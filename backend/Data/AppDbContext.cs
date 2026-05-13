@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using backend.Models;
 
 namespace backend.Data
 {
@@ -9,6 +10,8 @@ namespace backend.Data
         {
             
         }
+
+        public DbSet<User> Users {get; set;}
     }
 }
 #pragma warning restore format
