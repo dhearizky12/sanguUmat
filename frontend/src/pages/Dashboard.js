@@ -5,6 +5,7 @@ function Dashboard()
     const [showModal, setShowModal] = useState(false);
     const [title, setTitle] = useState("");
     const [content, setContent] = useState("");
+    const [questions, setQuestions] = useState([]);
 
     const logout = () => {
         window.location.href = "http://localhost:5236/api/auth/logout";
@@ -33,11 +34,23 @@ function Dashboard()
         if(response.ok)
         {
             alert("Pertanyaan berhasil dibuat");
+            await loadQuestions();
 
             setShowModal(false);
             setTitle("");
             setContent("");
         }
+    };
+
+    const loadQuestions = async () => {
+        const response = await fetch(
+            "http://localhost:5236/api/question",
+            {
+                credentials: "include"
+            }
+        );
+        const data = await response.json();
+        setQuestions(data);
     };
 
     return (
@@ -61,6 +74,67 @@ function Dashboard()
             <button onClick={logout}>
                 Logout
             </button>
+
+            <br/>
+            <br/>
+
+            <h2>Daftar Pertanyaan</h2>
+            {
+                questions.map((question) => (
+                <div
+                    key={question.id}
+                    style={{
+                        border: "1px solid #ccc",
+                        padding: 20,
+                        borderRadius: 10,
+                        marginBottom: 20
+                    }}
+                >
+
+                <div
+                    style={{
+                        display: "flex",
+                        alignItems: "center",
+                        marginBottom: 10
+                    }}
+                >
+
+                {
+                    question.userPicture && (
+                        <img
+                            src={question.userPicture}
+                            alt="Profile"
+                            width="40"
+                            height="40"
+                            style={{
+                                borderRadius: 999,
+                                marginRight: 10
+                            }}
+                        />
+                    )
+                }
+
+                <strong>
+                    {question.userName}
+                </strong>
+
+            </div>
+
+            <h3>
+                {question.title}
+            </h3>
+
+            <p>
+                {question.content}
+            </p>
+
+            <small>
+                {question.createdAt}
+            </small>
+
+        </div>
+    ))
+            }
 
             {
                 showModal && (

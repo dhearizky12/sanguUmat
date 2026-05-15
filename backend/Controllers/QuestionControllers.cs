@@ -9,11 +9,11 @@ namespace backend.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class QuestionControllers : Controller
+    public class QuestionController : Controller
     {
         private readonly AppDbContext _db;
 
-        public QuestionControllers(AppDbContext db)
+        public QuestionController(AppDbContext db)
         {
             _db = db;
         }
@@ -41,6 +41,27 @@ namespace backend.Controllers
 
             await _db.SaveChangesAsync();
             return Ok();
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetQuestions()
+        {
+            var questions = 
+                await _db.Questions
+                .Include( x=> x.User)
+                .OrderByDescending(x => x.CreatedAt)
+                .Select( x => new
+                {
+                    x.Id,
+                    x.Title,
+                    x.Content,
+                    x.CreatedAt,
+                    UserName = x.User.Name,
+                    UserPicture = x.User.Picture
+                })
+                .ToListAsync();
+
+            return Ok(questions);      
         }
     }
 }
