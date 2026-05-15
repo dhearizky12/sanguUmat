@@ -3,6 +3,10 @@ import { useEffect, useState } from "react";
 function Profile() {
     const [profile, setProfile] = useState(null);
 
+    const backDashboard = () => {
+        window.location.href = "/dashboard";
+    };
+
     useEffect(() => {
         fetch("http://localhost:5236/api/auth/profile",{
             credentials: "include"
@@ -76,6 +80,9 @@ function Profile() {
                 {" "}
                 {profile.lastLogin}
             </p>
+
+            <br/>
+            <button onClick={backDashboard}>Kembali ke Dashboard</button>
         </div>
     );
 }

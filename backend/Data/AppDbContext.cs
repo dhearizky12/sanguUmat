@@ -12,6 +12,7 @@ namespace backend.Data
         }
 
         public DbSet<User> Users {get; set;}
+        public DbSet<Question>Questions {get;set;}
     }
 }
 #pragma warning restore format
