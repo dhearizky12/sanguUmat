@@ -13,5 +13,7 @@ namespace backend.Models
         public DateTime CreatedAt { get; set;}
         public DateTime UpdatedAt { get; set;}
         public DateTime LastLogin { get; set;}
+
+        public List<Question> Questions {get;set;} = new List<Question>();
     }
 }
