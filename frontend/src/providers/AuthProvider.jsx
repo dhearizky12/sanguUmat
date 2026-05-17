@@ -24,13 +24,12 @@ export default function AuthProvider({ children }) {
       .finally(() => {
         setTimeout(() => {
           setLoading(false);
-        }, 1000)
+        }, 1000);
       });
   }, []);
 
-   const logout = () => {
-    window.location.href =
-      "http://localhost:5236/api/auth/logout";
+  const logout = () => {
+    window.location.href = "http://localhost:5236/api/auth/logout";
   };
 
   return (
@@ -38,7 +37,7 @@ export default function AuthProvider({ children }) {
       value={{
         user,
         loading,
-        isAuthenticated: !!(user?.isAuthenticated),
+        isAuthenticated: !!user?.isAuthenticated,
         logout,
       }}
     >
