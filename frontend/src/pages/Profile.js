@@ -7,6 +7,30 @@ function Profile() {
         window.location.href = "/dashboard";
     };
 
+    const [selectedFile, setSelectedFile] = useState(null);
+
+    const uploadPicture = async() => {
+        if (!selectedFile) return;
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        const response = await fetch(
+            "http://localhost:5236/api/auth/upload-picture",
+            {
+                method: "POST",
+                credentials: "include",
+                body: formData
+            }
+        );
+
+        if ( response.ok)
+        {
+            alert("Foto profil berhasil diupload");
+            window.location.reload();
+        }
+    };
+
     useEffect(() => {
         fetch("http://localhost:5236/api/auth/profile",{
             credentials: "include"
@@ -29,7 +53,7 @@ function Profile() {
             {
                 profile.picture && (
                     <img 
-                        src={profile.picture}
+                        src={"http://localhost:5236/" + profile.picture}
                         alt="Profile"
                         width="120"
                         style={{borderRadius : 999}}
@@ -37,6 +61,25 @@ function Profile() {
 
                 )
             }
+
+            <br />
+
+            <input
+            type="file"
+            onChange={(e) =>
+                setSelectedFile(e.target.files[0])
+            }
+            />
+
+            <br />
+            <br />
+
+            <button onClick={uploadPicture}>
+            Upload Foto
+            </button>
+
+            <br />
+            <br />
             <br/>
             <br/>
 

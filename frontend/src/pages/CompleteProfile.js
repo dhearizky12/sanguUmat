@@ -1,10 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 function CompleteProfile() {
     const [phone, setPhone] = useState("");
     const [address, setAddress] = useState("");
 
 
+    useEffect(() => {
+
+    setPhone("");
+
+    setAddress("");
+
+}, []);
     const saveProfile = async () => {
         const response = await fetch (
             "http://localhost:5236/api/auth/complete-profile",

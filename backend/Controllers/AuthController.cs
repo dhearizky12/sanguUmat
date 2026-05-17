@@ -133,5 +133,55 @@ namespace backend.Controllers
                 user.LastLogin
             });
         }
+
+        [HttpPost("upload-picture")]
+        public async Task<IActionResult>UploadPicture (IFormFile file)
+        {
+            if (file == null || file.Length == 0)
+            {
+                return BadRequest("File kosong");
+            }
+
+            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _db.Users.FirstOrDefaultAsync( x =>
+                x.GoogleId == googleId);    
+
+            if ( user == null )
+            {
+                return Unauthorized();
+            }
+
+            var uploadsFolder = Path.Combine(
+                Directory.GetCurrentDirectory(),
+                "wwwroot",
+                "uploads"   
+            );
+
+            if(!Directory.Exists(uploadsFolder))
+            {
+                Directory.CreateDirectory(uploadsFolder);
+            }
+
+            var extension = Path.GetExtension(file.FileName);
+
+            var fileName = Guid.NewGuid().ToString() + extension;
+
+            var filePath = Path.Combine(uploadsFolder, fileName);
+
+            using(var stream = new FileStream(filePath, FileMode.Create))
+            {
+                await file.CopyToAsync(stream);
+            }
+
+            user.Picture = "/uploads/" + fileName;
+            user.UpdatedAt = DateTime.UtcNow;
+
+            await _db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                picture = user.Picture
+            });
+        }
     }
 }

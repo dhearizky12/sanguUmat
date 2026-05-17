@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState, useEffect} from "react";
 
 function Dashboard()
 {
@@ -14,6 +14,21 @@ function Dashboard()
     const openProfile = () => {
         window.location.href = "/profile";
     }
+
+    const loadQuestions = async() => {
+        const response = await fetch(
+            "http://localhost:5236/api/question",
+            {
+                credentials: "include"
+            }
+        );
+
+        if(response.ok)
+        {
+            const data = await response.json();
+            setQuestions(data);
+        }
+    };
 
     const submitQuestion = async () => {
         const response = await fetch(
@@ -42,16 +57,20 @@ function Dashboard()
         }
     };
 
-    const loadQuestions = async () => {
-        const response = await fetch(
-            "http://localhost:5236/api/question",
-            {
-                credentials: "include"
-            }
-        );
-        const data = await response.json();
-        setQuestions(data);
-    };
+    // const loadQuestions = async () => {
+    //     const response = await fetch(
+    //         "http://localhost:5236/api/question",
+    //         {
+    //             credentials: "include"
+    //         }
+    //     );
+    //     const data = await response.json();
+    //     setQuestions(data);
+    // };
+
+    useEffect(() => {
+        loadQuestions();
+    }, []);
 
     return (
         <div style={{padding:40}}>
@@ -102,13 +121,14 @@ function Dashboard()
                 {
                     question.userPicture && (
                         <img
-                            src={question.userPicture}
+                            src={"http://localhost:5236/" + question.userPicture}
                             alt="Profile"
                             width="40"
                             height="40"
                             style={{
                                 borderRadius: 999,
-                                marginRight: 10
+                                marginRight: 10,
+                                objectFit: "cover"
                             }}
                         />
                     )
