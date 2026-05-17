@@ -2,7 +2,7 @@ import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 
 function Header() {
-  const { isAuthenticated, logout } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   const classNav = ({ isActive }) => `${isActive && "font-bold border-b-2 border-primary-container"} `;
 
@@ -70,14 +70,14 @@ function Header() {
             <span>Buat Pertanyaan</span>
           </Link>
           {isAuthenticated ? (
-            <button onClick={logout} className="cursor-pointer">
+            <Link to="/profile" className="cursor-pointer">
               <img
                 alt="User Avatar"
                 className="w-10 h-10 rounded-full border border-outline-variant object-cover"
                 data-alt="profile picture"
                 src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlecWxw8KhGJrYkMsZa7yLQi5icyYgE-fAWvyuZ5jbdjOfs794jd2bQSL34Gf5OFntHesK4uWxMWiKbtefoxc98or2hGz94jdY3ujxbXyhpdUt45EDRaU-_rLwLNvwGrooq4vAV3kXbfN6ev1SSvow4AgiyZbaKmxMqeuqlYAvXeRC2zwwZNBe3hObPSt1027GolP1Yh9cbOWKOQKxgGBMVE6T-xtMU6ABqPwFnjQq0Hm56h_MlaI6AKTxJOu42275b4dWXGFYEQk"
               />
-            </button>
+            </Link>
           ) : (
             <Link
               to="/login"

@@ -4,8 +4,8 @@ function Login() {
   };
 
   return (
-    <div className="font-body-md min-h-screen flex items-center justify-center p-margin-mobile md:p-gutter relative overflow-hidden">
-      <main className="relative z-10 w-full max-w-md bg-surface-container-lowest rounded-xl shadow-[0_4px_20px_rgba(6,78,59,0.05)] border border-outline-variant/30 overflow-hidden flex flex-col">
+    <main className="min-h-screen flex items-center justify-center relative overflow-hidden">
+      <div className="max-w-md bg-surface-container-lowest rounded-xl shadow border border-outline-variant/30 overflow-hidden flex flex-col">
         <div className="relative h-48 bg-surface-container w-full flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <img
@@ -95,8 +95,8 @@ function Login() {
             </a>
           </p>
         </div>
-      </main>
-    </div>
+      </div>
+    </main>
   );
 }
 
