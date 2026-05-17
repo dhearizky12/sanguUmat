@@ -45,12 +45,12 @@ function EditProfile() {
     <div className="font-body-md min-h-screen flex flex-col">
       <Header />
       <main class="grow z-10 relative py-section-gap px-margin-mobile md:px-gutter">
-        <div class="max-w-3xl mx-auto">
+        <div class="max-w-container-max mx-auto">
           <div class="text-center mb-12">
             <h1 class="text-headline-lg text-primary mb-2">Edit Profile</h1>
             <p class="text-on-surface-variant">Lengkapi data pribadi anda</p>
           </div>
-          <div class="bg-surface-container-lowest rounded-md shadow-xl p-8">
+          <div class="bg-surface-container-lowest rounded-xl shadow-xl p-8">
             <div class="flex flex-col items-center mb-12">
               <div class="relative group">
                 <div class="w-32 h-32 rounded-full overflow-hidden border-4 shadow-md">
