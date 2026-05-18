@@ -4,7 +4,7 @@ import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
 
 function Profile() {
-  const { logout, user } = useAuth();
+  const { logout, profile } = useAuth();
 
   const handleLogout = () => {
     logout();
@@ -18,33 +18,33 @@ function Profile() {
             <div className="flex flex-col md:flex-row items-center md:items-end justify-between gap-gutter">
               <div className="flex flex-col md:flex-row items-center md:items-start gap-gutter">
                 <div className="relative">
-                  <div className="w-24 h-24 rounded-full bg-surface-container-lowest overflow-hidden shadow-lg">
+                  <div className="w-24 h-24 rounded-full border border-primary bg-surface-container-lowest overflow-hidden shadow-lg">
                     <img
                       alt="photo profile"
                       className="w-full h-full object-cover rounded-full"
                       data-alt="photo profiles"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuDhO8OKTqx66wmHHbpjyvA_S8EtQquLMh2o689r-LBeMR7Zd0Ffq-PMUz9ah7RM-23Dg0tEycz2JOM96eSGa55wjHgvw9cBaqK1y6py44U309n_xpACln7S0pvqzVmtkwrYDWBke8Aqz5R5IQO4iWH41cIXpQMKw09hO1_U9EcIo0nzF74dBt86RtZvxc8xqBsjY4DvpDBqqTqGBCJX84T9qx3XZlpgETlrqgA9cDfVzTqyp3E_skFts37Rmxf5zC_Z9SEuO2zLoho"
+                      src={profile.picture || 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original'}
                     />
                   </div>
                 </div>
                 <div className="">
-                  <h1 className="text-headline-lg text-primary">{user.name}</h1>
-                  <div className="mb-2">{user.email || 'fatikhunnizam@gmail.com'}</div>
-                  <div>{user.phone}</div>
-                  <div>{user.address}</div>
+                  <h1 className="text-headline-lg text-primary">{profile.name}</h1>
+                  <div className="mb-2">{profile.email || 'fatikhunnizam@gmail.com'}</div>
+                  <div>{profile.phone}</div>
+                  <div>{profile.address}</div>
                 </div>
               </div>
               <div className="flex gap-2">
                 <button
                   onClick={handleLogout}
-                  class="border border-primary-container text-primary px-6 py-3 rounded-full font-label-sm text-label-sm shadow-sm active:scale-95"
+                  className="border border-primary-container text-primary px-6 py-3 rounded-full font-label-sm text-label-sm shadow-sm active:scale-95"
                   type="submit"
                 >
                   Logout
                 </button>
                 <Link
                   to="/edit-profile"
-                  class="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm shadow-sm active:scale-95"
+                  className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm shadow-sm active:scale-95"
                   type="submit"
                 >
                   Edit Profil

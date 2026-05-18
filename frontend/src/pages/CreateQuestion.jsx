@@ -1,8 +1,41 @@
 import { NavLink } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import { useState } from "react";
 
 function CreateQuestion() {
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+
+  const handleTitleChange = (e) => {
+    setTitle(e.target.value);
+  };
+
+  const handleContentChange = (e) => {
+    setContent(e.target.value)
+  }
+
+  const submitQuestion = async () => {
+    const response = await fetch("http://localhost:5236/api/question", {
+      method: "POST",
+      credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        title,
+        content,
+      }),
+    });
+
+    if (response.ok) {
+      alert("Pertanyaan berhasil dibuat");
+
+      setTitle("");
+      setContent("");
+    }
+  };
+
   return (
     <div className="font-body-md min-h-screen flex flex-col">
       <Header />
@@ -13,12 +46,9 @@ function CreateQuestion() {
               <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
               <div className="mb-6">
                 <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">Buat Pertanyaan</h1>
-                <p className="font-body-md text-body-md text-on-surface-variant">
-                  Seek clarity on matters of faith and practice. Our verified scholars are here to guide you with wisdom and understanding.
-                </p>
               </div>
               <form className="space-y-6">
-                <div>
+                {/* <div>
                   <label className="block font-label-sm text-label-sm text-on-surface mb-2" htmlFor="topic">
                     Topic Classification
                   </label>
@@ -38,30 +68,37 @@ function CreateQuestion() {
                       <span className="material-symbols-outlined">expand_more</span>
                     </div>
                   </div>
+                </div> */}
+                <div className="flex flex-col gap-2">
+                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Judul</label>
+                  <input
+                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container"
+                    type="text"
+                    placeholder="Tulis Judul"
+                    value={title}
+                    onChange={handleTitleChange}
+                  />
                 </div>
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface mb-2" htmlFor="question">
-                    Your Question
+                    Detail Pertanyaal
                   </label>
                   <textarea
-                    className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors resize-none placeholder-outline"
+                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container"
                     id="question"
-                    placeholder="Describe your situation or question in detail..."
+                    placeholder="Jelaskan pertanyaan anda dengan detail..."
                     rows="6"
+                    value={content}
+                    onChange={handleContentChange}
                   ></textarea>
                 </div>
                 <div className="flex items-center justify-between pt-2">
-                  <div className="flex items-center gap-2 text-on-surface-variant">
-                    <span className="material-symbols-outlined text-outline" data-icon="lock">
-                      lock
-                    </span>
-                    <span className="font-label-sm text-label-sm">Questions can be kept private</span>
-                  </div>
                   <button
                     className="bg-primary-container text-white px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-tertiary-container transition-colors shadow-sm active:scale-95 flex items-center gap-2"
-                    type="submit"
+                    type="button"
+                    onClick={submitQuestion}
                   >
-                    Submit Question
+                    Kirim Pertanyaan
                     <span className="material-symbols-outlined text-[18px]" data-icon="send">
                       send
                     </span>

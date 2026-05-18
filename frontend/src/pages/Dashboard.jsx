@@ -4,11 +4,40 @@ import QuestionCard from "../components/QuestionCard";
 import ArticleCard from "../components/ArticleCard";
 import ArticleMemberCard from "../components/ArticleMemberCard";
 import { NavLink } from "react-router-dom";
+import { isValidElement, useEffect, useState } from "react";
 
 function Dashboard() {
+  const [questions, setQuestions] = useState([]);
+
+  useEffect(() => {
+    const fetchQuestions = async () => {
+      try {
+        const response = await fetch("http://localhost:5236/api/question", {
+          credentials: "include",
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch");
+        }
+
+        const data = await response.json();
+        setQuestions(data);
+      } catch (err) {
+        console.error(err)
+        // setError(err.message);
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchQuestions();
+  }, []);
+
   return (
     <div className="font-body-md min-h-screen flex flex-col">
       <Header />
+
+      {questions.length}
       <main className="grow">
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
@@ -88,8 +117,8 @@ function Dashboard() {
             </NavLink>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {Array.from({ length: 3 }).map((v, i) => (
-              <QuestionCard key={i} slug={i} adminId={i}/>
+            {questions.map((v) => (
+              <QuestionCard key={v.id} slug={v.id} question={v} adminId={false} />
             ))}
           </div>
         </section>

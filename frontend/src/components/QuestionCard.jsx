@@ -1,6 +1,6 @@
 import { NavLink } from "react-router-dom";
 
-function QuestionCard({ slug, adminId }) {
+function QuestionCard({ slug, adminId, question }) {
   return (
     <div className="bg-surface-container-lowest rounded-xl border-primary-container border p-6 flex flex-col">
       <NavLink to={`/detail-question/${slug}`}>
@@ -9,12 +9,11 @@ function QuestionCard({ slug, adminId }) {
             help_outline
           </span>
           <h3 className="font-title-md text-title-md text-on-surface line-clamp-2">
-            What is the ruling on combining prayers while traveling for work?
+            {question.title}
           </h3>
         </div>
         <p className="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-6 grow">
-          I travel frequently for short business trips (less than 3 days). Can I combine Dhuhr and Asr, and Maghrib and Isha consistently during these
-          trips?
+          {question.content}
         </p>
       </NavLink>
       <div className="border-t border-outline-variant/20 pt-4 mt-auto">
