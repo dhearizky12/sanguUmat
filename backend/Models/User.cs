@@ -9,7 +9,9 @@ namespace backend.Models
         public string? Picture { get; set;}
         public string? Phone { get; set;}
         public string? Address { get; set;}
-        public string? Role { get; set;}
+        public string Role { get; set;} = "User";
+        public bool HasCompletedProfile { get; set;} = false;
+        public ICollection<Answer> Answers { get; set;}
         public DateTime CreatedAt { get; set;}
         public DateTime UpdatedAt { get; set;}
         public DateTime LastLogin { get; set;}

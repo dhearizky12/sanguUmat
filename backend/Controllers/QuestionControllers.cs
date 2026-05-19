@@ -44,24 +44,84 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetQuestions()
+        public async Task<IActionResult> GetQuestions([FromQuery] string? search)
         {
-            var questions = 
-                await _db.Questions
-                .Include( x=> x.User)
-                .OrderByDescending(x => x.CreatedAt)
-                .Select( x => new
-                {
-                    x.Id,
-                    x.Title,
-                    x.Content,
-                    x.CreatedAt,
-                    UserName = x.User.Name,
-                    UserPicture = x.User.Picture
-                })
-                .ToListAsync();
+            var query = _db.Questions.Include
+                        (x => x.User)
+                        .AsQueryable();
+
+            //Search Logic
+            if( !string.IsNullOrWhiteSpace(search))
+            {
+                query = query.Where( x => x.Title.ToLower().Contains(search.ToLower()) 
+                    ||
+                    x.Content.ToLower().Contains(search.ToLower())
+                );
+            }
+
+            var questions = await query.OrderByDescending( x => x.CreatedAt )
+                            .Select( x => new 
+                            {
+                                x.Id,
+                                x.Title,
+                                x.Content,
+                                x.CreatedAt,
+                                UserId = x.User.Id,
+                                UserName = x.User.Name,
+                                UserPicture = x.User.Picture
+                            })
+                            .ToListAsync();
 
             return Ok(questions);      
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetDetailQuestion(int id)
+        {
+            var question =
+                await _db.Questions
+                    .Include(x => x.User)
+
+                    .Include(x => x.Answers)
+                    .ThenInclude(x => x.User)
+
+                    .FirstOrDefaultAsync(x =>
+                        x.Id == id);
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(new
+            {
+                question.Id,
+                question.Title,
+                question.Content,
+
+                UserName =
+                    question.User.Name,
+
+                UserPicture =
+                    question.User.Picture,
+
+                Answers =
+                    question.Answers
+                        .OrderByDescending(x =>
+                            x.CreatedAt)
+                        .Select(x => new
+                        {
+                            x.Id,
+                            x.Content,
+                            x.CreatedAt,
+
+                            UserName =
+                                x.User.Name,
+
+                            UserPicture =
+                                x.User.Picture
+                        })
+            });
         }
     }
 }

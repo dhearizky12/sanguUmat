@@ -8,9 +8,9 @@ function EditProfile() {
   const navigate = useNavigate();
   const { profile } = useAuth();
 
-  const [fullName, setFullName] = useState(profile.name);
-  const [phone, setPhone] = useState(profile.phone || "");
-  const [address, setAddress] = useState(profile.address || "");
+  const [fullName, setFullName] = useState(profile?.name || "");
+  const [phone, setPhone] = useState(profile?.phone || "");
+  const [address, setAddress] = useState(profile?.address || "");
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
 
@@ -55,7 +55,7 @@ function EditProfile() {
         return;
       }
 
-      navigate("/profile");
+      window.location.href = "/";
     } catch (error) {
       console.error(error);
       alert("Terjadi kesalahan");

@@ -5,14 +5,29 @@ import ArticleCard from "../components/ArticleCard";
 import ArticleMemberCard from "../components/ArticleMemberCard";
 import { NavLink } from "react-router-dom";
 import { isValidElement, useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
 
 function Dashboard() {
   const [questions, setQuestions] = useState([]);
+  const [search, setSearch] = useState("");
+  const navigate = useNavigate();
+
+  const { isAuthenticated, me } = useAuth();
+
+  useEffect(() => {
+    if ( isAuthenticated && me && !me.hasCompletedProfile )
+    {
+        navigate("/edit-profile");
+    }
+  }, [ isAuthenticated, me, navigate]);
 
   useEffect(() => {
     const fetchQuestions = async () => {
       try {
-        const response = await fetch("http://localhost:5236/api/question", {
+        // const response = await fetch("http://localhost:5236/api/question", 
+        const response = await fetch(`http://localhost:5236/api/question?search=${search}`,
+        {
           credentials: "include",
         });
 
@@ -31,13 +46,12 @@ function Dashboard() {
     };
 
     fetchQuestions();
-  }, []);
+  }, [search]);
 
   return (
     <div className="font-body-md min-h-screen flex flex-col">
       <Header />
 
-      {questions.length}
       <main className="grow">
         <section className="relative overflow-hidden">
           <div className="absolute inset-0">
@@ -70,6 +84,8 @@ function Dashboard() {
                 className="w-full pl-14 pr-36 py-5 bg-surface rounded-2xl border-0 focus:ring-4 focus:ring-secondary-fixed/50 font-body-lg text-body-lg text-on-surface shadow-xl transition-all outline-none placeholder:text-outline"
                 placeholder="Search Fiqh questions..."
                 type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
               />
               <div className="absolute inset-y-0 right-3 flex items-center">
                 <button className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-8 py-3 rounded-xl hover:bg-secondary-fixed transition-colors shadow-md font-bold">

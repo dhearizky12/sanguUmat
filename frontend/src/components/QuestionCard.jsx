@@ -22,16 +22,21 @@ function QuestionCard({ slug, adminId, question }) {
             alt="Scholar Avatar"
             className="w-10 h-10 rounded-full object-cover"
             data-alt="A headshot of a dignified older man with a grey beard, wearing a traditional white kufi. The background is a soft, warm beige. The lighting is gentle and professional, conveying wisdom and approachability within a serene, modern context."
-            src="https://lh3.googleusercontent.com/aida-public/AB6AXuBw7XtMLpqAWBDpcA0agBYx13NwJHyRvY8IH66b_PSC21D6wiiWKik_yrbgUw72YDinHsV8GCXI5cTIEiLQmPfUmQKeuHZnUusGBaX_yeqzLqR8DwcFK3XWwRFUHHAJQtGji3YdEU_Nt7flSnjrUqV_8fZV841LB6ackkT6q2sRBLOG5heDRAkIlg8V-LsAvl7V0K24-mx94SW40YSoxe1IlTF0B-GosZuED5X81eDRwNiG-vjZSlPr04LLKYNKgxzy1gdibIK_OB4"
+            src={
+              question.userPicture
+                ? "http://localhost:5236" +
+                  question.userPicture
+                : "/default-avatar.png"
+            }
           />
           <div>
             <p className="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
-              Sheikh Abdullah Rahman
+              {question.userName}
               <span className="material-symbols-outlined text-[14px] text-secondary-container icon-fill" data-icon="verified">
                 verified
               </span>
             </p>
-            <p className="text-[12px] text-outline">Answered 2 hours ago</p>
+            <p className="text-[12px] text-outline">{new Date(question.createdAt).toLocaleDateString()}</p>
           </div>
         </NavLink>
       </div>

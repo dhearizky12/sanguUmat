@@ -1,11 +1,13 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { useEffect, useState } from "react";
 
 function Header() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, me } = useAuth();
 
   const classNav = ({ isActive }) => `${isActive && "font-bold border-b-2 border-primary-container"} `;
 
+  const [profile, setProfile]= useState(null);
   const isAdmin = false;
 
   const menus = [
@@ -31,13 +33,34 @@ function Header() {
     },
   ];
 
+  useEffect(() => {
+    if (!isAuthenticated)
+    {
+      return;
+    }
+    fetch(
+        "http://localhost:5236/api/auth/profile",
+        {
+          credentials: "include"
+        }
+      )
+      .then(res => res.json())
+      .then(data => {
+        setProfile(data);
+      });
+  }, [isAuthenticated]);
+
   return (
     <nav className="bg-surface shadow-sm top-0 z-50 sticky">
       <div className="max-w-container-max mx-auto px-gutter grid grid-cols-2 md:grid-cols-4 w-full h-20">
         <div className="flex items-center gap-2 cursor-pointer">
           <div className="rounded-lg flex items-center justify-center">
-            <span className="material-symbols-outlined text-primary icon-fill text-4xl!" data-icon="menu_book">
-              menu_book
+            <span>
+            <img
+                src="/favicon.png"
+                alt="Sangu Umat Logo"
+                className="w-12 h-12 object-contain"
+              />
             </span>
           </div>
           <span className="text-title-md font-bold text-primary-container">Sangu Umat</span>
@@ -63,19 +86,19 @@ function Header() {
           )}
         </div>
         <div className="flex items-center gap-4 justify-end">
-          <Link
-            to="/create-question"
-            className="bg-primary-container text-on-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm cursor-pointer text-nowrap"
-          >
+          { isAuthenticated && me?.role === "User" && (
+            < Link to="/create-question"
+              className="bg-primary-container text-on-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm cursor-pointer text-nowrap">
             <span>Buat Pertanyaan</span>
-          </Link>
+            </Link>
+            )}
           {isAuthenticated ? (
             <Link to="/profile" className="cursor-pointer">
               <img
                 alt="User Avatar"
                 className="w-10 h-10 rounded-full border border-outline-variant object-cover"
                 data-alt="profile picture"
-                src="https://lh3.googleusercontent.com/aida-public/AB6AXuAlecWxw8KhGJrYkMsZa7yLQi5icyYgE-fAWvyuZ5jbdjOfs794jd2bQSL34Gf5OFntHesK4uWxMWiKbtefoxc98or2hGz94jdY3ujxbXyhpdUt45EDRaU-_rLwLNvwGrooq4vAV3kXbfN6ev1SSvow4AgiyZbaKmxMqeuqlYAvXeRC2zwwZNBe3hObPSt1027GolP1Yh9cbOWKOQKxgGBMVE6T-xtMU6ABqPwFnjQq0Hm56h_MlaI6AKTxJOu42275b4dWXGFYEQk"
+                src={profile?.picture ? "http://localhost:5236" + profile.picture : "/default-avatar.png"}
               />
             </Link>
           ) : (

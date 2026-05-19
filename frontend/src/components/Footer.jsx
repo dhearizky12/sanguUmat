@@ -4,7 +4,7 @@ function Footer() {
       <div className="max-w-container-max mx-auto px-gutter py-section-gap flex flex-col md:flex-row justify-between items-center gap-base">
         <div>
           <div className="font-title-md text-title-md font-bold text-primary-container  mb-4 md:mb-0">
-            Sangu Umat <small>© 2024 </small>
+            Sangu Umat <small>© 2026 </small>
           </div>
 
           <div>Bridging traditional wisdom with modern clarity.</div>
