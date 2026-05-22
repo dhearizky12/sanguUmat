@@ -38,6 +38,7 @@ function EditProfile() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
+          name: fullName,
           phone,
           address,
         }),

@@ -107,6 +107,7 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
+            user.Name = request.Name;
             user.Phone = request.Phone;
             user.Address = request.Address;
             user.UpdatedAt = DateTime.UtcNow;

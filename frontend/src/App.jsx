@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
 
           <Route path="/questions" element={<Questions />} />
-          <Route path="/detail-question/:slug" element={<DetailQuestion />} />
+          <Route path="/detail-question/:id" element={<DetailQuestion />} />
 
           <Route path="/articles" element={<Articles />} />
           <Route path="/detail-article/:slug" element={<DetailArticle />} />
