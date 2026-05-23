@@ -72,5 +72,35 @@ namespace backend.Controllers
 
             return Ok();
         }
+
+        [HttpDelete("{answerId}")]
+        public async Task<IActionResult>DeleteAnswer( int answerId )
+        {
+            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _db.Users.FirstOrDefaultAsync( x => x.GoogleId == googleId );
+            if ( user == null )
+            {
+                return Unauthorized();
+            }
+
+            var answer = await _db.Answers.FirstOrDefaultAsync( x => x.Id == answerId );
+
+            if ( answer == null )
+            {
+                return NotFound();
+            }
+
+            //hanya pemilik jawaban atau admin yang bisa hapus
+
+            if( answer.UserId != user.Id && user.Role != "Admin" )
+            {
+                return Forbid();
+            }
+
+            _db.Answers.Remove(answer);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
     }
+    
 }

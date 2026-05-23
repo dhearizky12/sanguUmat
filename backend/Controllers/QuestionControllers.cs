@@ -115,11 +115,14 @@ namespace backend.Controllers
                             x.Content,
                             x.CreatedAt,
 
+                            UserId = x.UserId,
+
                             UserName =
                                 x.User.Name,
 
                             UserPicture =
-                                x.User.Picture
+                                x.User.Picture,
+                            Role = x.User.Role
                         })
             });
         }

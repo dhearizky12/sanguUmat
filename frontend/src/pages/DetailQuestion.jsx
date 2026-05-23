@@ -11,6 +11,30 @@ function DetailQuestion()
   const {id} = useParams();
   const {me} = useAuth();
 
+  const deleteAnswer = async(answerId) =>
+  {
+    const confirmDelete = window.confirm("Hapus jawaban ini?");
+    if(!confirmDelete) return;
+
+    const response = await fetch(
+      `http://localhost:5236/api/answer/${answerId}`,
+      {
+        method: "DELETE",
+        credentials: "include"
+      }
+    );
+
+    if (response.ok)
+    {
+      alert("Jawaban berhasil dihapus");
+      window.location.reload();
+    }
+    else
+    {
+      alert("Gagal menghapus jawaban");
+    }
+  };
+
   useEffect(()=>
   {
     fetch(`http://localhost:5236/api/Question/${id}`)
@@ -54,10 +78,29 @@ function DetailQuestion()
             {/* QUESTION CARD */}
             <div className="bg-white rounded-3xl shadow-sm border border-outline-variant/20 p-8">
               <div className="flex items-start gap-4">
-                <div className="w-14 h-14 rounded-full bg-primary-container/10 flex items-center justify-center">
-                  <span className="material-symbols-outlined text-primary-container text-3xl">
-                    help
-                  </span>
+                <div
+                  className="
+                    w-14
+                    h-14
+                    rounded-full
+                    overflow-hidden
+                    bg-primary-container/10
+                    flex
+                    items-center
+                    justify-center
+                    border
+                    border-outline-variant">
+                      <img
+                        src={
+                          question.userPicture?"http://localhost:5236/" + question.userPicture : "/default-avatar.png"
+                        }
+                        alt="profile"
+                        className="
+                        w-full
+                        h-full
+                        object-cover
+                        rounded-full">
+                      </img>
                 </div>
 
                 <div className="flex-1">
@@ -89,29 +132,69 @@ function DetailQuestion()
                     key={item.id}
                     className="bg-white rounded-2xl shadow-sm border border-outline-variant/20 p-6"
                   >
-                    <div className="flex items-center gap-3 mb-4">
-                      <img
-                        src={
-                          item.userPicture
-                            ? "http://localhost:5236/" + item.userPicture
-                            : "/default-avatar.png"
-                        }
-                        alt="profile"
-                        className="w-12 h-12 rounded-full object-cover"
-                      />
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="flex items-center gap-3">
+                        <img
+                          src={
+                            item.userPicture
+                              ? "http://localhost:5236/" + item.userPicture
+                              : "/default-avatar.png"
+                          }
+                          alt="profile"
+                          className="w-12 h-12 rounded-full object-cover"
+                        />
                       <div>
                         <div className="flex items-center gap-2">
                           <strong className="text-lg text-on-surface">
                             {item.userName}
                           </strong>
-                          <span className="material-symbols-outlined text-secondary-container text-[18px]">
-                            verified
-                          </span>
+                          {
+                            item.role == "Guru" &&
+                            (
+                              <span className="material-symbols-outlined text-secondary-container text-[18px]">
+                                verified
+                            </span>
+                            )
+                          }
                         </div>
                         <p className="text-sm text-outline">
-                          Guru
+                          { item.role === "Guru" ? "Guru" : "Murid" }
                         </p>
                       </div>
+                    </div>
+                    {
+                      (me?.id === item.userId && (me?.role === "Admin" || me?.role === "Guru"))&&
+                      (
+                        <button onClick = {() => 
+                          deleteAnswer(item.id)
+                        }
+                        title="Hapus Jawaban"
+                        className="
+                          self-center
+                          // mt-4
+                          w-10
+                          h-10
+                          rounded-full
+                          flex
+                          items-center
+                          justify-center
+                          text-red-600
+                          hover:bg-red-50
+                          hover:text-red-700
+                          transition
+                          cursor-pointer">
+
+                          <span
+                            className="
+                              material-symbols-outlined
+                              text-[15px]"
+                          >
+                            delete
+                          </span>
+                        </button>
+                        
+                      )
+                    }
                     </div>
 
                     <p className="text-on-surface-variant leading-relaxed text-lg">
@@ -120,6 +203,7 @@ function DetailQuestion()
                   </div>
                 ))
               }
+              
             </div>
 
             {/* FORM JAWABAN */}
@@ -149,9 +233,8 @@ function DetailQuestion()
                 </div>
               )
             }
-
+            
           </div>
-
         )
       }
 

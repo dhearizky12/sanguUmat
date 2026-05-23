@@ -70,6 +70,7 @@ namespace backend.Controllers
                 return Ok( new
                 {
                     isAuthenticated = true,
+                    Id = existingUser.Id,
                     name = existingUser.Name,
                     email = existingUser.Email,
                     picture = existingUser.Picture,

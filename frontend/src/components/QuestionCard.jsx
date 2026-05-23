@@ -32,9 +32,14 @@ function QuestionCard({ slug, adminId, question }) {
           <div>
             <p className="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
               {question.userName}
-              <span className="material-symbols-outlined text-[14px] text-secondary-container icon-fill" data-icon="verified">
-                verified
-              </span>
+              {
+                question.role == "Guru" &&
+                (
+                  <span className="material-symbols-outlined text-secondary-container text-[18px]">
+                    verified
+                </span>
+                )
+              }
             </p>
             <p className="text-[12px] text-outline">{new Date(question.createdAt).toLocaleDateString()}</p>
           </div>
