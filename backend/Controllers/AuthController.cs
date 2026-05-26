@@ -41,7 +41,7 @@ namespace backend.Controllers
                 var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
                 var email = User.FindFirst(ClaimTypes.Email)?.Value;
                 var name = User.FindFirst(ClaimTypes.Name)?.Value;
-                var picture = User.FindFirst("Picture")?.Value;
+                var picture = User.FindFirst("picture")?.Value;
                 var existingUser = await _db.Users.FirstOrDefaultAsync(x=> x.GoogleId == googleId);
 
                 if (existingUser == null)
@@ -52,11 +52,14 @@ namespace backend.Controllers
                         Email = email,
                         Name = name,
                         Picture = picture,
+                        Role = "User",
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
-                        LastLogin = DateTime.UtcNow
+                        LastLogin = DateTime.UtcNow,
+                        HasCompletedProfile = false
                     };
                     _db.Users.Add(user);
+                    existingUser = user;
                 }
                 else
                 {
@@ -67,8 +70,12 @@ namespace backend.Controllers
                 return Ok( new
                 {
                     isAuthenticated = true,
-                    Name = name,
-                    hasCompletedProfile = !string.IsNullOrEmpty(existingUser?.Phone)
+                    Id = existingUser.Id,
+                    name = existingUser.Name,
+                    email = existingUser.Email,
+                    picture = existingUser.Picture,
+                    role = existingUser.Role,
+                    hasCompletedProfile = existingUser.HasCompletedProfile
                 });
             }
             
@@ -101,9 +108,18 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
+            user.Name = request.Name;
             user.Phone = request.Phone;
             user.Address = request.Address;
             user.UpdatedAt = DateTime.UtcNow;
+            if ( !string.IsNullOrEmpty(request.Phone) && !string.IsNullOrEmpty(request.Address) )
+            {
+                user.HasCompletedProfile = true;
+            }
+            else
+            {
+                throw new Exception("Phone dan Address harus diisi untuk menyelesaikan profile");
+            }
 
             await _db.SaveChangesAsync();
             return Ok();

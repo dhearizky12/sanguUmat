@@ -5,6 +5,8 @@ export default function AuthProvider({ children }) {
   const [me, setMe] = useState(null);
   const [profile, setProfile] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -53,6 +55,7 @@ export default function AuthProvider({ children }) {
   return (
     <AuthContext.Provider
       value={{
+        me,
         profile,
         loading,
         isAuthenticated: !!me?.isAuthenticated,

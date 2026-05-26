@@ -10,5 +10,6 @@ namespace backend.Models
 
         public int UserId {get;set;}
         public User User {get; set;}
+        public ICollection<Answer> Answers{ get; set; }
     } 
 }

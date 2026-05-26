@@ -81,7 +81,7 @@ function CreateQuestion() {
                 </div>
                 <div>
                   <label className="block font-label-sm text-label-sm text-on-surface mb-2" htmlFor="question">
-                    Detail Pertanyaal
+                    Detail Pertanyaan
                   </label>
                   <textarea
                     className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container"
