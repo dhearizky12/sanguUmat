@@ -57,12 +57,12 @@ function CreateQuestion() {
                       className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container appearance-none transition-colors"
                       id="topic"
                     >
-                      <option>Select a general topic...</option>
-                      <option>Prayer (Salah)</option>
-                      <option>Fasting (Sawm)</option>
-                      <option>Charity (Zakat)</option>
-                      <option>Family &amp; Marriage</option>
-                      <option>Finance &amp; Trade</option>
+                      <option>Pilih topik umum...</option>
+                      <option>Sholat</option>
+                      <option>Puasa</option>
+                      <option>Zakat</option>
+                      <option>Keluarga &amp; Pernikahan</option>
+                      <option>Keuangan &amp; Muamalah</option>
                     </select>
                     <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-on-surface-variant">
                       <span className="material-symbols-outlined">expand_more</span>
@@ -111,13 +111,13 @@ function CreateQuestion() {
             <div className="flex justify-between items-end mb-8">
               <div>
                 <h2 className="font-headline-lg text-headline-lg text-primary-container">Pertanyaan Saya</h2>
-                <p className="font-body-md text-body-md text-on-surface-variant mt-2">Recent inquiries addressed by our scholarly community.</p>
+                <p className="font-body-md text-body-md text-on-surface-variant mt-2">Pertanyaan terkini yang dijawab oleh komunitas ustadz kami.</p>
               </div>
               <NavLink
                 to="questions"
                 className="hidden sm:flex items-center gap-1 font-label-sm text-label-sm text-primary-container hover:text-tertiary font-semibold"
               >
-                View all{" "}
+                Lihat semua{" "}
                 <span className="material-symbols-outlined" data-icon="arrow_forward">
                   arrow_forward
                 </span>
@@ -129,32 +129,32 @@ function CreateQuestion() {
                 <div className="flex justify-between items-start">
                   <div className="flex gap-3 items-center mb-2">
                     <span className="px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
-                      Finance &amp; Trade
+                      Keuangan &amp; Muamalah
                     </span>
-                    <span className="text-outline font-label-sm text-label-sm">2 days ago</span>
+                    <span className="text-outline font-label-sm text-label-sm">2 hari lalu</span>
                   </div>
                   <span className="flex items-center gap-1 text-tertiary-fixed-dim font-label-sm text-label-sm bg-tertiary-fixed-dim/10 px-3 py-1 rounded-full">
                     <span className="material-symbols-outlined text-[14px]" data-icon="check_circle">
                       check_circle
                     </span>
-                    Answered
+                    Terjawab
                   </span>
                 </div>
                 <h3 className="font-body-lg text-body-lg text-on-surface font-medium line-clamp-2">
-                  Is it permissible to invest in index funds that contain a small percentage of non-compliant companies?
+                  Apakah diperbolehkan berinvestasi di reksa dana indeks yang memuat sebagian kecil saham perusahaan yang tidak sesuai syariah?
                 </h3>
                 <div className="mt-2 pl-4 border-l-2 border-secondary-fixed-dim bg-surface-container-low/50 p-4 rounded-r-lg">
                   <div className="flex items-center gap-2 mb-2">
                     <span className="material-symbols-outlined text-secondary-container" data-icon="verified" data-weight="fill">
                       verified
                     </span>
-                    <span className="font-label-sm text-label-sm text-on-surface font-semibold">Sheikh Ahmad Scholar</span>
+                    <span className="font-label-sm text-label-sm text-on-surface font-semibold">Ustadz Ahmad</span>
                   </div>
                   <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">
-                    The general consensus among contemporary scholars is that if the core business is permissible, a small percentage of incidental
-                    non-compliant income can be purified. However, the threshold for this...
+                    Konsensus umum di kalangan ulama kontemporer menyatakan bahwa jika bisnis utamanya halal, sebagian kecil pendapatan yang tidak
+                    sesuai syariah dapat disucikan. Namun, ada batas ambang untuk hal ini...
                   </p>
-                  <button className="mt-3 text-primary-container font-label-sm text-label-sm hover:underline">Read Full Answer</button>
+                  <button className="mt-3 text-primary-container font-label-sm text-label-sm hover:underline">Baca Jawaban Lengkap</button>
                 </div>
               </div>
               <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-[0_4px_20px_rgba(6,78,59,0.05)] flex flex-col gap-4 relative overflow-hidden opacity-90">
@@ -162,32 +162,32 @@ function CreateQuestion() {
                 <div className="flex justify-between items-start">
                   <div className="flex gap-3 items-center mb-2">
                     <span className="px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
-                      Prayer (Salah)
+                      Sholat
                     </span>
-                    <span className="text-outline font-label-sm text-label-sm">Yesterday</span>
+                    <span className="text-outline font-label-sm text-label-sm">Kemarin</span>
                   </div>
                   <span className="flex items-center gap-1 text-on-secondary-container font-label-sm text-label-sm bg-secondary-container/20 px-3 py-1 rounded-full">
                     <span className="material-symbols-outlined text-[14px]" data-icon="schedule">
                       schedule
                     </span>
-                    Pending Review
+                    Menunggu Jawaban
                   </span>
                 </div>
                 <h3 className="font-body-lg text-body-lg text-on-surface font-medium">
-                  How should one adjust prayer times when traveling across multiple time zones during a single flight?
+                  Bagaimana cara menyesuaikan waktu sholat ketika bepergian melintasi beberapa zona waktu dalam satu penerbangan?
                 </h3>
                 <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">
-                  I frequently travel for work and sometimes cross 4-5 time zones in a single 12-hour flight. I'm confused about when to pray Maghrib
-                  and Isha while in the air...
+                  Saya sering bepergian untuk urusan pekerjaan dan terkadang melintasi 4-5 zona waktu dalam satu penerbangan 12 jam. Saya bingung
+                  kapan harus sholat Maghrib dan Isya saat berada di pesawat...
                 </p>
               </div>
               <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant border-dashed shadow-sm flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <div className="flex gap-3 items-center mb-2">
                     <span className="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-[12px] font-semibold border border-outline-variant">
-                      Draft
+                      Draf
                     </span>
-                    <span className="text-outline font-label-sm text-label-sm">Just now</span>
+                    <span className="text-outline font-label-sm text-label-sm">Baru saja</span>
                   </div>
                   <button className="text-outline hover:text-error transition-colors p-1 rounded-full hover:bg-error-container/20">
                     <span className="material-symbols-outlined text-[20px]" data-icon="delete">
@@ -196,11 +196,11 @@ function CreateQuestion() {
                   </button>
                 </div>
                 <h3 className="font-body-lg text-body-lg text-on-surface font-medium italic text-on-surface-variant/70">
-                  Untitled Question regarding Zakat on inherited property...
+                  Pertanyaan tanpa judul mengenai zakat atas harta warisan...
                 </h3>
                 <div className="mt-2 flex gap-3">
                   <button className="bg-surface-container-high text-on-surface px-4 py-2 rounded-full font-label-sm text-label-sm hover:bg-surface-variant transition-colors">
-                    Continue Editing
+                    Lanjutkan Menulis
                   </button>
                 </div>
               </div>

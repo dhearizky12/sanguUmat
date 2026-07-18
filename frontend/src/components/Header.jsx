@@ -57,7 +57,7 @@ function Header() {
           <div className="rounded-lg flex items-center justify-center">
             <span>
             <img
-                src="/favicon.png"
+                src="/logo.png"
                 alt="Sangu Umat Logo"
                 className="w-12 h-12 object-contain"
               />
@@ -95,7 +95,7 @@ function Header() {
           {isAuthenticated ? (
             <Link to="/profile" className="cursor-pointer">
               <img
-                alt="User Avatar"
+                alt="Foto profil"
                 className="w-10 h-10 rounded-full border border-outline-variant object-cover"
                 data-alt="profile picture"
                 src={profile?.picture ? "http://localhost:5236" + profile.picture : "/default-avatar.png"}
@@ -109,7 +109,7 @@ function Header() {
               <span className="material-symbols-outlined -my-3 mr-2" data-icon="login">
                 login
               </span>
-              <div>Login</div>
+              <div>Masuk</div>
             </Link>
           )}
         </div>

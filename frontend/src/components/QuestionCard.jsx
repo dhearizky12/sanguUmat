@@ -19,7 +19,7 @@ function QuestionCard({ slug, adminId, question }) {
       <div className="border-t border-outline-variant/20 pt-4 mt-auto">
         <NavLink to={`/detail-admin/${adminId}`} className="flex items-center gap-3 cursor-pointer">
           <img
-            alt="Scholar Avatar"
+            alt="Foto Ustadz"
             className="w-10 h-10 rounded-full object-cover"
             data-alt="A headshot of a dignified older man with a grey beard, wearing a traditional white kufi. The background is a soft, warm beige. The lighting is gentle and professional, conveying wisdom and approachability within a serene, modern context."
             src={

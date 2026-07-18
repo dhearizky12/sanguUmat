@@ -45,14 +45,14 @@ function EditProfile() {
       });
 
       if (!response.ok) {
-        alert("Gagal menyimpan profile");
+        alert("Gagal menyimpan profil");
         return;
       }
 
       const uploadSuccess = await uploadPicture();
 
       if (!uploadSuccess) {
-        alert("Profile tersimpan, tapi upload foto gagal");
+        alert("Profil tersimpan, tapi upload foto gagal");
         return;
       }
 
@@ -90,7 +90,7 @@ function EditProfile() {
       <main className="grow z-10 relative py-section-gap px-margin-mobile md:px-gutter">
         <div className="max-w-container-max mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-headline-lg text-primary mb-2">Edit Profile</h1>
+            <h1 className="text-headline-lg text-primary mb-2">Edit Profil</h1>
             <p className="text-on-surface-variant">Lengkapi data pribadi anda</p>
           </div>
           <div className="bg-surface-container-lowest rounded-xl shadow-xl p-8">
@@ -129,11 +129,11 @@ function EditProfile() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Email Address</label>
+                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Alamat Email</label>
                   <input
                     className="rounded-xl px-4 py-3 outline-none transition-all font-body-md text-on-surface disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500"
                     type="email"
-                    placeholder="example@example.com"
+                    placeholder="contoh@email.com"
                     value={profile.email}
                     disabled
                   />

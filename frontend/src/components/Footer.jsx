@@ -7,20 +7,20 @@ function Footer() {
             Sangu Umat <small>© 2026 </small>
           </div>
 
-          <div>Bridging traditional wisdom with modern clarity.</div>
+          <div>Menjembatani kearifan tradisional dengan kejelasan modern.</div>
         </div>
         <div className="flex flex-col flex-wrap justify-center gap-6">
           <a className="text-on-surface-variant font-body-md text-body-md hover:text-secondary-container transition-colors" href="#">
-            Community Guidelines
+            Panduan Komunitas
           </a>
           <a className="text-on-surface-variant font-body-md text-body-md hover:text-secondary-container transition-colors" href="#">
-            Scholar Verification
+            Verifikasi Ustadz
           </a>
           <a className="text-on-surface-variant font-body-md text-body-md hover:text-secondary-container transition-colors" href="#">
-            Privacy Policy
+            Kebijakan Privasi
           </a>
           <a className="text-on-surface-variant font-body-md text-body-md hover:text-secondary-container transition-colors" href="#">
-            Contact Support
+            Hubungi Kami
           </a>
         </div>
       </div>

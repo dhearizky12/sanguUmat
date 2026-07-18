@@ -94,7 +94,7 @@ function DetailQuestion()
                         src={
                           question.userPicture?"http://localhost:5236/" + question.userPicture : "/default-avatar.png"
                         }
-                        alt="profile"
+                        alt="Foto profil"
                         className="
                         w-full
                         h-full
@@ -140,7 +140,7 @@ function DetailQuestion()
                               ? "http://localhost:5236/" + item.userPicture
                               : "/default-avatar.png"
                           }
-                          alt="profile"
+                          alt="Foto profil"
                           className="w-12 h-12 rounded-full object-cover"
                         />
                       <div>

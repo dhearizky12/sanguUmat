@@ -6,7 +6,7 @@ function Loading() {
       <main className="relative z-10 flex flex-col items-center text-center">
         <div className="flex flex-col items-center gap-2">
           <span className="text-title-md font-bold text-primary-container">Sangu Umat</span>
-          <p className="">Seeking wisdom for your journey...</p>
+          <p className="">Mencari hikmah untuk perjalanan anda...</p>
           <div className="mt-4 w-64 h-1 bg-secondary-container rounded-full overflow-hidden relative">
             <div className="absolute h-full bg-gold rounded-full progress-animation bg-surface-variant"></div>
           </div>

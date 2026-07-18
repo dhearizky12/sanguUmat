@@ -20,7 +20,7 @@ function Profile() {
                 <div className="relative">
                   <div className="w-24 h-24 rounded-full border border-primary bg-surface-container-lowest overflow-hidden shadow-lg">
                     <img
-                      alt="photo profile"
+                      alt="Foto profil"
                       className="w-full h-full object-cover rounded-full"
                       data-alt="photo profiles"
                       src={profile.picture || 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original'}
@@ -40,7 +40,7 @@ function Profile() {
                   className="border border-primary-container text-primary px-6 py-3 rounded-full font-label-sm text-label-sm shadow-sm active:scale-95"
                   type="submit"
                 >
-                  Logout
+                  Keluar
                 </button>
                 <Link
                   to="/edit-profile"
@@ -59,33 +59,33 @@ function Profile() {
                 <div className="absolute top-0 right-0 w-24 h-24 islamic-pattern opacity-10"></div>
                 <h2 className="font-title-md text-title-md text-primary mb-gutter flex items-center gap-2">
                   <span className="material-symbols-outlined text-secondary">analytics</span>
-                  Account Stats
+                  Statistik Akun
                 </h2>
                 <div className="grid grid-cols-2 gap-base">
                   <div className="p-base rounded-2xl bg-surface-container-low border border-outline-variant text-center">
                     <span className="block font-headline-lg text-headline-lg text-primary">24</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Questions Asked</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">Pertanyaan Diajukan</span>
                   </div>
                   <div className="p-base rounded-2xl bg-surface-container-low border border-outline-variant text-center">
                     <span className="block font-headline-lg text-headline-lg text-primary">142</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Articles Read</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">Artikel Dibaca</span>
                   </div>
                   <div className="p-base rounded-2xl bg-surface-container-low border border-outline-variant text-center">
                     <span className="block font-headline-lg text-headline-lg text-primary">12</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Saved Fatwas</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">Fatwa Tersimpan</span>
                   </div>
                   <div className="p-base rounded-2xl bg-surface-container-low border border-outline-variant text-center">
                     <span className="block font-headline-lg text-headline-lg text-primary">350</span>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Points</span>
+                    <span className="font-label-sm text-label-sm text-on-surface-variant">Poin</span>
                   </div>
                 </div>
                 <div className="mt-gutter pt-gutter border-t border-outline-variant">
-                  <h3 className="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-base">Recent Achievement</h3>
+                  <h3 className="font-label-sm text-label-sm text-secondary uppercase tracking-widest mb-base">Pencapaian Terbaru</h3>
                   <div className="flex items-center gap-base p-base bg-secondary-container/10 rounded-xl border border-secondary/20">
                     <span className="material-symbols-outlined text-secondary text-3xl">workspace_premium</span>
                     <div>
-                      <p className="font-title-md text-[16px] text-on-secondary-container">Deep Diver</p>
-                      <p className="font-label-sm text-[12px] text-on-surface-variant">Read 10 Articles in 7 days</p>
+                      <p className="font-title-md text-[16px] text-on-secondary-container">Pembaca Tekun</p>
+                      <p className="font-label-sm text-[12px] text-on-surface-variant">Membaca 10 artikel dalam 7 hari</p>
                     </div>
                   </div>
                 </div>
@@ -93,9 +93,9 @@ function Profile() {
             </aside>
             <div className="lg:col-span-2 space-y-gutter">
               <div className="flex gap-gutter border-b border-outline-variant pb-base">
-                <button className="font-title-md text-title-md text-primary border-b-2 border-primary pb-base px-2">Recent Q&amp;As</button>
+                <button className="font-title-md text-title-md text-primary border-b-2 border-primary pb-base px-2">Tanya Jawab Terbaru</button>
                 <button className="font-title-md text-title-md text-on-surface-variant hover:text-primary pb-base px-2 transition-all">
-                  Bookmarked Articles
+                  Artikel Tersimpan
                 </button>
               </div>
               <div className="space-y-base">
@@ -106,13 +106,13 @@ function Profile() {
                       <span className="font-label-sm text-label-sm text-secondary bg-secondary-container/20 px-2 py-0.5 rounded-md">
                         Fiqh al-Ibadah
                       </span>
-                      <span className="font-label-sm text-label-sm text-on-surface-variant">Oct 12, 2024</span>
+                      <span className="font-label-sm text-label-sm text-on-surface-variant">12 Okt 2024</span>
                     </div>
                     <h3 className="font-title-md text-title-md text-on-surface mb-2">
-                      How to maintain focus (Khushu) during prayer while living in a loud urban environment?
+                      Bagaimana cara menjaga kekhusyukan saat sholat di lingkungan perkotaan yang bising?
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">
-                      Assalamu'alaikum, I find it difficult to concentrate when street noises are constant. What are the recommended practices...
+                      Assalamu'alaikum, saya merasa sulit berkonsentrasi karena suara jalanan yang terus-menerus. Apa saja amalan yang dianjurkan...
                     </p>
                     <div className="mt-gutter flex items-center gap-4">
                       <div className="flex -space-x-2">
@@ -126,7 +126,7 @@ function Profile() {
                       </div>
                       <span className="font-label-sm text-label-sm text-primary flex items-center gap-1">
                         <span className="material-symbols-outlined text-[16px]">check_circle</span>
-                        Answered by Dr. Usman
+                        Dijawab oleh Dr. Usman
                       </span>
                     </div>
                   </div>
@@ -139,18 +139,18 @@ function Profile() {
                   <div className="flex-grow">
                     <div className="flex justify-between items-start mb-2">
                       <span className="font-label-sm text-label-sm text-secondary bg-secondary-container/20 px-2 py-0.5 rounded-md">Muamalat</span>
-                      <span className="font-label-sm text-label-sm text-on-surface-variant">Oct 05, 2024</span>
+                      <span className="font-label-sm text-label-sm text-on-surface-variant">05 Okt 2024</span>
                     </div>
                     <h3 className="font-title-md text-title-md text-on-surface mb-2">
-                      Ethical considerations in digital asset trading: A modern perspective.
+                      Pertimbangan etis dalam perdagangan aset digital: sebuah perspektif modern.
                     </h3>
                     <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">
-                      I am exploring the concepts of Gharar and Riba in the context of decentralized finance. Are there specific scholars...
+                      Saya sedang mendalami konsep Gharar dan Riba dalam konteks keuangan terdesentralisasi. Apakah ada ustadz tertentu yang...
                     </p>
                     <div className="mt-gutter flex items-center gap-4">
                       <span className="font-label-sm text-label-sm text-on-surface-variant flex items-center gap-1 italic">
                         <span className="material-symbols-outlined text-[16px]">pending</span>
-                        Awaiting scholar response
+                        Menunggu jawaban ustadz
                       </span>
                     </div>
                   </div>
@@ -159,7 +159,7 @@ function Profile() {
                   </button>
                 </div>
               </div>
-              <h3 className="font-headline-lg text-[24px] text-primary pt-gutter">Saved for Later</h3>
+              <h3 className="font-headline-lg text-[24px] text-primary pt-gutter">Disimpan untuk Nanti</h3>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-base">
                 <div className="bg-surface-container-lowest rounded-3xl overflow-hidden border border-[#F3F4F6] shadow-sm group">
                   <div className="h-40 overflow-hidden relative">
@@ -173,12 +173,12 @@ function Profile() {
                     </div>
                   </div>
                   <div className="p-gutter">
-                    <h4 className="font-title-md text-[18px] text-on-surface mb-2">The Golden Age of Islamic Ethics</h4>
+                    <h4 className="font-title-md text-[18px] text-on-surface mb-2">Masa Keemasan Etika Islam</h4>
                     <p className="font-body-md text-[14px] text-on-surface-variant mb-4">
-                      Exploring how historical principles can guide modern professional conduct.
+                      Menelusuri bagaimana prinsip-prinsip klasik dapat menuntun perilaku profesional di era modern.
                     </p>
                     <a className="font-label-sm text-label-sm text-primary flex items-center gap-1 group-hover:gap-2 transition-all" href="#">
-                      Read Article <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                      Baca Artikel <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                     </a>
                   </div>
                 </div>
@@ -194,12 +194,12 @@ function Profile() {
                     </div>
                   </div>
                   <div className="p-gutter">
-                    <h4 className="font-title-md text-[18px] text-on-surface mb-2">Digital Mindfullness in Faith</h4>
+                    <h4 className="font-title-md text-[18px] text-on-surface mb-2">Menjaga Kesadaran Spiritual di Era Digital</h4>
                     <p className="font-body-md text-[14px] text-on-surface-variant mb-4">
-                      Techniques to stay spiritually grounded in the age of constant notifications.
+                      Teknik untuk tetap terhubung secara spiritual di tengah notifikasi yang tak henti-hentinya.
                     </p>
                     <a className="font-label-sm text-label-sm text-primary flex items-center gap-1 group-hover:gap-2 transition-all" href="#">
-                      Read Article <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+                      Baca Artikel <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
                     </a>
                   </div>
                 </div>
