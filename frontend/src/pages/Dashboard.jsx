@@ -1,110 +1,35 @@
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import QuestionCard from "../components/QuestionCard";
 import ArticleCard from "../components/ArticleCard";
 import ArticleMemberCard from "../components/ArticleMemberCard";
-import { NavLink } from "react-router-dom";
+import LoadingState from "../components/LoadingState";
+import EmptyState from "../components/EmptyState";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
-
-// Question model has no Category field yet (see BE_PLAN.md). Until the backend adds one,
-// we approximate a category from title/content keywords so the filter below has something
-// real to operate on instead of inventing fake questions. Replace with a real `?category=`
-// query once the backend ships it.
-const CATEGORIES = [
-  { key: "semua", label: "Semua" },
-  { key: "sholat", label: "Sholat", keywords: ["sholat", "shalat", "salat", "sembahyang"] },
-  { key: "puasa", label: "Puasa", keywords: ["puasa", "sawm", "shaum"] },
-  { key: "zakat", label: "Zakat", keywords: ["zakat"] },
-  { key: "keluarga", label: "Keluarga & Pernikahan", keywords: ["nikah", "keluarga", "suami", "istri", "cerai", "talak"] },
-  { key: "muamalah", label: "Keuangan & Muamalah", keywords: ["riba", "dagang", "bisnis", "investasi", "keuangan", "muamalah", "utang", "hutang"] },
-];
-
-function matchCategory(text) {
-  const lower = text.toLowerCase();
-  for (const cat of CATEGORIES.slice(1)) {
-    if (cat.keywords.some((k) => lower.includes(k))) {
-      return cat.key;
-    }
-  }
-  return null;
-}
-
-function categoryLabel(key) {
-  return CATEGORIES.find((c) => c.key === key)?.label ?? "Lainnya";
-}
+import { handleAvatarError } from "../lib/image";
+import { formatDate } from "../lib/date";
+import { CATEGORIES, matchCategory, categoryLabel } from "../lib/category";
 
 function getFeaturedAnswer(question) {
   return question.answers.find((a) => a.role === "Guru") ?? question.answers[0];
 }
 
-function formatDate(value) {
-  return new Date(value).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" });
-}
-
-function formatReadCount(n) {
-  if (n >= 1000) {
-    return `${(n / 1000).toFixed(1).replace(".", ",")}rb`;
-  }
-  return `${n}`;
-}
-
-// Placeholder only — there is no view/read-count tracking in the backend at all yet.
-// Swap this out once the backend adds a Views field + sort-by-views support (see BE_PLAN.md).
-const MOST_READ_PLACEHOLDER = [
-  {
-    id: "placeholder-1",
-    categoryLabel: "Sholat",
-    title: "Apa hukum menjamak sholat karena alasan pekerjaan?",
-    excerpt:
-      "Penjelasan mengenai syarat dan ketentuan menjamak sholat bagi pekerja yang memiliki jadwal padat dan sulit menunaikan sholat tepat waktu.",
-    answererName: "Ustadz Fajar",
-    reads: 1240,
-  },
-  {
-    id: "placeholder-2",
-    categoryLabel: "Zakat",
-    title: "Bagaimana cara menghitung zakat penghasilan yang benar?",
-    excerpt: "Panduan lengkap perhitungan nisab dan haul untuk zakat profesi bagi karyawan dan pekerja lepas.",
-    answererName: "Ustadzah Hana",
-    reads: 980,
-  },
-  {
-    id: "placeholder-3",
-    categoryLabel: "Keluarga & Pernikahan",
-    title: "Apa saja syarat sah pernikahan menurut syariat Islam?",
-    excerpt: "Rukun dan syarat pernikahan yang wajib dipenuhi agar akad nikah dianggap sah secara syariat.",
-    answererName: "Ustadz Fajar",
-    reads: 756,
-  },
+// Topics cycled through the hero search placeholder via a typewriter effect, so the copy
+// itself demonstrates the site covers more than just Fiqh.
+const HERO_SEARCH_TOPICS = [
+  "fiqih",
+  "waris",
+  "shalat",
+  "Al-Qur'an",
+  "hadis",
+  "zakat",
+  "pernikahan",
+  "muamalah",
+  "akhlak",
+  "isu sosial",
 ];
-
-function LoadingState({ message }) {
-  return (
-    <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
-      <span className="material-symbols-outlined text-primary-container text-4xl! animate-spin" data-icon="progress_activity">
-        progress_activity
-      </span>
-      <p className="font-body-md text-body-md text-on-surface-variant">{message}</p>
-    </div>
-  );
-}
-
-function EmptyState({ icon, title, message }) {
-  return (
-    <div className="flex flex-col items-center justify-center text-center gap-3 py-16 px-6 bg-surface-container-lowest rounded-2xl border border-dashed border-outline-variant">
-      <div className="w-16 h-16 rounded-full bg-primary-container/10 flex items-center justify-center">
-        <span className="material-symbols-outlined text-primary-container text-3xl!" data-icon={icon}>
-          {icon}
-        </span>
-      </div>
-      <h3 className="font-title-md text-title-md text-on-surface">{title}</h3>
-      {message && <p className="font-body-md text-body-md text-on-surface-variant max-w-md">{message}</p>}
-    </div>
-  );
-}
 
 function AnsweredCard({ question, categoryTag }) {
   const answer = getFeaturedAnswer(question);
@@ -129,6 +54,7 @@ function AnsweredCard({ question, categoryTag }) {
             alt="Foto Ustadz"
             className="w-8 h-8 rounded-full object-cover"
             src={answer.userPicture ? API_URL + answer.userPicture : "/default-avatar.png"}
+            onError={handleAvatarError}
           />
           <span className="font-label-sm text-label-sm text-on-surface font-semibold">{answer.userName}</span>
           {answer.role === "Guru" && (
@@ -144,11 +70,13 @@ function AnsweredCard({ question, categoryTag }) {
 }
 
 function Dashboard() {
-  const [questions, setQuestions] = useState([]);
-  const [search, setSearch] = useState("");
+  const [heroSearch, setHeroSearch] = useState("");
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [loadingAnswered, setLoadingAnswered] = useState(true);
   const [category, setCategory] = useState("semua");
+  const [heroTopicIndex, setHeroTopicIndex] = useState(0);
+  const [heroTypedLength, setHeroTypedLength] = useState(0);
+  const [heroDeleting, setHeroDeleting] = useState(false);
   const navigate = useNavigate();
 
   const { isAuthenticated, me } = useAuth();
@@ -160,25 +88,31 @@ function Dashboard() {
   }, [isAuthenticated, me, navigate]);
 
   useEffect(() => {
-    const fetchQuestions = async () => {
-      try {
-        const response = await fetch(`${API_URL}/api/question?search=${search}`, {
-          credentials: "include",
-        });
+    // Pause the typewriter once the user is actually typing a search — the placeholder is
+    // invisible anyway once the input has a value, no point animating in the background.
+    if (heroSearch.trim() !== "") {
+      return;
+    }
 
-        if (!response.ok) {
-          throw new Error("Failed to fetch");
-        }
+    const currentTopic = HERO_SEARCH_TOPICS[heroTopicIndex];
+    const atFullWord = !heroDeleting && heroTypedLength === currentTopic.length;
+    const atEmptyWord = heroDeleting && heroTypedLength === 0;
 
-        const data = await response.json();
-        setQuestions(data);
-      } catch (err) {
-        console.error(err);
+    const delay = atFullWord ? 1400 : heroDeleting ? 40 : 70;
+
+    const timeout = setTimeout(() => {
+      if (atFullWord) {
+        setHeroDeleting(true);
+      } else if (atEmptyWord) {
+        setHeroDeleting(false);
+        setHeroTopicIndex((i) => (i + 1) % HERO_SEARCH_TOPICS.length);
+      } else {
+        setHeroTypedLength((len) => len + (heroDeleting ? -1 : 1));
       }
-    };
+    }, delay);
 
-    fetchQuestions();
-  }, [search]);
+    return () => clearTimeout(timeout);
+  }, [heroTypedLength, heroDeleting, heroTopicIndex, heroSearch]);
 
   useEffect(() => {
     // GET /api/question does not include answers or a category, so we pull the most recent
@@ -196,7 +130,10 @@ function Dashboard() {
         const details = await Promise.all(
           recent.map((q) =>
             fetch(`${API_URL}/api/question/${q.id}`)
+              // GET /api/question/{id} doesn't return createdAt (see QuestionControllers.cs
+              // GetDetailQuestion) — merge it back in from the list response, which has it.
               .then((r) => (r.ok ? r.json() : null))
+              .then((detail) => (detail ? { ...q, ...detail } : null))
               .catch(() => null)
           )
         );
@@ -216,10 +153,20 @@ function Dashboard() {
     fetchAnswered();
   }, []);
 
+  // GET /api/question has no way yet to distinguish "latest answered" vs "important" vs
+  // "most read" — no answered-at timestamp, no importance signal, no view count (see
+  // BE_PLAN.md Phase 4). Until those exist, all three sections below intentionally draw from
+  // the same real answered-questions pool instead of faking a difference that isn't there.
   const latestAnswered = answeredQuestions.slice(0, 6);
-  const importantAnswers = answeredQuestions.filter((q) => q.answers.some((a) => a.role === "Guru"));
-  const filteredImportant = category === "semua" ? importantAnswers : importantAnswers.filter((q) => q.category === category);
-  const isSearching = search.trim() !== "";
+  const filteredImportant = (category === "semua" ? answeredQuestions : answeredQuestions.filter((q) => q.category === category)).slice(0, 6);
+  const mostRead = answeredQuestions.slice(0, 6);
+  const heroPlaceholder = `Cari pertanyaan tentang ${HERO_SEARCH_TOPICS[heroTopicIndex].slice(0, heroTypedLength)}`;
+
+  const handleHeroSearchSubmit = (e) => {
+    e.preventDefault();
+    const trimmed = heroSearch.trim();
+    navigate(trimmed ? `/questions?search=${encodeURIComponent(trimmed)}` : "/questions");
+  };
 
   return (
     <div className="font-body-md min-h-screen flex flex-col">
@@ -238,13 +185,13 @@ function Dashboard() {
           </div>
           <div className="max-w-container-max mx-auto px-gutter py-section-gap lg:pt-32 lg:pb-52 relative z-10 flex flex-col items-center text-center">
             <h1 className="font-display-lg text-display-lg text-secondary-fixed max-w-3xl mb-6 drop-shadow-md">
-              Temukan kejelasan dalam kearifan tradisional.
+              Temukan kejelasan dalam setiap pertanyaan tentang Islam.
             </h1>
             <p className="font-body-lg text-body-lg text-surface-container-low max-w-2xl mb-12 drop-shadow-sm">
-              Telusuri koleksi pertanyaan Fiqih yang lengkap, dijawab oleh para ustadz terverifikasi, atau jelajahi artikel pilihan yang
-              menjembatani tradisi dengan kehidupan sehari-hari.
+              Dari Al-Qur'an, Hadis, fiqih, muamalah, hingga persoalan sosial sehari-hari <br /> tanyakan apa saja seputar Islam dan dapatkan
+              jawaban dari para ustadz.
             </p>
-            <div className="w-full max-w-2xl relative group">
+            <form onSubmit={handleHeroSearchSubmit} className="w-full max-w-2xl relative group">
               <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                 <span
                   className="material-symbols-outlined text-outline group-focus-within:text-primary-container transition-colors"
@@ -255,222 +202,193 @@ function Dashboard() {
               </div>
               <input
                 className="w-full pl-14 pr-36 py-5 bg-surface rounded-2xl border-0 focus:ring-4 focus:ring-secondary-fixed/50 font-body-lg text-body-lg text-on-surface shadow-xl transition-all outline-none placeholder:text-outline"
-                placeholder="Cari pertanyaan Fiqih..."
+                placeholder={heroPlaceholder}
                 type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
+                value={heroSearch}
+                onChange={(e) => setHeroSearch(e.target.value)}
               />
               <div className="absolute inset-y-0 right-3 flex items-center">
-                <button className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-8 py-3 rounded-xl hover:bg-secondary-fixed transition-colors shadow-md font-bold">
+                <button
+                  type="submit"
+                  className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-8 py-3 rounded-xl hover:bg-secondary-fixed transition-colors shadow-md font-bold"
+                >
                   Cari
                 </button>
               </div>
-            </div>
-            <div className="mt-8 flex flex-wrap justify-center gap-3 items-center">
-              <span className="font-label-sm text-label-sm text-surface-container-highest drop-shadow-sm">Populer:</span>
-              <a
-                className="font-label-sm text-label-sm text-on-primary border border-surface-container-highest/30 bg-surface/10 backdrop-blur-sm px-4 py-1.5 rounded-full hover:bg-surface/20 transition-colors"
-                href="#"
+            </form>
+            <div className="mt-8 flex flex-col items-center gap-3">
+              <span className="font-label-sm text-label-sm text-surface-container-highest drop-shadow-sm">Atau</span>
+              <NavLink
+                to="/create-question"
+                className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-6 py-3 rounded-full hover:bg-surface-container-low transition-colors shadow-md font-bold"
               >
-                Waktu sholat
-              </a>
-              <a
-                className="font-label-sm text-label-sm text-on-primary border border-surface-container-highest/30 bg-surface/10 backdrop-blur-sm px-4 py-1.5 rounded-full hover:bg-surface/20 transition-colors"
-                href="#"
-              >
-                Kalkulator zakat
-              </a>
-              <a
-                className="font-label-sm text-label-sm text-on-primary border border-surface-container-highest/30 bg-surface/10 backdrop-blur-sm px-4 py-1.5 rounded-full hover:bg-surface/20 transition-colors"
-                href="#"
-              >
-                Aturan puasa
-              </a>
+                <span className="material-symbols-outlined text-[18px]" data-icon="edit_note">
+                  edit_note
+                </span>
+                Ajukan Pertanyaan
+              </NavLink>
             </div>
           </div>
         </section>
 
-        {isSearching ? (
-          <section className="max-w-container-max mx-auto px-gutter py-section-gap">
-            <div className="mb-8">
-              <h2 className="font-headline-lg text-headline-lg text-primary-container">Hasil Pencarian</h2>
-              <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                {questions.length} pertanyaan ditemukan untuk &quot;{search}&quot;.
-              </p>
+        <section className="max-w-container-max mx-auto px-gutter py-section-gap">
+          <div className="flex justify-between items-end mb-8">
+            <div>
+              <h2 className="font-headline-lg text-headline-lg text-primary-container">Jawab-jawaban Terbaru</h2>
+              <p className="font-body-md text-body-md text-on-surface-variant mt-2">Pertanyaan yang baru saja dijawab oleh komunitas ustadz kami.</p>
             </div>
+            <NavLink
+              to="/questions"
+              className="hidden sm:flex items-center gap-1 font-label-sm text-label-sm text-primary-container hover:text-tertiary font-semibold"
+            >
+              Lihat semua{" "}
+              <span className="material-symbols-outlined" data-icon="arrow_forward">
+                arrow_forward
+              </span>
+            </NavLink>
+          </div>
+          {loadingAnswered ? (
+            <LoadingState message="Memuat pertanyaan terjawab..." />
+          ) : latestAnswered.length === 0 ? (
+            <EmptyState
+              icon="forum"
+              title="Belum Ada Pertanyaan Terjawab"
+              message="Jawaban dari para ustadz akan tampil di sini begitu tersedia."
+            />
+          ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {questions.map((v) => (
-                <QuestionCard key={v.id} slug={v.id} question={v} adminId={false} />
+              {latestAnswered.map((q) => (
+                <AnsweredCard key={q.id} question={q} categoryTag={q.category ? categoryLabel(q.category) : null} />
               ))}
             </div>
-          </section>
-        ) : (
-          <>
-            <section className="max-w-container-max mx-auto px-gutter py-section-gap">
-              <div className="flex justify-between items-end mb-8">
-                <div>
-                  <h2 className="font-headline-lg text-headline-lg text-primary-container">Jawab-jawaban Terbaru</h2>
-                  <p className="font-body-md text-body-md text-on-surface-variant mt-2">Pertanyaan yang baru saja dijawab oleh komunitas ustadz kami.</p>
-                </div>
-                <NavLink
-                  to="questions"
-                  className="hidden sm:flex items-center gap-1 font-label-sm text-label-sm text-primary-container hover:text-tertiary font-semibold"
-                >
-                  Lihat semua{" "}
-                  <span className="material-symbols-outlined" data-icon="arrow_forward">
-                    arrow_forward
-                  </span>
-                </NavLink>
-              </div>
-              {loadingAnswered ? (
-                <LoadingState message="Memuat pertanyaan terjawab..." />
-              ) : latestAnswered.length === 0 ? (
-                <EmptyState
-                  icon="forum"
-                  title="Belum Ada Pertanyaan Terjawab"
-                  message="Jawaban dari para ustadz akan tampil di sini begitu tersedia."
-                />
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {latestAnswered.map((q) => (
-                    <AnsweredCard key={q.id} question={q} categoryTag={q.category ? categoryLabel(q.category) : null} />
-                  ))}
-                </div>
-              )}
-            </section>
+          )}
+        </section>
 
-            <section className="max-w-container-max mx-auto px-gutter py-section-gap">
-              <div className="mb-6">
-                <h2 className="font-headline-lg text-headline-lg text-primary-container">Kumpulan Jawaban Penting</h2>
+        <section className="max-w-container-max mx-auto px-gutter py-section-gap">
+          <div className="mb-6">
+            <h2 className="font-headline-lg text-headline-lg text-primary-container">Kumpulan Jawaban Penting</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2">
+              Jawaban terverifikasi dari para ustadz, dikelompokkan berdasarkan kategori.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 mb-8" role="radiogroup" aria-label="Filter kategori">
+            {CATEGORIES.map((cat) => (
+              <button
+                key={cat.key}
+                type="button"
+                role="radio"
+                aria-checked={category === cat.key}
+                onClick={() => setCategory(cat.key)}
+                className={`px-4 py-2 rounded-full font-label-sm text-label-sm border transition-colors ${
+                  category === cat.key
+                    ? "bg-primary-container text-on-primary border-primary-container"
+                    : "bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container-low"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+          {loadingAnswered ? (
+            <LoadingState message="Memuat jawaban penting..." />
+          ) : filteredImportant.length === 0 ? (
+            <EmptyState
+              icon="filter_alt_off"
+              title="Belum Ada Jawaban untuk Kategori Ini"
+              message='Coba pilih kategori lain, atau kembali ke "Semua" untuk melihat semua jawaban penting.'
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredImportant.map((q) => (
+                <AnsweredCard key={q.id} question={q} categoryTag={q.category ? categoryLabel(q.category) : null} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="max-w-container-max mx-auto px-gutter py-section-gap">
+          <div className="mb-8">
+            <h2 className="font-headline-lg text-headline-lg text-primary-container">Paling Banyak Dibaca</h2>
+            <p className="font-body-md text-body-md text-on-surface-variant mt-2">Pertanyaan yang paling banyak dibaca oleh pengguna lain.</p>
+          </div>
+          {loadingAnswered ? (
+            <LoadingState message="Memuat pertanyaan populer..." />
+          ) : mostRead.length === 0 ? (
+            <EmptyState
+              icon="visibility"
+              title="Belum Ada Data Pertanyaan Populer"
+              message="Statistik pembacaan akan tampil di sini begitu tersedia."
+            />
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {mostRead.map((q) => (
+                <AnsweredCard key={q.id} question={q} categoryTag={q.category ? categoryLabel(q.category) : null} />
+              ))}
+            </div>
+          )}
+        </section>
+
+        <section className="py-section-gap">
+          <div className="max-w-container-max mx-auto px-gutter">
+            <div className="flex justify-between items-end mb-8">
+              <div>
+                <h2 className="font-headline-lg text-headline-lg text-primary-container">Artikel Pilihan</h2>
                 <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                  Jawaban terverifikasi dari para ustadz, dikelompokkan berdasarkan kategori.
+                  Pembahasan mendalam seputar fiqih Islam dan isu-isu kontemporer.
                 </p>
               </div>
-              <div className="flex flex-wrap gap-2 mb-8" role="radiogroup" aria-label="Filter kategori">
-                {CATEGORIES.map((cat) => (
-                  <button
-                    key={cat.key}
-                    type="button"
-                    role="radio"
-                    aria-checked={category === cat.key}
-                    onClick={() => setCategory(cat.key)}
-                    className={`px-4 py-2 rounded-full font-label-sm text-label-sm border transition-colors ${
-                      category === cat.key
-                        ? "bg-primary-container text-on-primary border-primary-container"
-                        : "bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container-low"
-                    }`}
-                  >
-                    {cat.label}
-                  </button>
-                ))}
-              </div>
-              {loadingAnswered ? (
-                <LoadingState message="Memuat jawaban penting..." />
-              ) : filteredImportant.length === 0 ? (
-                <EmptyState
-                  icon="filter_alt_off"
-                  title="Belum Ada Jawaban untuk Kategori Ini"
-                  message='Coba pilih kategori lain, atau kembali ke "Semua" untuk melihat semua jawaban penting.'
+              <NavLink
+                to="articles"
+                className="hidden sm:flex items-center gap-1 font-label-sm text-label-sm text-primary-container hover:text-tertiary font-semibold"
+              >
+                Lihat semua
+                <span className="material-symbols-outlined" data-icon="arrow_forward">
+                  arrow_forward
+                </span>
+              </NavLink>
+            </div>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 auto-rows-[400px]">
+              <div className="lg:col-span-2 relative rounded-2xl overflow-hidden group shadow-sm hover:shadow-md transition-all">
+                <img
+                  alt="Arsitektur Islam"
+                  className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  src="https://lh3.googleusercontent.com/aida-public/AB6AXuApuvinrav-NhOPQ9ilMuFVBZanE8UpHiwo4SlzuEIgMOau7mt6xIH1CQ7Lp0eJ5GTeRyzNvN37vfDJ1GxA5XbP-7vylI8lY34TYLrHLrfgbusiLXF-ohIf66-Kb00G-iMGUjhPUVzFZ9OzgnK3JtbzDuA7esr2-0MnjcO7zKFpKHDd6puAPfR8Eta9Ed9StxVF2NwE6J4-X-ngP17SE88Zjhhw-GRCMUV4oiE1jDydo3R9gZFGOcgJSjx1GAu-xAxgZSSeUBBZYho"
                 />
-              ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {filteredImportant.map((q) => (
-                    <AnsweredCard key={q.id} question={q} categoryTag={q.category ? categoryLabel(q.category) : null} />
-                  ))}
-                </div>
-              )}
-            </section>
-
-            <section className="max-w-container-max mx-auto px-gutter py-section-gap">
-              <div className="mb-8">
-                <h2 className="font-headline-lg text-headline-lg text-primary-container">Paling Banyak Dibaca</h2>
-                <p className="font-body-md text-body-md text-on-surface-variant mt-2">Pertanyaan yang paling banyak dibaca oleh pengguna lain.</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {MOST_READ_PLACEHOLDER.map((q) => (
-                  <div key={q.id} className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col gap-4 shadow-sm">
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
-                        {q.categoryLabel}
-                      </span>
-                      <span className="flex items-center gap-1 text-outline font-label-sm text-label-sm">
-                        <span className="material-symbols-outlined text-[14px]" data-icon="visibility">
-                          visibility
-                        </span>
-                        {formatReadCount(q.reads)} dibaca
-                      </span>
-                    </div>
-                    <h3 className="font-body-lg text-body-lg text-on-surface font-medium line-clamp-2">{q.title}</h3>
-                    <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">{q.excerpt}</p>
-                    <span className="font-label-sm text-label-sm text-on-surface-variant">Dijawab oleh {q.answererName}</span>
-                  </div>
-                ))}
-              </div>
-            </section>
-
-            <section className="py-section-gap">
-              <div className="max-w-container-max mx-auto px-gutter">
-                <div className="flex justify-between items-end mb-8">
-                  <div>
-                    <h2 className="font-headline-lg text-headline-lg text-primary-container">Artikel Pilihan</h2>
-                    <p className="font-body-md text-body-md text-on-surface-variant mt-2">
-                      Pembahasan mendalam seputar fiqih Islam dan isu-isu kontemporer.
-                    </p>
-                  </div>
-                  <NavLink
-                    to="articles"
-                    className="hidden sm:flex items-center gap-1 font-label-sm text-label-sm text-primary-container hover:text-tertiary font-semibold"
-                  >
-                    Lihat semua
-                    <span className="material-symbols-outlined" data-icon="arrow_forward">
-                      arrow_forward
-                    </span>
-                  </NavLink>
-                </div>
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 auto-rows-[400px]">
-                  <div className="lg:col-span-2 relative rounded-2xl overflow-hidden group shadow-sm hover:shadow-md transition-all">
-                    <img
-                      alt="Arsitektur Islam"
-                      className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                      src="https://lh3.googleusercontent.com/aida-public/AB6AXuApuvinrav-NhOPQ9ilMuFVBZanE8UpHiwo4SlzuEIgMOau7mt6xIH1CQ7Lp0eJ5GTeRyzNvN37vfDJ1GxA5XbP-7vylI8lY34TYLrHLrfgbusiLXF-ohIf66-Kb00G-iMGUjhPUVzFZ9OzgnK3JtbzDuA7esr2-0MnjcO7zKFpKHDd6puAPfR8Eta9Ed9StxVF2NwE6J4-X-ngP17SE88Zjhhw-GRCMUV4oiE1jDydo3R9gZFGOcgJSjx1GAu-xAxgZSSeUBBZYho"
-                    />
-                    <div className="absolute inset-0 bg-linear-to-t from-primary-container/90 via-primary-container/40 to-transparent"></div>
-                    <div className="absolute bottom-0 left-0 p-8 w-full">
-                      <span className="inline-block bg-surface/20 backdrop-blur-sm text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full mb-3 border border-surface/30">
-                        Teologi
-                      </span>
-                      <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-on-primary mb-2">
-                        Memahami Maqasid al-Shariah di Era Modern
-                      </h3>
-                      <p className="font-body-md text-body-md text-on-primary/80 line-clamp-2">
-                        Eksplorasi tujuan-tujuan luhur hukum Islam dan bagaimana hal itu memandu penalaran hukum kontemporer.
-                      </p>
-                    </div>
-                  </div>
-                  <ArticleMemberCard
-                    slug={0}
-                    category="Muamalah"
-                    title="Hukum Investasi Saham Syariah bagi Pemula"
-                  />
-                  <ArticleMemberCard
-                    slug={1}
-                    category="Keluarga"
-                    title="Adab Menjaga Keharmonisan Rumah Tangga"
-                    image="https://lh3.googleusercontent.com/aida-public/AB6AXuBpmfkssMkPTKHL-677652GIUTLAwGq3O0MiVLSKWM7Ws_ERL4bhaF8jNkDKUn_-PQTDc7UL6irwCOxvmKYiwqwz4DVOOCXtpszWQ8acN25qkF2wert8icM4jY6KWiKmFLTquiPOYen_nP3HWuK0uGeLojmIHl2F7g5ZXL3zfmAO_YXv2KyO82AqYUcrx2UDJeWrVH5WFrGT49kwjd8uuvOclm97z7_B2TN_GjoEVgvVKox9YXDydsrvR_ak5qd23gTtTSrzyd2pjM"
-                  />
-                  <ArticleCard slug={0} isMember={false} category="Ibadah" title="Keutamaan Sholat Berjamaah di Masjid" />
-                  <ArticleCard
-                    slug={1}
-                    isMember={false}
-                    category="Akhlak"
-                    title="Menjaga Lisan dalam Kehidupan Bermedia Sosial"
-                    image="https://lh3.googleusercontent.com/aida-public/AB6AXuApuvinrav-NhOPQ9ilMuFVBZanE8UpHiwo4SlzuEIgMOau7mt6xIH1CQ7Lp0eJ5GTeRyzNvN37vfDJ1GxA5XbP-7vylI8lY34TYLrHLrfgbusiLXF-ohIf66-Kb00G-iMGUjhPUVzFZ9OzgnK3JtbzDuA7esr2-0MnjcO7zKFpKHDd6puAPfR8Eta9Ed9StxVF2NwE6J4-X-ngP17SE88Zjhhw-GRCMUV4oiE1jDydo3R9gZFGOcgJSjx1GAu-xAxgZSSeUBBZYho"
-                  />
+                <div className="absolute inset-0 bg-linear-to-t from-primary-container/90 via-primary-container/40 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 p-8 w-full">
+                  <span className="inline-block bg-surface/20 backdrop-blur-sm text-on-primary font-label-sm text-label-sm px-3 py-1 rounded-full mb-3 border border-surface/30">
+                    Teologi
+                  </span>
+                  <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-on-primary mb-2">
+                    Memahami Maqasid al-Shariah di Era Modern
+                  </h3>
+                  <p className="font-body-md text-body-md text-on-primary/80 line-clamp-2">
+                    Eksplorasi tujuan-tujuan luhur hukum Islam dan bagaimana hal itu memandu penalaran hukum kontemporer.
+                  </p>
                 </div>
               </div>
-            </section>
-          </>
-        )}
+              <ArticleMemberCard
+                slug={0}
+                category="Muamalah"
+                title="Hukum Investasi Saham Syariah bagi Pemula"
+              />
+              <ArticleMemberCard
+                slug={1}
+                category="Keluarga"
+                title="Adab Menjaga Keharmonisan Rumah Tangga"
+                image="https://lh3.googleusercontent.com/aida-public/AB6AXuBpmfkssMkPTKHL-677652GIUTLAwGq3O0MiVLSKWM7Ws_ERL4bhaF8jNkDKUn_-PQTDc7UL6irwCOxvmKYiwqwz4DVOOCXtpszWQ8acN25qkF2wert8icM4jY6KWiKmFLTquiPOYen_nP3HWuK0uGeLojmIHl2F7g5ZXL3zfmAO_YXv2KyO82AqYUcrx2UDJeWrVH5WFrGT49kwjd8uuvOclm97z7_B2TN_GjoEVgvVKox9YXDydsrvR_ak5qd23gTtTSrzyd2pjM"
+              />
+              <ArticleCard slug={0} isMember={false} category="Ibadah" title="Keutamaan Sholat Berjamaah di Masjid" />
+              <ArticleCard
+                slug={1}
+                isMember={false}
+                category="Akhlak"
+                title="Menjaga Lisan dalam Kehidupan Bermedia Sosial"
+                image="https://lh3.googleusercontent.com/aida-public/AB6AXuApuvinrav-NhOPQ9ilMuFVBZanE8UpHiwo4SlzuEIgMOau7mt6xIH1CQ7Lp0eJ5GTeRyzNvN37vfDJ1GxA5XbP-7vylI8lY34TYLrHLrfgbusiLXF-ohIf66-Kb00G-iMGUjhPUVzFZ9OzgnK3JtbzDuA7esr2-0MnjcO7zKFpKHDd6puAPfR8Eta9Ed9StxVF2NwE6J4-X-ngP17SE88Zjhhw-GRCMUV4oiE1jDydo3R9gZFGOcgJSjx1GAu-xAxgZSSeUBBZYho"
+              />
+            </div>
+          </div>
+        </section>
       </main>
       <Footer />
     </div>

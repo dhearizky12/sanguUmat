@@ -1,4 +1,7 @@
 import { NavLink } from "react-router-dom";
+import { API_URL } from "../lib/api";
+import { handleAvatarError } from "../lib/image";
+import { formatDate } from "../lib/date";
 
 function QuestionCard({ slug, adminId, question }) {
   return (
@@ -21,13 +24,8 @@ function QuestionCard({ slug, adminId, question }) {
           <img
             alt="Foto Ustadz"
             className="w-10 h-10 rounded-full object-cover"
-            data-alt="A headshot of a dignified older man with a grey beard, wearing a traditional white kufi. The background is a soft, warm beige. The lighting is gentle and professional, conveying wisdom and approachability within a serene, modern context."
-            src={
-              question.userPicture
-                ? "http://localhost:5236" +
-                  question.userPicture
-                : "/default-avatar.png"
-            }
+            src={question.userPicture ? API_URL + question.userPicture : "/default-avatar.png"}
+            onError={handleAvatarError}
           />
           <div>
             <p className="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
@@ -41,7 +39,7 @@ function QuestionCard({ slug, adminId, question }) {
                 )
               }
             </p>
-            <p className="text-[12px] text-outline">{new Date(question.createdAt).toLocaleDateString()}</p>
+            <p className="text-[12px] text-outline">{formatDate(question.createdAt)}</p>
           </div>
         </NavLink>
       </div>

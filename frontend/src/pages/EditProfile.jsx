@@ -3,6 +3,8 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
+import { API_URL } from "../lib/api";
+import { handleAvatarError } from "../lib/image";
 
 function EditProfile() {
   const navigate = useNavigate();
@@ -20,7 +22,7 @@ function EditProfile() {
     const formData = new FormData();
     formData.append("file", selectedFile);
 
-    const response = await fetch("http://localhost:5236/api/auth/upload-picture", {
+    const response = await fetch(`${API_URL}/api/auth/upload-picture`, {
       method: "POST",
       credentials: "include",
       body: formData,
@@ -31,7 +33,7 @@ function EditProfile() {
 
   const saveProfile = async () => {
     try {
-      const response = await fetch("http://localhost:5236/api/auth/complete-profile", {
+      const response = await fetch(`${API_URL}/api/auth/complete-profile`, {
         method: "POST",
         credentials: "include",
         headers: {
@@ -99,11 +101,11 @@ function EditProfile() {
                 <div className="w-32 h-32 rounded-full overflow-hidden border border-primary shadow-md">
                   <img
                     className="w-full h-full object-cover"
-                    data-alt="photo_profile"
+                    onError={handleAvatarError}
                     src={
                       preview ||
                       profile.picture ||
-                      "https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original"
+                      "/default-avatar.png"
                     }
                   />
                 </div>

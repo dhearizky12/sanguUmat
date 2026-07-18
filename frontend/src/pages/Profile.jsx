@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
+import { handleAvatarError } from "../lib/image";
 
 function Profile() {
   const { logout, profile } = useAuth();
@@ -22,8 +23,8 @@ function Profile() {
                     <img
                       alt="Foto profil"
                       className="w-full h-full object-cover rounded-full"
-                      data-alt="photo profiles"
-                      src={profile.picture || 'https://upload.wikimedia.org/wikipedia/commons/b/bc/Unknown_person.jpg?utm_source=commons.wikimedia.org&utm_campaign=index&utm_content=original'}
+                      src={profile.picture || "/default-avatar.png"}
+                      onError={handleAvatarError}
                     />
                   </div>
                 </div>

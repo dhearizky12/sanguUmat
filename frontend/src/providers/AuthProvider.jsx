@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthContext from "../contexts/AuthContext";
+import { API_URL } from "../lib/api";
 
 export default function AuthProvider({ children }) {
   const [me, setMe] = useState(null);
@@ -11,7 +12,7 @@ export default function AuthProvider({ children }) {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const meRes = await fetch("http://localhost:5236/api/auth/me", {
+        const meRes = await fetch(`${API_URL}/api/auth/me`, {
           credentials: "include",
         });
 
@@ -24,7 +25,7 @@ export default function AuthProvider({ children }) {
         const meJson = await meRes.json();
         setMe(meJson);
 
-        const profileRes = await fetch("http://localhost:5236/api/auth/profile", {
+        const profileRes = await fetch(`${API_URL}/api/auth/profile`, {
           credentials: "include",
         });
 
@@ -34,7 +35,7 @@ export default function AuthProvider({ children }) {
         }
 
         const profileData = await profileRes.json();
-        profileData.picture = "http://localhost:5236/" + profileData.picture;
+        profileData.picture = profileData.picture ? API_URL + profileData.picture : null;
         setProfile(profileData);
       } catch {
         setProfile(null);
@@ -49,7 +50,7 @@ export default function AuthProvider({ children }) {
   }, []);
 
   const logout = () => {
-    window.location.href = "http://localhost:5236/api/auth/logout";
+    window.location.href = `${API_URL}/api/auth/logout`;
   };
 
   return (

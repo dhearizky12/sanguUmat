@@ -3,6 +3,8 @@ import {useParams} from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import { useAuth } from "../hooks/useAuth";
+import { API_URL } from "../lib/api";
+import { handleAvatarError } from "../lib/image";
 
 function DetailQuestion() 
 {
@@ -17,7 +19,7 @@ function DetailQuestion()
     if(!confirmDelete) return;
 
     const response = await fetch(
-      `http://localhost:5236/api/answer/${answerId}`,
+      `${API_URL}/api/answer/${answerId}`,
       {
         method: "DELETE",
         credentials: "include"
@@ -37,7 +39,7 @@ function DetailQuestion()
 
   useEffect(()=>
   {
-    fetch(`http://localhost:5236/api/Question/${id}`)
+    fetch(`${API_URL}/api/Question/${id}`)
     .then(res => res.json())
     .then(data => {
       setQuestion(data);
@@ -47,7 +49,7 @@ function DetailQuestion()
   const submitAnswer = async () =>
   {
     const response = await fetch(
-      `http://localhost:5236/api/answer/${id}`,
+      `${API_URL}/api/answer/${id}`,
       {
         method: "POST",
         credentials: "include",
@@ -92,9 +94,10 @@ function DetailQuestion()
                     border-outline-variant">
                       <img
                         src={
-                          question.userPicture?"http://localhost:5236/" + question.userPicture : "/default-avatar.png"
+                          question.userPicture ? API_URL + "/" + question.userPicture : "/default-avatar.png"
                         }
                         alt="Foto profil"
+                        onError={handleAvatarError}
                         className="
                         w-full
                         h-full
@@ -137,10 +140,11 @@ function DetailQuestion()
                         <img
                           src={
                             item.userPicture
-                              ? "http://localhost:5236/" + item.userPicture
+                              ? API_URL + "/" + item.userPicture
                               : "/default-avatar.png"
                           }
                           alt="Foto profil"
+                          onError={handleAvatarError}
                           className="w-12 h-12 rounded-full object-cover"
                         />
                       <div>

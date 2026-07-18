@@ -1,6 +1,8 @@
 import { Link, NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
+import { API_URL } from "../lib/api";
+import { handleAvatarError } from "../lib/image";
 
 function Header() {
   const { isAuthenticated, me } = useAuth();
@@ -39,7 +41,7 @@ function Header() {
       return;
     }
     fetch(
-        "http://localhost:5236/api/auth/profile",
+        `${API_URL}/api/auth/profile`,
         {
           credentials: "include"
         }
@@ -98,7 +100,8 @@ function Header() {
                 alt="Foto profil"
                 className="w-10 h-10 rounded-full border border-outline-variant object-cover"
                 data-alt="profile picture"
-                src={profile?.picture ? "http://localhost:5236" + profile.picture : "/default-avatar.png"}
+                src={profile?.picture ? API_URL + profile.picture : "/default-avatar.png"}
+                onError={handleAvatarError}
               />
             </Link>
           ) : (
