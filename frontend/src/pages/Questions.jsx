@@ -11,9 +11,34 @@ import { CATEGORIES, matchCategory } from "../lib/category";
 function Questions() {
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search") || "";
+  const [inputValue, setInputValue] = useState(search);
+  const [syncedSearch, setSyncedSearch] = useState(search);
   const [category, setCategory] = useState("semua");
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Keep the input in sync if the URL's search param changes from outside this component —
+  // arriving here from the Dashboard hero search, or browser back/forward. Adjusted directly
+  // during render (React's documented pattern for this) rather than in an effect, so it takes
+  // effect before paint instead of causing an extra render pass.
+  if (search !== syncedSearch) {
+    setSyncedSearch(search);
+    setInputValue(search);
+  }
+
+  // Debounce: only push the typed value into the URL (which drives the fetch below) after the
+  // user pauses typing, instead of firing a request on every keystroke.
+  useEffect(() => {
+    if (inputValue === search) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      setSearchParams(inputValue ? { search: inputValue } : {}, { replace: true });
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [inputValue, search, setSearchParams]);
 
   useEffect(() => {
     let cancelled = false;
@@ -50,8 +75,7 @@ function Questions() {
   }, [search]);
 
   const handleSearchChange = (e) => {
-    const value = e.target.value;
-    setSearchParams(value ? { search: value } : {}, { replace: true });
+    setInputValue(e.target.value);
   };
 
   const categorized = questions.map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
@@ -79,7 +103,7 @@ function Questions() {
               className="w-full pl-14 pr-4 py-4 bg-surface-container-lowest border border-outline-variant rounded-2xl font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all"
               placeholder="Cari pertanyaan..."
               type="text"
-              value={search}
+              value={inputValue}
               onChange={handleSearchChange}
             />
           </div>

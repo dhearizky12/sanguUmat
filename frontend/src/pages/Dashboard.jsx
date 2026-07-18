@@ -210,24 +210,18 @@ function Dashboard() {
               <div className="absolute inset-y-0 right-3 flex items-center">
                 <button
                   type="submit"
-                  className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-8 py-3 rounded-xl hover:bg-secondary-fixed transition-colors shadow-md font-bold"
+                  className="bg-secondary-container text-on-secondary-container font-label-sm text-label-sm px-8 py-3 rounded-full hover:bg-secondary-fixed transition-colors shadow-md font-bold"
                 >
                   Cari
                 </button>
               </div>
             </form>
-            <div className="mt-8 flex flex-col items-center gap-3">
-              <span className="font-label-sm text-label-sm text-surface-container-highest drop-shadow-sm">Atau</span>
-              <NavLink
-                to="/question/create"
-                className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-6 py-3 rounded-full hover:bg-surface-container-low transition-colors shadow-md font-bold"
-              >
-                <span className="material-symbols-outlined text-[18px]" data-icon="edit_note">
-                  edit_note
-                </span>
+            <p className="mt-6 font-label-sm text-label-sm text-surface-container-highest drop-shadow-sm">
+              Tidak menemukan jawabannya?{" "}
+              <NavLink to="/question/create" className="font-bold text-on-primary underline underline-offset-4 hover:text-secondary-fixed">
                 Ajukan Pertanyaan
               </NavLink>
-            </div>
+            </p>
           </div>
         </section>
 

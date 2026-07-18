@@ -8,6 +8,21 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ## Ready now (this session)
 
+- [x] **Added a related-questions sidebar to `DetailQuestion.jsx` (2026-07-19).** The page had
+  gone full `max-w-container-max` width for consistency with the rest of the site, but that
+  left long-form answer text stretching edge to edge with nothing else on the page — looked
+  plain, and the width fix effectively undid a lot of the earlier reading-width benefit.
+  Restructured into a two-column layout (`lg:grid-cols-3`, content `lg:col-span-2`, sidebar
+  `lg:col-span-1`, stacks to one column below `lg`) with a sticky sidebar containing:
+  - **"Pertanyaan Terkait"** — real data, not mocked: fetches the full question list and ranks
+    same-category questions first (via the existing `matchCategory` heuristic from
+    `lib/category.js`, same one used everywhere else category is faked), falling back to most
+    recent otherwise, capped at 5. Verified the ranking against the live seeded data before
+    calling it done — a Zakat question correctly surfaces the other Zakat question first, then
+    fills the rest with recent ones.
+  - A small "Punya Pertanyaan Lain?" prompt card linking to `/question/create`, so the sidebar
+    isn't just one block and reinforces the same conversion goal as the Dashboard hero.
+
 - [x] **Moved detail/create question under `/question/*` + fixed nav active-state (2026-07-19).**
   `/detail-question/:id` → `/question/detail/:id`, `/create-question` → `/question/create`
   (`App.jsx`, and every link pointing at them: `Header.jsx`, `Dashboard.jsx`, `Questions.jsx`,
@@ -110,6 +125,16 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
     locally and, on submit (button click or Enter — it's a `<form>` now), navigates to
     `/questions?search=<query>`. The Dashboard is a landing page now, not also a second search
     results view — `Questions.jsx` is the one and only place Q&A browsing/search results live.
+  - **Follow-up (2026-07-19): debounced the search-as-you-type.** Was firing a fetch on every
+    keystroke (URL param updated directly in `onChange`). Now the input's displayed value is
+    local state (`inputValue`) updated instantly on every keystroke so typing feels responsive,
+    while the URL param (and therefore the actual fetch, which stays keyed on it) only updates
+    400ms after the user stops typing. Syncing `inputValue` back from the URL when it changes
+    externally (e.g. arriving from the Dashboard hero search) is done by adjusting state
+    directly during render rather than in a `useEffect` — React's documented pattern for
+    "derive state from a prop that can also change externally," and avoids an ESLint
+    `react-hooks` error this repo enforces (`set-state-in-effect`) against calling `setState`
+    synchronously inside an effect body.
   - Known pre-existing oddity, not introduced or fixed here: `QuestionCard`'s asker
     name/photo links to `/detail-admin/${adminId}` with `adminId` hardcoded to `false`
     everywhere it's used (Dashboard did this before too) — that route/page isn't a real user
@@ -158,6 +183,13 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
   `/create-question`, since asking a question is the actual point of the site — unauthenticated
   visitors get bounced to `/login` by the existing `AuthGuard`, same as every other protected
   route.
+  - **Follow-up (2026-07-19): cohesion pass.** Two problems: the "Cari" button was `rounded-xl`
+    while literally every other button in the app is `rounded-full` — fixed to match. And
+    having two full boxed buttons stacked in the hero (search's "Cari" + a separate "Ajukan
+    Pertanyaan" pill below it) read as two competing equal-weight CTAs. Demoted "Ajukan
+    Pertanyaan" from a button to an inline text link ("Tidak menemukan jawabannya? *Ajukan
+    Pertanyaan*") directly under the search bar — now there's one real button (search) and one
+    lightweight secondary path, not two buttons asking for equal attention.
 - [x] **Bahasa Indonesia audit.** Done — translated all known English leftovers across
   `Dashboard.jsx`, `Header.jsx`, `Footer.jsx`, `Login.jsx`, `Loading.jsx`, `Profile.jsx`,
   `CreateQuestion.jsx`, `EditProfile.jsx`, `ArticleCard.jsx`/`ArticleMemberCard.jsx`, plus alt

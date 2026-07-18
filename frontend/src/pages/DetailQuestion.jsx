@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { NavLink, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import RichContent from "../components/RichContent";
@@ -10,10 +10,14 @@ import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 import { matchCategory, categoryLabel } from "../lib/category";
+import { formatDate } from "../lib/date";
+
+const RELATED_LIMIT = 5;
 
 function DetailQuestion() {
   const [question, setQuestion] = useState(null);
   const [answer, setAnswer] = useState("");
+  const [relatedQuestions, setRelatedQuestions] = useState([]);
   const { id } = useParams();
   const { me } = useAuth();
 
@@ -42,6 +46,31 @@ function DetailQuestion() {
       });
   }, [id]);
 
+  useEffect(() => {
+    if (!question) {
+      return;
+    }
+
+    // No "related questions" endpoint on the backend — approximate it client-side: same
+    // category (via the shared matchCategory heuristic, see lib/category.js) first, then fill
+    // the rest with the most recent other questions.
+    fetch(`${API_URL}/api/question`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : []))
+      .then((list) => {
+        const currentCategory = matchCategory(`${question.title} ${question.content}`);
+
+        const others = list
+          .filter((q) => String(q.id) !== String(id))
+          .map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
+
+        const sameCategory = currentCategory ? others.filter((q) => q.category === currentCategory) : [];
+        const rest = others.filter((q) => !sameCategory.includes(q));
+
+        setRelatedQuestions([...sameCategory, ...rest].slice(0, RELATED_LIMIT));
+      })
+      .catch((err) => console.error(err));
+  }, [question, id]);
+
   const submitAnswer = async () => {
     const response = await fetch(`${API_URL}/api/answer/${id}`, {
       method: "POST",
@@ -69,7 +98,8 @@ function DetailQuestion() {
         {!question ? (
           <LoadingState message="Memuat pertanyaan..." />
         ) : (
-          <div className="space-y-8">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="lg:col-span-2 space-y-8">
             {/* QUESTION — a page header, not a card, so it reads as the top-level subject
                 rather than looking identical to the answer list below it. */}
             <div className="border-b border-outline-variant pb-8">
@@ -163,6 +193,44 @@ function DetailQuestion() {
                 </div>
               </div>
             )}
+          </div>
+
+          {/* SIDEBAR */}
+          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
+              <h3 className="font-title-md text-title-md text-on-surface mb-4 flex items-center gap-2">
+                <span className="material-symbols-outlined text-primary-container text-[20px]">forum</span>
+                Pertanyaan Terkait
+              </h3>
+              {relatedQuestions.length === 0 ? (
+                <p className="font-body-md text-body-md text-on-surface-variant">Belum ada pertanyaan terkait.</p>
+              ) : (
+                <div className="divide-y divide-outline-variant/50">
+                  {relatedQuestions.map((q) => (
+                    <NavLink key={q.id} to={`/question/detail/${q.id}`} className="block py-3 first:pt-0 last:pb-0 group">
+                      <h4 className="font-label-sm text-label-sm text-on-surface font-semibold line-clamp-2 group-hover:text-primary-container transition-colors">
+                        {q.title}
+                      </h4>
+                      <p className="text-[12px] text-outline mt-1">{formatDate(q.createdAt)}</p>
+                    </NavLink>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            <div className="bg-primary-container rounded-xl p-6 text-center">
+              <p className="font-title-md text-title-md text-on-primary mb-2">Punya Pertanyaan Lain?</p>
+              <p className="font-body-md text-body-md text-on-primary/80 mb-4">
+                Ajukan pertanyaan anda dan dapatkan jawaban dari para ustadz.
+              </p>
+              <NavLink
+                to="/question/create"
+                className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-surface-container-low transition-colors font-bold"
+              >
+                Ajukan Pertanyaan
+              </NavLink>
+            </div>
+          </aside>
           </div>
         )}
       </main>
