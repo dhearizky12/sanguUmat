@@ -6,7 +6,7 @@ import { formatDate } from "../lib/date";
 function QuestionCard({ slug, adminId, question }) {
   return (
     <div className="bg-surface-container-lowest rounded-xl border-primary-container border p-6 flex flex-col">
-      <NavLink to={`/detail-question/${slug}`}>
+      <NavLink to={`/question/detail/${slug}`}>
         <div className="flex items-start gap-3 mb-4 cursor-pointer">
           <span className="material-symbols-outlined text-secondary-container icon-fill" data-icon="help_outline">
             help_outline

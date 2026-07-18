@@ -1,13 +1,16 @@
-import { Link, NavLink } from "react-router-dom";
+import { Link, NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 
+function isMenuActive(pathname, matchPaths) {
+  return matchPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
+}
+
 function Header() {
   const { isAuthenticated, me } = useAuth();
-
-  const classNav = ({ isActive }) => `${isActive && "font-bold border-b-2 border-primary-container"} `;
+  const location = useLocation();
 
   const [profile, setProfile]= useState(null);
   const isAdmin = false;
@@ -21,12 +24,14 @@ function Header() {
     {
       label: "Tanya Jawab",
       to: "/questions",
-      matchPaths: ["/questions", "/create-question", "/details-question"],
+      // Covers both the "/questions" listing and everything under "/question/..."
+      // (detail, create) — same menu item should read as active for all of it.
+      matchPaths: ["/questions", "/question"],
     },
     {
       label: "Artikel",
       to: "/articles",
-      matchPaths: ["/articles", "/create-article", "/details-article"],
+      matchPaths: ["/articles", "/detail-article"],
     },
     {
       label: "Ngaji Bareng",
@@ -69,7 +74,7 @@ function Header() {
         </div>
         <div className="col-span-2 hidden md:flex justify-center space-x-8 h-full">
           {menus.map((menu) => {
-            const isActive = menu.matchPaths.some((path) => location.pathname === path);
+            const isActive = isMenuActive(location.pathname, menu.matchPaths);
 
             return (
               <NavLink
@@ -82,14 +87,14 @@ function Header() {
             );
           })}
           {isAdmin && (
-            <NavLink to="/admin" className={classNav}>
+            <NavLink to="/admin" className={({ isActive }) => (isActive ? "font-bold border-b-2 border-primary-container" : "")}>
               Scholars
             </NavLink>
           )}
         </div>
         <div className="flex items-center gap-4 justify-end">
           { isAuthenticated && me?.role === "User" && (
-            < Link to="/create-question"
+            < Link to="/question/create"
               className="bg-primary-container text-on-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm cursor-pointer text-nowrap">
             <span>Buat Pertanyaan</span>
             </Link>

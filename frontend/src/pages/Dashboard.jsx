@@ -36,7 +36,7 @@ function AnsweredCard({ question, categoryTag }) {
 
   return (
     <NavLink
-      to={`/detail-question/${question.id}`}
+      to={`/question/detail/${question.id}`}
       className="bg-surface-container-lowest rounded-xl border border-outline-variant p-6 flex flex-col gap-4 shadow-sm hover:shadow-md transition-all"
     >
       <div className="flex items-center justify-between gap-3">
@@ -219,7 +219,7 @@ function Dashboard() {
             <div className="mt-8 flex flex-col items-center gap-3">
               <span className="font-label-sm text-label-sm text-surface-container-highest drop-shadow-sm">Atau</span>
               <NavLink
-                to="/create-question"
+                to="/question/create"
                 className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-6 py-3 rounded-full hover:bg-surface-container-low transition-colors shadow-md font-bold"
               >
                 <span className="material-symbols-outlined text-[18px]" data-icon="edit_note">

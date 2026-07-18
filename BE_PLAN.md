@@ -71,6 +71,22 @@ Note: "important answers" itself (verified-scholar answers) did **not** need a n
 FE derives it from the existing `role` on each answer (`role === "Guru"`), which already comes
 back from `GET /api/question/{id}`.
 
+## Phase 5 — Comments (added 2026-07-19)
+
+`DetailQuestion.jsx` now has a comment section under each answer, but it's 100% mock — local
+component state only (`src/components/CommentSection.jsx`), resets on page reload, never
+touches the network. Needed to make it real:
+
+- [ ] `Comment` model: `Id`, `Content`, `CreatedAt`, `AnswerId` (FK → `Answer`), `UserId` (FK →
+  `User`). Simplest shape — one flat list per answer, no nested replies for now.
+- [ ] `GET /api/answer/{answerId}/comments` — list, include commenter name/picture like
+  `GetDetailQuestion` already does for answers.
+- [ ] `POST /api/answer/{answerId}/comments` — auth required (any authenticated user, not
+  role-gated — commenting isn't answering).
+- [ ] Consider whether `GetDetailQuestion` should just include comments inline per answer
+  (avoids an extra round trip per answer card) vs. a separate endpoint fetched on demand —
+  frontend's call once this exists.
+
 ## Notes for whoever picks this up
 
 - No automated tests exist in the repo yet — a plain `dotnet build` + manual exercise via

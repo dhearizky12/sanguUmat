@@ -108,7 +108,7 @@ function Questions() {
               {loading ? "Memuat..." : `${filtered.length} pertanyaan ditemukan${search ? ` untuk "${search}"` : ""}.`}
             </p>
             <NavLink
-              to="/create-question"
+              to="/question/create"
               className="hidden sm:inline-flex items-center gap-2 bg-primary-container text-on-primary font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm"
             >
               <span className="material-symbols-outlined text-[18px]" data-icon="edit_note">

@@ -24,7 +24,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
 
           <Route path="/questions" element={<Questions />} />
-          <Route path="/detail-question/:id" element={<DetailQuestion />} />
+          <Route path="/question/detail/:id" element={<DetailQuestion />} />
 
           <Route path="/articles" element={<Articles />} />
           <Route path="/detail-article/:slug" element={<DetailArticle />} />
@@ -35,7 +35,7 @@ function App() {
           <Route element={<AuthGuard />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/create-question" element={<CreateQuestion />} />
+            <Route path="/question/create" element={<CreateQuestion />} />
             <Route path="/detail-admin/:adminId" element={<DetailAdmin />} />
           </Route>
         </Routes>

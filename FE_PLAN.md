@@ -8,6 +8,48 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ## Ready now (this session)
 
+- [x] **Moved detail/create question under `/question/*` + fixed nav active-state (2026-07-19).**
+  `/detail-question/:id` → `/question/detail/:id`, `/create-question` → `/question/create`
+  (`App.jsx`, and every link pointing at them: `Header.jsx`, `Dashboard.jsx`, `Questions.jsx`,
+  `QuestionCard.jsx`). Also fixed a real pre-existing bug this surfaced: `Header.jsx`'s active-
+  menu check did an *exact* `location.pathname === path` comparison against a hardcoded list —
+  which could never match a dynamic route like `/detail-question/7` (extra `/7` segment) even
+  before this change, so "Tanya Jawab" never actually highlighted on the detail or create
+  pages. Replaced with `isMenuActive()` (exact match OR `startsWith(path + "/")`), switched to
+  React Router's `useLocation()` instead of reading the global `window.location` directly (the
+  latter isn't reactive to client-side navigation), and set "Tanya Jawab"'s `matchPaths` to
+  `["/questions", "/question"]` — covers the listing page and everything nested under
+  `/question/...` in one go. Along the way also fixed the "Artikel" menu's matchPaths, which
+  had a typo (`/details-article` instead of the real `/detail-article`) and referenced a
+  `/create-article` route that doesn't exist — harmless since Articles are out of scope, but
+  cheap to correct while touching the same logic. Also fixed a dangling reference to a
+  `classNav` variable removed during this edit (used by the still-hardcoded-off admin "Scholars"
+  link) that would have thrown once that flag is ever wired up.
+
+- [x] **Redesigned `DetailQuestion.jsx` + mock comments (2026-07-19).** Was inconsistent with
+  the rest of the app: raw `bg-white`/Tailwind defaults instead of the design-system color
+  tokens (`surface-container-lowest`, `outline-variant`, etc.) and font scale (`font-headline-lg`
+  etc.) used everywhere else, a one-off `max-w-4xl` container instead of the standard
+  `max-w-container-max`/`px-gutter`, and — the specific complaint — the question and every
+  answer were styled as identical cards, giving no visual hierarchy between "the thing being
+  asked" and "the list of responses to it." Now: the question renders as an unboxed page
+  header (category pill, title, asker, body) with a bottom border, and answers are a list of
+  distinct cards below it, both using the shared design tokens. Delete button also switched
+  from raw Tailwind red to the design system's `error`/`error-container` tokens (already
+  defined in `index.css`, just unused here before).
+  - **Follow-up fix:** first pass still added an inner `max-w-3xl` around the content (for
+    reading line-length) sitting inside the outer `max-w-container-max` — that's what was
+    still making it look narrower than Beranda. Removed; content now spans the same width as
+    every other page, no secondary constraint.
+  - **Follow-up fix:** comments were originally rendered inside the same bordered/shadowed box
+    as the answer. Moved out — the answer (authoritative scholar content) stays in its clean
+    card, comments (lighter community layer) render as a separate unboxed block directly below
+    it, associated by proximity/indentation rather than being boxed together.
+  - Added mock, per-answer comments (`src/components/CommentSection.jsx`) — seed comments +
+    a working input that appends to local state (not persisted, resets on reload; gated behind
+    login like the rest of the app). No backend Comment model exists yet — see `BE_PLAN.md`
+    Phase 5 for what real implementation needs.
+
 - [ ] **Fix the admin delete-answer permission bug.** `DetailQuestion.jsx:166` only shows the
   delete button when `me?.id === item.userId && (me?.role === "Admin" || me?.role === "Guru")`
   — an Admin never sees the delete option on someone else's answer, even though
@@ -18,6 +60,41 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
   to a real `/admin` page yet — the admin user-management page itself is **blocked** (see
   below) until `BE_PLAN.md`'s admin endpoints exist. For now this just makes the flag correct;
   either hide the nav item until the page exists, or point it at a simple "Segera hadir" state.
+- [x] **Render real long-form answers correctly on `DetailQuestion.jsx` (2026-07-19).** Real
+  Q&A content from the actual Sangu Umat WhatsApp group is WhatsApp-style formatted text — an
+  all-caps title, section labels (PERTANYAAN/JAWABAN/PENJELASAN/REFERENSI/KESIMPULAN), numbered
+  points, blank-line paragraph breaks, Arabic reference citations — all inside a single plain
+  `Content` string (no structured fields on the backend, see `BE_PLAN.md`). The old
+  `<p>{content}</p>` collapsed all of that into one run-on paragraph since CSS ignores
+  newlines by default. Added `src/components/RichContent.jsx`: splits on `\n`, renders each
+  line as its own block, and lightly bolds lines that look like section headings (known labels,
+  or short all-caps lines) and adds spacing before numbered points (`1.`/Arabic-Indic `١.`).
+  Verified the heuristic against the user's real pasted example via a standalone Node script
+  before wiring it in — caught and fixed a real bug where Arabic-only lines trivially passed
+  the "all uppercase" check (Arabic has no letter casing, so `.toUpperCase()` is a no-op),
+  which was misclassifying short Arabic reference lines as headings. Wired into both the
+  question body and every answer body in `DetailQuestion.jsx`.
+  - Added two real examples (verbatim, from the user) to `backend/seed-dummy-data.sql` and ran
+    them against the local DB: the Muharram/Suro wedding question (left unanswered — no answer
+    was provided, and fabricating a religious ruling isn't something to do), and the full
+    suami/istri long-form answer (attributed to the seeded "Ustadzah Hana Wulandari" account).
+  - **Rewrote all 10 of the original dummy answers (2026-07-19)** to match this same realistic
+    WhatsApp-style format (title/PERTANYAAN/JAWABAN/PENJELASAN numbered points/REFERENSI/
+    KESIMPULAN) instead of the short single-paragraph placeholders from the first seed pass —
+    they didn't reflect what real answers actually look like. 7 of 10 quote real, short,
+    well-known Qur'an verses with accurate surah:ayat citations (Al-Baqarah 183, At-Taubah 103,
+    Ar-Rum 21, Al-Baqarah 275); the other 3 use generic, unattributed Arabic fiqh commentary
+    rather than a fabricated specific book+page citation, since this is illustrative mock data
+    and inventing a fake citation to a real named book would be worse than not citing one.
+    Updated both the live local DB (`UPDATE`, matched by question title) and the committed
+    `backend/seed-dummy-data.sql` so a fresh setup gets the same content.
+  - **Follow-up (2026-07-19): dropped the title/PERTANYAAN preamble from all 11 answers.** The
+    detail page already shows the question separately at the top, so every answer restating it
+    again (all-caps title + "PERTANYAAN\n<question text>") was pure duplication. Stripped via
+    `UPDATE "Answers" SET "Content" = substring("Content" from position('JAWABAN' in "Content"))`
+    on the live DB (safer than retyping — no risk of a transcription slip in the Arabic), then
+    mirrored the exact same resulting text back into `backend/seed-dummy-data.sql`. Every
+    answer now starts directly at JAWABAN.
 - [x] **Build out `Questions.jsx` — the real "Tanya Jawab" hub (2026-07-19).** Was an empty
   `<Header/><Footer/>` shell. Now: search box + category filter (chips, same `CATEGORIES` list
   as Dashboard, extracted to `src/lib/category.js` so both pages share it instead of
