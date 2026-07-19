@@ -140,11 +140,25 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
     everywhere it's used (Dashboard did this before too) — that route/page isn't a real user
     profile page, so this link doesn't actually go anywhere useful yet. Left as-is since fixing
     it is unrelated to this task; worth a real look whenever `DetailAdmin.jsx` gets built out.
-- [ ] **Build the "Pertanyaan Saya" panel in `CreateQuestion.jsx` for real.** Currently fully
-  mocked static markup (CreateQuestion.jsx:110-208). Fetch `GET /api/question?search=` and
-  filter client-side to `question.userId === me.id` as a stopgap (the endpoint has no per-user
-  filter yet). **Mark this filter clearly as temporary** — swap to `GET /api/question/mine`
-  once `BE_PLAN.md` ships it, don't build more on top of the client-filter approach.
+- [x] **Redesigned `CreateQuestion.jsx` + built "Pertanyaan Saya" for real (2026-07-19).** Was
+  visually its own thing — no `max-w-container-max`, an ad-hoc 12-col 5/7 grid split instead of
+  the `lg:grid-cols-3` content+sidebar pattern established on `DetailQuestion.jsx`, hardcoded
+  `http://localhost:5236` instead of `API_URL`, `text-white`/arbitrary-value shadows instead of
+  the design-system tokens, and a 100%-mocked "Pertanyaan Saya" list (including a "Draft" state
+  that doesn't correspond to anything real — there's no draft-saving mechanism at all). Now
+  matches the same container width and sidebar structure as the rest of the app, and
+  "Pertanyaan Saya" is real: filters `GET /api/question` to `userId === me.id`, then fetches
+  each one's detail (same N+1 pattern as `Dashboard.jsx` — reasonable at "one person's own
+  questions" scale) to show a real Terjawab/Menunggu status and category tag. Verified against
+  the live DB: user id 1's 5 real questions show up with correct statuses. List refetches after
+  a successful submission so a new question appears without a full page reload. Also: added
+  basic empty-field validation (previously submitting blank fields just silently POSTed empty
+  strings with no feedback), a real form `onSubmit` (Enter-to-submit, matching the Dashboard
+  hero's pattern) with an actual failure alert, and renamed the page heading + `Header.jsx`'s
+  nav button from "Buat Pertanyaan" to "Ajukan Pertanyaan" to match the wording used everywhere
+  else that links here (Dashboard hero, Questions page, DetailQuestion sidebar).
+  Swap the client-side `userId === me.id` filter for `GET /api/question/mine` once `BE_PLAN.md`
+  ships it — don't build further on top of the filter approach.
 - [~] **Centralize the API base URL.** Added `src/lib/api.js` exporting `API_URL` (reads
   `VITE_API_URL`, falls back to `http://localhost:5236`) and switched `Dashboard.jsx`,
   `QuestionCard.jsx`, `Header.jsx`, `DetailQuestion.jsx`, `AuthProvider.jsx`, `EditProfile.jsx`

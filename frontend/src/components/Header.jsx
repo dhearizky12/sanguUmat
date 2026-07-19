@@ -96,7 +96,7 @@ function Header() {
           { isAuthenticated && me?.role === "User" && (
             < Link to="/question/create"
               className="bg-primary-container text-on-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm cursor-pointer text-nowrap">
-            <span>Buat Pertanyaan</span>
+            <span>Ajukan Pertanyaan</span>
             </Link>
             )}
           {isAuthenticated ? (

@@ -1,22 +1,77 @@
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { useState } from "react";
+import LoadingState from "../components/LoadingState";
+import EmptyState from "../components/EmptyState";
+import { useAuth } from "../hooks/useAuth";
+import { API_URL } from "../lib/api";
+import { formatDate } from "../lib/date";
+import { matchCategory, categoryLabel } from "../lib/category";
 
 function CreateQuestion() {
+  const { me } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [myQuestions, setMyQuestions] = useState([]);
+  const [loadingMine, setLoadingMine] = useState(true);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const handleTitleChange = (e) => {
-    setTitle(e.target.value);
-  };
+  useEffect(() => {
+    if (!me) {
+      return;
+    }
 
-  const handleContentChange = (e) => {
-    setContent(e.target.value)
-  }
+    // No "my questions" endpoint yet (see BE_PLAN.md) — filter the full list client-side, then
+    // pull each one's detail to know whether it's been answered. Fine at the scale of "one
+    // person's own questions"; swap for GET /api/question/mine once that ships.
+    let cancelled = false;
 
-  const submitQuestion = async () => {
-    const response = await fetch("http://localhost:5236/api/question", {
+    const fetchMine = async () => {
+      setLoadingMine(true);
+      try {
+        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        if (!listRes.ok) throw new Error("Failed to fetch questions");
+        const list = await listRes.json();
+        const mine = list.filter((q) => q.userId === me.id);
+
+        const details = await Promise.all(
+          mine.map((q) =>
+            fetch(`${API_URL}/api/question/${q.id}`)
+              .then((r) => (r.ok ? r.json() : null))
+              .then((detail) => (detail ? { ...q, ...detail } : null))
+              .catch(() => null),
+          ),
+        );
+
+        if (!cancelled) {
+          setMyQuestions(details.filter(Boolean));
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!cancelled) {
+          setLoadingMine(false);
+        }
+      }
+    };
+
+    fetchMine();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [me, refreshKey]);
+
+  const submitQuestion = async (e) => {
+    e.preventDefault();
+
+    if (!title.trim() || !content.trim()) {
+      alert("Judul dan detail pertanyaan tidak boleh kosong.");
+      return;
+    }
+
+    const response = await fetch(`${API_URL}/api/question`, {
       method: "POST",
       credentials: "include",
       headers: {
@@ -30,73 +85,50 @@ function CreateQuestion() {
 
     if (response.ok) {
       alert("Pertanyaan berhasil dibuat");
-
       setTitle("");
       setContent("");
+      setRefreshKey((k) => k + 1);
+    } else {
+      alert("Gagal membuat pertanyaan");
     }
   };
 
   return (
     <div className="font-body-md min-h-screen flex flex-col">
       <Header />
-      <main className="grow mx-auto w-full px-margin-mobile md:px-gutter py-section-gap relative">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
-          <div className="lg:col-span-5 flex flex-col gap-8">
-            <div className="bg-surface-container-lowest rounded-xl p-6 md:p-8 shadow-sm relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1 bg-primary-container"></div>
-              <div className="mb-6">
-                <h1 className="font-headline-lg text-headline-lg text-on-surface mb-2">Buat Pertanyaan</h1>
-              </div>
-              <form className="space-y-6">
-                {/* <div>
-                  <label className="block font-label-sm text-label-sm text-on-surface mb-2" htmlFor="topic">
-                    Topic Classification
-                  </label>
-                  <div className="relative">
-                    <select
-                      className="w-full bg-surface border border-outline-variant rounded-lg px-4 py-3 font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container appearance-none transition-colors"
-                      id="topic"
-                    >
-                      <option>Pilih topik umum...</option>
-                      <option>Sholat</option>
-                      <option>Puasa</option>
-                      <option>Zakat</option>
-                      <option>Keluarga &amp; Pernikahan</option>
-                      <option>Keuangan &amp; Muamalah</option>
-                    </select>
-                    <div className="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none text-on-surface-variant">
-                      <span className="material-symbols-outlined">expand_more</span>
-                    </div>
-                  </div>
-                </div> */}
+      <main className="grow max-w-container-max w-full mx-auto px-gutter py-section-gap">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
+          <div className="lg:col-span-2">
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 md:p-8">
+              <h1 className="font-headline-lg text-headline-lg text-primary-container mb-2">Ajukan Pertanyaan</h1>
+              <p className="font-body-md text-body-md text-on-surface-variant mb-6">
+                Tuliskan pertanyaan anda seputar Islam, dan dapatkan jawaban dari para ustadz terverifikasi.
+              </p>
+              <form className="space-y-6" onSubmit={submitQuestion}>
                 <div className="flex flex-col gap-2">
                   <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Judul</label>
                   <input
-                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container"
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors"
                     type="text"
-                    placeholder="Tulis Judul"
+                    placeholder="Tulis judul pertanyaan anda"
                     value={title}
-                    onChange={handleTitleChange}
+                    onChange={(e) => setTitle(e.target.value)}
                   />
                 </div>
-                <div>
-                  <label className="block font-label-sm text-label-sm text-on-surface mb-2" htmlFor="question">
-                    Detail Pertanyaan
-                  </label>
+                <div className="flex flex-col gap-2">
+                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Detail Pertanyaan</label>
                   <textarea
-                    className="w-full bg-surface-container-low rounded-xl px-4 py-3 text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container"
-                    id="question"
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors resize-none"
                     placeholder="Jelaskan pertanyaan anda dengan detail..."
                     rows="6"
                     value={content}
-                    onChange={handleContentChange}
-                  ></textarea>
+                    onChange={(e) => setContent(e.target.value)}
+                  />
                 </div>
-                <div className="flex items-center justify-between pt-2">
+                <div className="flex justify-end">
                   <button
-                    className="bg-primary-container text-white px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-tertiary-container transition-colors shadow-sm active:scale-95 flex items-center gap-2"
-                    type="button"
-                    onClick={submitQuestion}
+                    type="submit"
+                    className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-bold hover:bg-tertiary transition-colors shadow-sm active:scale-95 flex items-center gap-2"
                   >
                     Kirim Pertanyaan
                     <span className="material-symbols-outlined text-[18px]" data-icon="send">
@@ -107,105 +139,47 @@ function CreateQuestion() {
               </form>
             </div>
           </div>
-          <section className="lg:col-span-7 max-w-container-max mx-auto px-gutter">
-            <div className="flex justify-between items-end mb-8">
-              <div>
-                <h2 className="font-headline-lg text-headline-lg text-primary-container">Pertanyaan Saya</h2>
-                <p className="font-body-md text-body-md text-on-surface-variant mt-2">Pertanyaan terkini yang dijawab oleh komunitas ustadz kami.</p>
-              </div>
-              <NavLink
-                to="questions"
-                className="hidden sm:flex items-center gap-1 font-label-sm text-label-sm text-primary-container hover:text-tertiary font-semibold"
-              >
-                Lihat semua{" "}
-                <span className="material-symbols-outlined" data-icon="arrow_forward">
-                  arrow_forward
-                </span>
-              </NavLink>
+
+          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
+            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
+              <h2 className="font-title-md text-title-md text-on-surface mb-4">Pertanyaan Saya</h2>
+
+              {loadingMine ? (
+                <LoadingState message="Memuat pertanyaan anda..." />
+              ) : myQuestions.length === 0 ? (
+                <EmptyState icon="quiz" title="Belum Ada Pertanyaan" message="Pertanyaan yang anda ajukan akan tampil di sini." />
+              ) : (
+                <div className="divide-y divide-outline-variant/50">
+                  {myQuestions.map((q) => {
+                    const isAnswered = q.answers && q.answers.length > 0;
+                    const category = matchCategory(`${q.title} ${q.content}`);
+
+                    return (
+                      <NavLink key={q.id} to={`/question/detail/${q.id}`} className="block py-4 first:pt-0 last:pb-0 group">
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="px-2 py-0.5 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[11px] font-semibold border border-primary-container/20">
+                            {categoryLabel(category)}
+                          </span>
+                          <span
+                            className={`flex items-center gap-1 font-label-sm text-[11px] pl-2 p-0.5 rounded-full ml-auto ${
+                              isAnswered ? "text-primary" : "text-on-surface/50"
+                            }`}
+                          >
+                            {isAnswered ? "Terjawab" : "Menunggu"}
+                            <span className="material-symbols-outlined text-[13px]">{isAnswered ? "check_circle" : "schedule"}</span>
+                          </span>
+                        </div>
+                        <h3 className="font-body-md text-body-md text-on-surface font-medium line-clamp-2 group-hover:text-primary-container transition-colors">
+                          {q.title}
+                        </h3>
+                        <p className="text-[12px] text-outline mt-1">{formatDate(q.createdAt)}</p>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              )}
             </div>
-            <div className="space-y-6">
-              <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-[0_4px_20px_rgba(6,78,59,0.05)] flex flex-col gap-4 relative overflow-hidden">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-fixed-dim"></div>
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-3 items-center mb-2">
-                    <span className="px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
-                      Keuangan &amp; Muamalah
-                    </span>
-                    <span className="text-outline font-label-sm text-label-sm">2 hari lalu</span>
-                  </div>
-                  <span className="flex items-center gap-1 text-tertiary-fixed-dim font-label-sm text-label-sm bg-tertiary-fixed-dim/10 px-3 py-1 rounded-full">
-                    <span className="material-symbols-outlined text-[14px]" data-icon="check_circle">
-                      check_circle
-                    </span>
-                    Terjawab
-                  </span>
-                </div>
-                <h3 className="font-body-lg text-body-lg text-on-surface font-medium line-clamp-2">
-                  Apakah diperbolehkan berinvestasi di reksa dana indeks yang memuat sebagian kecil saham perusahaan yang tidak sesuai syariah?
-                </h3>
-                <div className="mt-2 pl-4 border-l-2 border-secondary-fixed-dim bg-surface-container-low/50 p-4 rounded-r-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span className="material-symbols-outlined text-secondary-container" data-icon="verified" data-weight="fill">
-                      verified
-                    </span>
-                    <span className="font-label-sm text-label-sm text-on-surface font-semibold">Ustadz Ahmad</span>
-                  </div>
-                  <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">
-                    Konsensus umum di kalangan ulama kontemporer menyatakan bahwa jika bisnis utamanya halal, sebagian kecil pendapatan yang tidak
-                    sesuai syariah dapat disucikan. Namun, ada batas ambang untuk hal ini...
-                  </p>
-                  <button className="mt-3 text-primary-container font-label-sm text-label-sm hover:underline">Baca Jawaban Lengkap</button>
-                </div>
-              </div>
-              <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant shadow-[0_4px_20px_rgba(6,78,59,0.05)] flex flex-col gap-4 relative overflow-hidden opacity-90">
-                <div className="absolute left-0 top-0 bottom-0 w-1 bg-secondary-container"></div>
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-3 items-center mb-2">
-                    <span className="px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
-                      Sholat
-                    </span>
-                    <span className="text-outline font-label-sm text-label-sm">Kemarin</span>
-                  </div>
-                  <span className="flex items-center gap-1 text-on-secondary-container font-label-sm text-label-sm bg-secondary-container/20 px-3 py-1 rounded-full">
-                    <span className="material-symbols-outlined text-[14px]" data-icon="schedule">
-                      schedule
-                    </span>
-                    Menunggu Jawaban
-                  </span>
-                </div>
-                <h3 className="font-body-lg text-body-lg text-on-surface font-medium">
-                  Bagaimana cara menyesuaikan waktu sholat ketika bepergian melintasi beberapa zona waktu dalam satu penerbangan?
-                </h3>
-                <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">
-                  Saya sering bepergian untuk urusan pekerjaan dan terkadang melintasi 4-5 zona waktu dalam satu penerbangan 12 jam. Saya bingung
-                  kapan harus sholat Maghrib dan Isya saat berada di pesawat...
-                </p>
-              </div>
-              <div className="bg-surface-container-lowest rounded-xl p-6 border border-outline-variant border-dashed shadow-sm flex flex-col gap-4">
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-3 items-center mb-2">
-                    <span className="px-2.5 py-1 rounded-full bg-surface-container text-on-surface-variant font-label-sm text-[12px] font-semibold border border-outline-variant">
-                      Draf
-                    </span>
-                    <span className="text-outline font-label-sm text-label-sm">Baru saja</span>
-                  </div>
-                  <button className="text-outline hover:text-error transition-colors p-1 rounded-full hover:bg-error-container/20">
-                    <span className="material-symbols-outlined text-[20px]" data-icon="delete">
-                      delete
-                    </span>
-                  </button>
-                </div>
-                <h3 className="font-body-lg text-body-lg text-on-surface font-medium italic text-on-surface-variant/70">
-                  Pertanyaan tanpa judul mengenai zakat atas harta warisan...
-                </h3>
-                <div className="mt-2 flex gap-3">
-                  <button className="bg-surface-container-high text-on-surface px-4 py-2 rounded-full font-label-sm text-label-sm hover:bg-surface-variant transition-colors">
-                    Lanjutkan Menulis
-                  </button>
-                </div>
-              </div>
-            </div>
-          </section>
+          </aside>
         </div>
       </main>
       <Footer />
