@@ -8,6 +8,60 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 
 ## Ready now (this session)
 
+- [x] **Fixed `Header.jsx` nav wrapping onto two lines (2026-07-19).** The nav bar used a rigid
+  `grid-cols-2 md:grid-cols-4` with the menu list pinned to exactly 2 of 4 columns regardless
+  of how many items were inside, and labels had no `whitespace-nowrap` — adding "Jawab
+  Pertanyaan" (a 5th, longer item) pushed it over the available width and every multi-word
+  label started wrapping to two lines. Replaced with a flex layout (`flex justify-between`,
+  logo and avatar sections `shrink-0`, the nav section `flex-1` so it takes whatever space
+  remains instead of a fixed fraction) and added `whitespace-nowrap` to every label — scales
+  correctly regardless of how many menu items exist going forward (e.g. once "Admin" is wired
+  up for real).
+
+- [x] **Guru "Jawab Pertanyaan" answering queue (2026-07-19).** New page at
+  `/jawab-pertanyaan`, its own top-level nav item (shown only when `me?.role === "Guru"`,
+  positioned right after "Tanya Jawab") — deliberately *not* nested under `/question/*`, since
+  it's a distinct audience/purpose from the general Tanya Jawab hub, not a sub-page of it.
+  Lists only unanswered questions (same N+1 list-then-detail-filter pattern used everywhere
+  else this session — `GET /api/question` has no `isAnswered` filter yet, see `BE_PLAN.md`),
+  with the same category chips as `Questions.jsx`. Each card links into the existing
+  `DetailQuestion.jsx`, which already has the "Tulis Jawaban" form gated to `role === "Guru"`
+  — this page is a triage/discovery queue only, it doesn't duplicate the answer-submission UI.
+  Verified against the live DB: 3 real unanswered questions surface correctly.
+  - Added `src/components/RoleGuard.jsx` — the first role-gated route in the app (this page
+    requires `me?.role === "Guru"`, redirects to `/` otherwise, to `/login` if not even
+    authenticated). Written generically (`allow={["Guru"]}` prop) so the still-blocked Admin
+    panel can reuse it later instead of writing a one-off check — see `BE_PLAN.md` Phase 2.
+  - Promoted `fatikhunnizam@gmail.com` to `Guru` directly in the local DB for demo purposes
+    (both duplicate rows sharing that email, so whichever session is active picks it up).
+    **You'll need to log out/in or refresh once for the client to pick up the new role** —
+    `AuthProvider.jsx` only fetches `/api/auth/me` on mount, it's not re-checked automatically.
+
+- [x] **Edit own unanswered question (2026-07-19).** `DetailQuestion.jsx` now shows an "Edit"
+  link next to the category pill when `me?.id === question.userId && question.answers.length
+  === 0` — the moment an answer lands, the edit option disappears (client-side only; see the
+  server-side note below). Clicking it swaps the question header into an inline form
+  (title + content, same styling as `CreateQuestion.jsx`'s form) with Simpan/Batal.
+  **This is blocked on the backend** — `PUT /api/question/{id}` doesn't exist yet (confirmed
+  via a direct curl: 405, no PUT route mapped). Built the FE wired to the correct real shape
+  anyway rather than faking a local-only save — a silent fake "save" for a user's own question
+  content would be actively misleading (they'd think it persisted; it wouldn't have), unlike
+  the `CommentSection` mock where that trade-off was fine. Right now clicking "Simpan" will
+  show "Fitur ini belum didukung oleh server." until `BE_PLAN.md`'s `PUT /api/question/{id}`
+  ships — at that point this should just start working, no FE change needed except removing
+  this note. **Important:** the "only if unanswered" rule is only enforced client-side today —
+  `BE_PLAN.md` flags that the real endpoint must also enforce owner-only + zero-answers
+  server-side, since a client-side check alone is trivially bypassed via a direct API call.
+
+- [x] **Delete own unanswered question (2026-07-19).** Same eligibility as the edit above
+  (`canEditQuestion`, reused as-is) — a "Hapus" button next to "Edit," confirm dialog, then
+  `DELETE /api/question/{id}` and redirect to `/questions` on success. Same blocked-on-backend
+  situation: confirmed via curl this also 405s (no DELETE route mapped either), wired to the
+  real endpoint rather than faking success for the same reason as the edit. Noted in
+  `BE_PLAN.md` that the real permission shape should differ slightly from `DeleteAnswer`'s
+  owner-or-Admin: owner can only delete while unanswered, but Admin should be able to delete
+  regardless (moderation shouldn't be blocked by that rule).
+
 - [x] **Added a related-questions sidebar to `DetailQuestion.jsx` (2026-07-19).** The page had
   gone full `max-w-container-max` width for consistency with the rest of the site, but that
   left long-form answer text stretching edge to edge with nothing else on the page — looked

@@ -39,8 +39,20 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
   client-side-filter stopgap for this today — swap it out once this lands, see `FE_PLAN.md`.)
 - [ ] `PUT /api/answer/{id}` — edit an existing answer. Same owner-or-Admin permission shape as
   the existing `DeleteAnswer`.
-- [ ] `DELETE /api/question/{id}` — same owner-or-Admin permission shape as `DeleteAnswer`.
-  Nobody, not even Admin, can currently remove a question.
+- [ ] `DELETE /api/question/{id}` (FE already built and wired to this exact shape, 2026-07-19 —
+  currently 405, confirmed via a direct curl, no DELETE route mapped for `api/question/{id}`).
+  Nobody, not even Admin, can currently remove a question. Permission shape is slightly
+  different from `DeleteAnswer`'s owner-or-Admin: **the owner can only delete while the
+  question has zero answers** (rejecting it once someone's answered protects that answer's
+  context — the FE hides the button client-side but this must be enforced server-side too,
+  same as the `PUT` note below), while **Admin can delete regardless of answer count**
+  (moderation shouldn't be blocked by that rule).
+- [ ] `PUT /api/question/{id}` — edit an existing question's `title`/`content` (added
+  2026-07-19, FE already built and wired to this exact shape, currently gets a 405 since no
+  PUT route is mapped for `api/question/{id}` — confirmed via a direct curl). Business rule
+  the FE currently enforces only client-side, **needs enforcing server-side too**: only the
+  question's own author can edit it, and only while it has zero answers — reject with 403/409
+  if either doesn't hold (a client-side check is trivially bypassable via a direct API call).
 
 ## Phase 4 — Dashboard data (added 2026-07-18, for the new enriched Dashboard)
 

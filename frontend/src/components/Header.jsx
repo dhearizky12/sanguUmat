@@ -28,6 +28,15 @@ function Header() {
       // (detail, create) — same menu item should read as active for all of it.
       matchPaths: ["/questions", "/question"],
     },
+    ...(me?.role === "Guru"
+      ? [
+          {
+            label: "Jawab Pertanyaan",
+            to: "/jawab-pertanyaan",
+            matchPaths: ["/jawab-pertanyaan"],
+          },
+        ]
+      : []),
     {
       label: "Artikel",
       to: "/articles",
@@ -59,8 +68,8 @@ function Header() {
 
   return (
     <nav className="bg-surface shadow-sm top-0 z-50 sticky">
-      <div className="max-w-container-max mx-auto px-gutter grid grid-cols-2 md:grid-cols-4 w-full h-20">
-        <div className="flex items-center gap-2 cursor-pointer">
+      <div className="max-w-container-max mx-auto px-gutter flex items-center justify-between gap-4 w-full h-20">
+        <div className="flex items-center gap-2 cursor-pointer shrink-0">
           <div className="rounded-lg flex items-center justify-center">
             <span>
             <img
@@ -72,7 +81,7 @@ function Header() {
           </div>
           <span className="text-title-md font-bold text-primary-container">Sangu Umat</span>
         </div>
-        <div className="col-span-2 hidden md:flex justify-center space-x-8 h-full">
+        <div className="hidden md:flex flex-1 justify-center items-center gap-6 h-full min-w-0">
           {menus.map((menu) => {
             const isActive = isMenuActive(location.pathname, menu.matchPaths);
 
@@ -80,19 +89,22 @@ function Header() {
               <NavLink
                 key={menu.to}
                 to={menu.to}
-                className={`flex items-center h-full text-primary-container text-body-md hover:text-primary-container transition-transform duration-200 active:scale-95 ${isActive && "font-bold border-b-2 border-primary-container"}`}
+                className={`flex items-center h-full whitespace-nowrap text-primary-container text-body-md hover:text-primary-container transition-transform duration-200 active:scale-95 ${isActive && "font-bold border-b-2 border-primary-container"}`}
               >
                 {menu.label}
               </NavLink>
             );
           })}
           {isAdmin && (
-            <NavLink to="/admin" className={({ isActive }) => (isActive ? "font-bold border-b-2 border-primary-container" : "")}>
+            <NavLink
+              to="/admin"
+              className={({ isActive }) => `whitespace-nowrap ${isActive ? "font-bold border-b-2 border-primary-container" : ""}`}
+            >
               Scholars
             </NavLink>
           )}
         </div>
-        <div className="flex items-center gap-4 justify-end">
+        <div className="flex items-center gap-4 justify-end shrink-0">
           { isAuthenticated && me?.role === "User" && (
             < Link to="/question/create"
               className="bg-primary-container text-on-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm cursor-pointer text-nowrap">
