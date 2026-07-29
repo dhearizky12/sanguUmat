@@ -1,0 +1,38 @@
+# Files not uploaded to Cloud Build by `gcloud run deploy --source .`
+# (run from the repo root, since the Dockerfile builds both frontend and backend).
+#
+# Note: once this file exists, gcloud stops falling back to .gitignore, so build
+# outputs have to be listed here explicitly.
+#
+# Do NOT ignore the Dockerfile — Cloud Build needs to see it.
+
+.git/
+.gitignore
+
+# Backend build output
+backend/bin/
+backend/obj/
+backend/.vs/
+backend/.vscode/
+backend/.idea/
+backend/*.user
+backend/*.suo
+backend/appsettings.Development.json
+backend/backend.http
+backend/seed-dummy-data.sql
+
+# Read locally by `gcloud run deploy --env-vars-file` and sent over the API, so
+# it never needs to reach Cloud Build. Keeps the secrets out of the staging bucket.
+backend/env.yaml
+backend/env.example.yaml
+
+# The SPA is built inside the image.
+frontend/node_modules/
+frontend/dist/
+
+# Locally uploaded profile pictures — instance storage is wiped on redeploy.
+backend/wwwroot/uploads/
+
+# Planning docs, not needed at build time.
+*.md
+sanguUmat.slnx

@@ -855,3 +855,7 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# Cloud Run deploy config — holds the Google client secret and DB password.
+# Committed template lives in env.example.yaml.
+env.yaml

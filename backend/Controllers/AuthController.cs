@@ -15,10 +15,12 @@ namespace backend.Controllers
     public class AuthController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly string _frontendBaseUrl;
 
-        public AuthController(AppDbContext db)
+        public AuthController(AppDbContext db, IConfiguration config)
         {
             _db = db;
+            _frontendBaseUrl = (config["Frontend:BaseUrl"] ?? "http://localhost:3000").TrimEnd('/');
         }
 
         [HttpGet("login")]
@@ -27,7 +29,7 @@ namespace backend.Controllers
             return Challenge(
                 new AuthenticationProperties
                 {
-                    RedirectUri = "http://localhost:3000"
+                    RedirectUri = _frontendBaseUrl
                 },
                 GoogleDefaults.AuthenticationScheme
             );
@@ -91,7 +93,7 @@ namespace backend.Controllers
             return SignOut(
                 new AuthenticationProperties
                 {
-                    RedirectUri = "http://localhost:3000/login"
+                    RedirectUri = _frontendBaseUrl + "/login"
                 },
                 CookieAuthenticationDefaults.AuthenticationScheme
             );

@@ -1,6 +1,8 @@
+import { API_URL } from "../lib/api";
+
 function Login() {
   const loginGoogle = () => {
-    window.location.href = "http://localhost:5236/api/auth/login";
+    window.location.href = `${API_URL}/api/auth/login`;
   };
 
   return (

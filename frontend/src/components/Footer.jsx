@@ -9,7 +9,7 @@ function Footer() {
 
           <div>Menjembatani kearifan tradisional dengan kejelasan modern.</div>
         </div>
-        <div className="flex flex-col flex-wrap justify-center gap-6">
+        <div className="hidden flex flex-col flex-wrap justify-center gap-6">
           <a className="text-on-surface-variant font-body-md text-body-md hover:text-secondary-container transition-colors" href="#">
             Panduan Komunitas
           </a>

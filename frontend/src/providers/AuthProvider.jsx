@@ -25,6 +25,14 @@ export default function AuthProvider({ children }) {
         const meJson = await meRes.json();
         setMe(meJson);
 
+        // /api/auth/me answers 200 with { isAuthenticated: false } for signed-out
+        // visitors, so meRes.ok says nothing about whether there is a user. Asking
+        // for the profile anyway just produces a 404.
+        if (!meJson.isAuthenticated) {
+          setProfile(null);
+          return;
+        }
+
         const profileRes = await fetch(`${API_URL}/api/auth/profile`, {
           credentials: "include",
         });

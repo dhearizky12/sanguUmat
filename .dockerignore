@@ -1,0 +1,27 @@
+.git/
+.gitignore
+
+# Backend build output
+backend/bin/
+backend/obj/
+backend/.vs/
+backend/.vscode/
+backend/.idea/
+backend/*.user
+backend/*.suo
+backend/appsettings.Development.json
+backend/backend.http
+backend/seed-dummy-data.sql
+backend/env.yaml
+backend/env.example.yaml
+
+# The SPA is built inside the image; anything local would just be overwritten.
+frontend/node_modules/
+frontend/dist/
+
+# Locally uploaded profile pictures — instance storage is wiped on redeploy.
+backend/wwwroot/uploads/
+
+Dockerfile
+.dockerignore
+.gcloudignore
