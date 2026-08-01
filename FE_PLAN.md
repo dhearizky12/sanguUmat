@@ -311,30 +311,47 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
     `canDeleteQuestion` (`canEditQuestion || role === "Admin"`), so Admin now sees "Hapus"
     regardless of answer count. `BE_PLAN.md`'s `DELETE /api/question/{id}` shipped the same day
     to back this — see below.
-  - Comment delete: added a per-comment delete button (owner or Admin) to the still-100%-mock
-    `CommentSection.jsx`. Since there's no backend Comment model at all yet (`BE_PLAN.md` Phase
-    5), this only filters local component state — same fidelity trade-off already accepted for
-    the rest of that component (not persisted, resets on reload).
+  - Comment delete: added a per-comment delete button (owner or Admin) to the then-100%-mock
+    `CommentSection.jsx`. Superseded the same day — see the real-comments entry below, which
+    rewired this button to a real `DELETE` call instead of filtering local state.
 - [x] **`DELETE /api/question/{id}` now implemented (2026-07-21).** The button built 2026-07-19
   was wired to a 405 the whole time — backend now has the endpoint (owner-zero-answers-only,
   or Admin unconditionally; see `BE_PLAN.md` Phase 3). Swapped the FE's generic "fitur belum
   didukung" alert for real 403 (no permission) / 409 (has answers) messages.
+- [x] **Views, comment counts, and a real answered/pending badge on question cards
+  (2026-07-21).** `BE_PLAN.md` shipped `Views` tracking, `isAnswered`/`?status=`, and a real
+  `Comment` model the same day (Phases 3/4/5) — this is the FE side of all three:
+  - `QuestionCard.jsx` (used by `Questions.jsx` and indirectly `Dashboard.jsx`) now shows a
+    Terjawab/Menunggu badge plus 👁 views / 💬 comment-count, all straight from `GET
+    /api/question`'s new fields — no extra fetch needed.
+  - `Dashboard.jsx`'s `AnsweredCard` shows the same views/comment-count row. "Paling Banyak
+    Dibaca" is now a real `sort by views desc` instead of reusing the same pool as the other
+    two sections (previously all three were intentionally identical — see now-removed note).
+  - `CommentSection.jsx` **rewritten from local mock state to the real backend**: fetches
+    `GET /api/answer/{id}/comments` on mount, `POST`s new comments (appends the returned
+    comment directly, no refetch), and the existing owner-or-Admin delete button now calls the
+    real `DELETE` instead of filtering local state. No longer resets on reload.
+  - Dropped the N+1 list-then-detail-per-item pattern (now redundant) from `CreateQuestion.jsx`
+    ("Pertanyaan Saya" reads `q.isAnswered` straight off the list response),
+    `AnswerQueue.jsx` and `Header.jsx`'s pending-count badge (both now use
+    `GET /api/question?status=pending` directly).
+  - **Correctness note:** `Views` is deliberately *not* incremented by the plain
+    `GET /api/question/{id}` fetch these N+1-workaround pages use — see `BE_PLAN.md` Phase 4.
+    Only `DetailQuestion.jsx` calls the dedicated `POST /api/question/{id}/view`, once per real
+    visit, so dashboard/queue page loads never inflate view counts.
 
 ## Blocked — waiting on `BE_PLAN.md`
 
 - [ ] Admin user-management page (real `DetailAdmin.jsx` build-out + a `RoleGuard` component
   alongside `AuthGuard.jsx`) — needs `GET/PATCH /api/admin/users`.
-- [ ] Answered/pending filter + Guru "needs your answer" queue in `Questions.jsx` — needs
-  `isAnswered`/`?status=` on `GET /api/question`.
+- [ ] Answered/pending filter + Guru "needs your answer" queue *in `Questions.jsx` itself*
+  (the general listing has no answered/pending toggle yet, unlike `AnswerQueue.jsx` which
+  already uses `?status=pending`) — data's available now, just needs the UI control added.
 - [ ] Edit-answer UI in `DetailQuestion.jsx` — needs `PUT /api/answer/{id}`.
-- [ ] Real comment persistence + delete (`CommentSection.jsx` is still 100% local mock) — needs
-  `BE_PLAN.md` Phase 5 (`Comment` model + GET/POST/DELETE).
 - [ ] Swap "Pertanyaan Saya" from client-side filter to `GET /api/question/mine`.
 - [ ] Replace `Dashboard.jsx`'s `matchCategory()` keyword heuristic with a real `?category=`
   filter once `BE_PLAN.md`'s `Category` field ships.
-- [ ] Replace `Dashboard.jsx`'s N+1 "fetch 10 questions then detail-fetch each" with a proper
-  `isAnswered`/`?status=` query once `BE_PLAN.md` ships it.
-- [ ] Give "Jawab-jawaban Terbaru" / "Kumpulan Jawaban Penting" / "Paling Banyak Dibaca" real,
-  distinct data once `BE_PLAN.md` ships an answered-at signal, category, and view counts —
-  right now they're intentionally identical (see note above) since there's nothing to
-  distinguish them by yet.
+- [ ] Give "Kumpulan Jawaban Penting" a real distinct signal (still reuses the same answered
+  pool as "Jawab-jawaban Terbaru", just Guru-authored — no dedicated importance/verification
+  field exists) once `BE_PLAN.md` has one. "Paling Banyak Dibaca" no longer needs this — see
+  above, it's real now.

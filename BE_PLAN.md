@@ -69,39 +69,42 @@ obvious what to rip out once these ship.
   `GET /api/question`. **Currently the FE fakes this** by keyword-matching each question's
   title/content against a hardcoded keyword list client-side (see `matchCategory` in
   `Dashboard.jsx`) — replace that entirely once this field is real.
-- [ ] **`isAnswered` + an `AnsweredAt`-ish signal on `GET /api/question`.** Needed so "latest
-  answered" can be a real sorted/filtered query instead of the FE fetching the 10 most recent
-  questions and then calling `GET /api/question/{id}` on each one just to check
-  `answers.length > 0`. That N+1 approach is a stopgap, not something to build further on.
-- [ ] **View/read-count tracking.** `Views` (or similar) column on `Question`, incremented on
-  `GET /api/question/{id}`, plus a `?sort=views` option on the list endpoint. There is currently
-  zero signal for "most read" anywhere — the FE section for it is 100% static placeholder data
-  (`MOST_READ_PLACEHOLDER` in `Dashboard.jsx`) with an explicit TODO comment; nothing to migrate
-  from, just build the real thing and swap the placeholder out.
+- [x] **`isAnswered` on `GET /api/question`** (shipped 2026-07-21). Computed (`Answers.Any()`,
+  not stored), plus a `?status=answered|pending` filter param — same wording as originally
+  planned. Also added `CommentCount` (summed across all of a question's answers' comments)
+  to the same list response while touching this. No `AnsweredAt` timestamp yet — "latest
+  answered" still just relies on `CreatedAt` recency, not true answered-at order; still an
+  open gap if that distinction ever matters.
+- [x] **View/read-count tracking** (shipped 2026-07-21). `Views` column on `Question`, but
+  **not** incremented on `GET /api/question/{id}` as originally planned — that endpoint is
+  also reused as a batch data-fetch workaround by `Dashboard.jsx`/`CreateQuestion.jsx`/
+  `AnswerQueue.jsx` (see `FE_PLAN.md`), so incrementing there would count every one of those
+  page loads, not real visits. Instead added a dedicated `POST /api/question/{id}/view`,
+  called once by `DetailQuestion.jsx` (the actual "viewing a question" page) per visit. No
+  `?sort=views` param added — FE currently sorts the already-fetched answered pool client-side
+  for "Paling Banyak Dibaca" instead; revisit if this needs to move server-side at scale.
 
 Note: "important answers" itself (verified-scholar answers) did **not** need a new field — the
 FE derives it from the existing `role` on each answer (`role === "Guru"`), which already comes
 back from `GET /api/question/{id}`.
 
-## Phase 5 — Comments (added 2026-07-19)
+## Phase 5 — Comments (added 2026-07-19, shipped 2026-07-21)
 
-`DetailQuestion.jsx` now has a comment section under each answer, but it's 100% mock — local
-component state only (`src/components/CommentSection.jsx`), resets on page reload, never
-touches the network. Needed to make it real:
+`DetailQuestion.jsx`'s comment section (`src/components/CommentSection.jsx`) is now real — no
+more mock/local-only state. Delivered:
 
-- [ ] `Comment` model: `Id`, `Content`, `CreatedAt`, `AnswerId` (FK → `Answer`), `UserId` (FK →
-  `User`). Simplest shape — one flat list per answer, no nested replies for now.
-- [ ] `GET /api/answer/{answerId}/comments` — list, include commenter name/picture like
-  `GetDetailQuestion` already does for answers.
-- [ ] `POST /api/answer/{answerId}/comments` — auth required (any authenticated user, not
-  role-gated — commenting isn't answering).
-- [ ] Consider whether `GetDetailQuestion` should just include comments inline per answer
-  (avoids an extra round trip per answer card) vs. a separate endpoint fetched on demand —
-  frontend's call once this exists.
-- [ ] `DELETE` for a comment (owner-or-Admin, same shape as `DeleteAnswer`) — not in the list
-  above originally, but needed now: FE added an admin/owner delete button to the mock
-  `CommentSection.jsx` (2026-07-21), currently just filtering local state since there's nothing
-  to call. Add this alongside the model/GET/POST work above rather than as a follow-up.
+- [x] `Comment` model: `Id`, `Content`, `CreatedAt`, `AnswerId` (FK → `Answer`, cascade delete),
+  `UserId` (FK → `User`, cascade delete). Flat list per answer, no nested replies.
+- [x] `GET /api/answer/{answerId}/comments` — list, includes commenter name/picture.
+- [x] `POST /api/answer/{answerId}/comments` — auth required, not role-gated (commenting isn't
+  answering). Returns the created comment so the FE can append without a refetch.
+- [x] `DELETE /api/answer/{answerId}/comments/{commentId}` — owner-or-Admin, same shape as
+  `DeleteAnswer`. FE's admin/owner delete button (added 2026-07-21, previously just filtering
+  local state) now calls this for real.
+- Went with a separate endpoint fetched on demand rather than inlining comments into
+  `GetDetailQuestion` — keeps that response light; each answer card fetches its own comments
+  independently. `GetDetailQuestion` does include a per-answer `CommentCount` though (cheap
+  aggregate, no join needed for a bare count).
 
 ## Notes for whoever picks this up
 

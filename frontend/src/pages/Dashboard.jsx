@@ -65,6 +65,16 @@ function AnsweredCard({ question, categoryTag }) {
         </div>
         <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">{answer.content}</p>
       </div>
+      <div className="flex items-center gap-4 text-outline">
+        <span className="flex items-center gap-1 font-label-sm text-label-sm">
+          <span className="material-symbols-outlined text-[16px]">visibility</span>
+          {question.views ?? 0}
+        </span>
+        <span className="flex items-center gap-1 font-label-sm text-label-sm">
+          <span className="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
+          {question.commentCount ?? 0}
+        </span>
+      </div>
     </NavLink>
   );
 }
@@ -115,23 +125,20 @@ function Dashboard() {
   }, [heroTypedLength, heroDeleting, heroTopicIndex, heroSearch]);
 
   useEffect(() => {
-    // GET /api/question does not include answers or a category, so we pull the most recent
-    // batch and fetch each one's detail to find out which are actually answered. Fine for a
-    // homepage widget at today's question volume; revisit if this ever needs to scale (see
-    // BE_PLAN.md for the isAnswered/category fields that would replace this).
+    // GET /api/question?status=answered gives the real answered set (no more guessing from
+    // "most recent 15"), but still no answer content/category in the list response, so each
+    // one's detail is fetched to get the actual answer text to preview. Fine for a homepage
+    // widget at today's question volume; revisit if this ever needs to scale further.
     const fetchAnswered = async () => {
       setLoadingAnswered(true);
       try {
-        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const listRes = await fetch(`${API_URL}/api/question?status=answered`, { credentials: "include" });
         if (!listRes.ok) throw new Error("Failed to fetch questions");
         const list = await listRes.json();
-        const recent = list.slice(0, 15);
 
         const details = await Promise.all(
-          recent.map((q) =>
+          list.map((q) =>
             fetch(`${API_URL}/api/question/${q.id}`)
-              // GET /api/question/{id} doesn't return createdAt (see QuestionControllers.cs
-              // GetDetailQuestion) — merge it back in from the list response, which has it.
               .then((r) => (r.ok ? r.json() : null))
               .then((detail) => (detail ? { ...q, ...detail } : null))
               .catch(() => null)
@@ -153,13 +160,13 @@ function Dashboard() {
     fetchAnswered();
   }, []);
 
-  // GET /api/question has no way yet to distinguish "latest answered" vs "important" vs
-  // "most read" — no answered-at timestamp, no importance signal, no view count (see
-  // BE_PLAN.md Phase 4). Until those exist, all three sections below intentionally draw from
-  // the same real answered-questions pool instead of faking a difference that isn't there.
+  // "Important" still has no dedicated backend signal beyond the Guru-authored-answer check
+  // already applied when building answeredQuestions, and "latest" is just recency (the list
+  // is already newest-first) — both still draw from the same pool. "Most read" is now a real,
+  // distinct sort now that Views is tracked (see BE_PLAN.md Phase 4).
   const latestAnswered = answeredQuestions.slice(0, 6);
   const filteredImportant = (category === "semua" ? answeredQuestions : answeredQuestions.filter((q) => q.category === category)).slice(0, 6);
-  const mostRead = answeredQuestions.slice(0, 6);
+  const mostRead = [...answeredQuestions].sort((a, b) => (b.views ?? 0) - (a.views ?? 0)).slice(0, 6);
   const heroPlaceholder = `Cari pertanyaan tentang ${HERO_SEARCH_TOPICS[heroTopicIndex].slice(0, heroTypedLength)}`;
 
   const handleHeroSearchSubmit = (e) => {

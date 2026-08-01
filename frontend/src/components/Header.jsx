@@ -65,21 +65,11 @@ function Header() {
 
     let cancelled = false;
 
-    // No "unanswered count" endpoint yet (see BE_PLAN.md) — same N+1 list-then-detail
-    // pattern used in AnswerQueue.jsx, just tallied instead of listed.
     const loadPendingCount = async () => {
       try {
-        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const listRes = await fetch(`${API_URL}/api/question?status=pending`, { credentials: "include" });
         const list = listRes.ok ? await listRes.json() : [];
-        const details = await Promise.all(
-          list.map((q) =>
-            fetch(`${API_URL}/api/question/${q.id}`)
-              .then((r) => (r.ok ? r.json() : null))
-              .catch(() => null)
-          )
-        );
-        const unanswered = details.filter((d) => d && d.answers && d.answers.length === 0).length;
-        if (!cancelled) setPendingAnswerCount(unanswered);
+        if (!cancelled) setPendingAnswerCount(list.length);
       } catch (err) {
         console.error(err);
       }

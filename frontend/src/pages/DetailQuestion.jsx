@@ -49,6 +49,11 @@ function DetailQuestion() {
       .then((data) => {
         setQuestion(data);
       });
+
+    // Fire-and-forget: records a real view for this specific visit. Deliberately not the same
+    // request as the fetch above — that endpoint is also reused as a batch data-fetch
+    // workaround elsewhere (Dashboard.jsx etc.), which must never count as a view.
+    fetch(`${API_URL}/api/question/${id}/view`, { method: "POST" }).catch((err) => console.error(err));
   }, [id]);
 
   useEffect(() => {
@@ -66,17 +71,7 @@ function DetailQuestion() {
 
         if (me?.role === "Guru") {
           // For an ustadz, "related" isn't useful — what matters is what to answer next.
-          // No "unanswered" filter on the backend yet (see BE_PLAN.md), so same N+1
-          // list-then-detail pattern as AnswerQueue.jsx to find questions with zero answers.
-          const details = await Promise.all(
-            others.map((q) =>
-              fetch(`${API_URL}/api/question/${q.id}`)
-                .then((r) => (r.ok ? r.json() : null))
-                .then((detail) => (detail ? { ...q, ...detail } : null))
-                .catch(() => null)
-            )
-          );
-          const unanswered = details.filter((d) => d && d.answers && d.answers.length === 0);
+          const unanswered = others.filter((q) => !q.isAnswered);
           if (!cancelled) setRelatedQuestions(unanswered.slice(0, RELATED_LIMIT));
           return;
         }
@@ -336,7 +331,7 @@ function DetailQuestion() {
                         </div>
 
                         <div className="pt-12">
-                          <CommentSection />
+                          <CommentSection answerId={item.id} />
                         </div>
                       </div>
                     ))}

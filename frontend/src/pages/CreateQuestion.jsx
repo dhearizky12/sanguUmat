@@ -22,9 +22,9 @@ function CreateQuestion() {
       return;
     }
 
-    // No "my questions" endpoint yet (see BE_PLAN.md) — filter the full list client-side, then
-    // pull each one's detail to know whether it's been answered. Fine at the scale of "one
-    // person's own questions"; swap for GET /api/question/mine once that ships.
+    // No "my questions" endpoint yet (see BE_PLAN.md) — filter the full list client-side.
+    // isAnswered now comes straight from GET /api/question, so no per-item detail fetch needed
+    // any more; swap this filter for GET /api/question/mine once that ships.
     let cancelled = false;
 
     const fetchMine = async () => {
@@ -35,17 +35,8 @@ function CreateQuestion() {
         const list = await listRes.json();
         const mine = list.filter((q) => q.userId === me.id);
 
-        const details = await Promise.all(
-          mine.map((q) =>
-            fetch(`${API_URL}/api/question/${q.id}`)
-              .then((r) => (r.ok ? r.json() : null))
-              .then((detail) => (detail ? { ...q, ...detail } : null))
-              .catch(() => null),
-          ),
-        );
-
         if (!cancelled) {
-          setMyQuestions(details.filter(Boolean));
+          setMyQuestions(mine);
         }
       } catch (err) {
         console.error(err);
@@ -151,7 +142,7 @@ function CreateQuestion() {
               ) : (
                 <div className="divide-y divide-outline-variant/50">
                   {myQuestions.map((q) => {
-                    const isAnswered = q.answers && q.answers.length > 0;
+                    const isAnswered = q.isAnswered;
                     const category = matchCategory(`${q.title} ${q.content}`);
 
                     return (

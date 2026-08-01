@@ -101,6 +101,96 @@ namespace backend.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
+
+        [HttpGet("{answerId}/comments")]
+        public async Task<IActionResult> GetComments(int answerId)
+        {
+            var comments = await _db.Comments
+                .Where(x => x.AnswerId == answerId)
+                .Include(x => x.User)
+                .OrderBy(x => x.CreatedAt)
+                .Select(x => new
+                {
+                    x.Id,
+                    x.Content,
+                    x.CreatedAt,
+                    UserId = x.UserId,
+                    UserName = x.User.Name,
+                    UserPicture = x.User.Picture
+                })
+                .ToListAsync();
+
+            return Ok(comments);
+        }
+
+        [HttpPost("{answerId}/comments")]
+        public async Task<IActionResult> CreateComment(int answerId, [FromBody] CreateCommentRequest request)
+        {
+            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var answer = await _db.Answers.FirstOrDefaultAsync(x => x.Id == answerId);
+
+            if (answer == null)
+            {
+                return NotFound();
+            }
+
+            var comment = new Comment
+            {
+                Content = request.Content,
+                CreatedAt = DateTime.UtcNow,
+                AnswerId = answerId,
+                UserId = user.Id
+            };
+
+            _db.Comments.Add(comment);
+            await _db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                comment.Id,
+                comment.Content,
+                comment.CreatedAt,
+                UserId = user.Id,
+                UserName = user.Name,
+                UserPicture = user.Picture
+            });
+        }
+
+        [HttpDelete("{answerId}/comments/{commentId}")]
+        public async Task<IActionResult> DeleteComment(int answerId, int commentId)
+        {
+            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var comment = await _db.Comments.FirstOrDefaultAsync(x => x.Id == commentId && x.AnswerId == answerId);
+
+            if (comment == null)
+            {
+                return NotFound();
+            }
+
+            //hanya pemilik komentar atau admin yang bisa hapus
+            if (comment.UserId != user.Id && user.Role != "Admin")
+            {
+                return Forbid();
+            }
+
+            _db.Comments.Remove(comment);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
     }
-    
+
 }

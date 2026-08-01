@@ -15,29 +15,16 @@ function AnswerQueue() {
   const [category, setCategory] = useState("semua");
 
   useEffect(() => {
-    // No "unanswered questions" endpoint yet (see BE_PLAN.md) — same N+1 pattern used
-    // elsewhere: fetch the list, then each one's detail to find out which have zero answers.
     let cancelled = false;
 
     const fetchUnanswered = async () => {
       setLoading(true);
       try {
-        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const listRes = await fetch(`${API_URL}/api/question?status=pending`, { credentials: "include" });
         if (!listRes.ok) throw new Error("Failed to fetch questions");
         const list = await listRes.json();
 
-        const details = await Promise.all(
-          list.map((q) =>
-            fetch(`${API_URL}/api/question/${q.id}`)
-              .then((r) => (r.ok ? r.json() : null))
-              .then((detail) => (detail ? { ...q, ...detail } : null))
-              .catch(() => null)
-          )
-        );
-
-        const unanswered = details
-          .filter((d) => d && d.answers && d.answers.length === 0)
-          .map((d) => ({ ...d, category: matchCategory(`${d.title} ${d.content}`) }));
+        const unanswered = list.map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
 
         if (!cancelled) {
           setQuestions(unanswered);
