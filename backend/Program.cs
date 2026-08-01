@@ -42,8 +42,12 @@ builder.Services.AddAuthentication(options =>
 .AddCookie()
 .AddGoogle(options =>
 {
-    options.ClientId = "131261563528-vpq6998o8hpek6i46e0sifef3lkvtac4.apps.googleusercontent.com";
-    options.ClientSecret = "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";
+    // Dev: `dotnet user-secrets set "Authentication:Google:ClientId" "..."` (and ClientSecret).
+    // Prod: env vars `Authentication__Google__ClientId` / `Authentication__Google__ClientSecret`.
+    options.ClientId = builder.Configuration["Authentication:Google:ClientId"]
+        ?? throw new InvalidOperationException("Authentication:Google:ClientId is not configured.");
+    options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]
+        ?? throw new InvalidOperationException("Authentication:Google:ClientSecret is not configured.");
 });
 
 

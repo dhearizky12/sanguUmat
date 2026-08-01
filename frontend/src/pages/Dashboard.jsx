@@ -10,7 +10,8 @@ import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 import { formatDate } from "../lib/date";
-import { CATEGORIES, matchCategory, categoryLabel } from "../lib/category";
+import { formatCount } from "../lib/format";
+import { CATEGORIES, categoryLabel } from "../lib/category";
 
 function getFeaturedAnswer(question) {
   return question.answers.find((a) => a.role === "Guru") ?? question.answers[0];
@@ -47,7 +48,7 @@ function AnsweredCard({ question, categoryTag }) {
         )}
         <span className="text-outline font-label-sm text-label-sm ml-auto">{formatDate(question.createdAt)}</span>
       </div>
-      <h3 className="font-body-lg text-body-lg text-on-surface font-medium line-clamp-2">{question.title}</h3>
+      <h3 className="font-body-lg text-body-lg text-on-surface font-medium line-clamp-2 min-h-14">{question.title}</h3>
       <div className="pl-4 border-l-2 border-secondary-fixed-dim bg-surface-container-low/50 p-4 rounded-r-lg">
         <div className="flex items-center gap-2 mb-2">
           <img
@@ -58,21 +59,21 @@ function AnsweredCard({ question, categoryTag }) {
           />
           <span className="font-label-sm text-label-sm text-on-surface font-semibold">{answer.userName}</span>
           {answer.role === "Guru" && (
-            <span className="material-symbols-outlined text-secondary-container text-[16px]" data-icon="verified">
+            <span className="material-symbols-outlined icon-fill text-secondary-container text-[16px]" data-icon="verified">
               verified
             </span>
           )}
         </div>
-        <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2">{answer.content}</p>
+        <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2 min-h-12">{answer.content}</p>
       </div>
-      <div className="flex items-center gap-4 text-outline">
+      <div className="flex items-center gap-4 text-outline mt-auto">
         <span className="flex items-center gap-1 font-label-sm text-label-sm">
           <span className="material-symbols-outlined text-[16px]">visibility</span>
-          {question.views ?? 0}
+          {formatCount(question.views)}
         </span>
         <span className="flex items-center gap-1 font-label-sm text-label-sm">
           <span className="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
-          {question.commentCount ?? 0}
+          {formatCount(question.commentCount)}
         </span>
       </div>
     </NavLink>
@@ -126,9 +127,9 @@ function Dashboard() {
 
   useEffect(() => {
     // GET /api/question?status=answered gives the real answered set (no more guessing from
-    // "most recent 15"), but still no answer content/category in the list response, so each
-    // one's detail is fetched to get the actual answer text to preview. Fine for a homepage
-    // widget at today's question volume; revisit if this ever needs to scale further.
+    // "most recent 15"), but still no answer content in the list response, so each one's
+    // detail is fetched to get the actual answer text to preview. Fine for a homepage widget
+    // at today's question volume; revisit if this ever needs to scale further.
     const fetchAnswered = async () => {
       setLoadingAnswered(true);
       try {
@@ -145,9 +146,7 @@ function Dashboard() {
           )
         );
 
-        const answered = details
-          .filter((d) => d && d.answers && d.answers.length > 0)
-          .map((d) => ({ ...d, category: matchCategory(`${d.title} ${d.content}`) }));
+        const answered = details.filter((d) => d && d.answers && d.answers.length > 0);
 
         setAnsweredQuestions(answered);
       } catch (err) {

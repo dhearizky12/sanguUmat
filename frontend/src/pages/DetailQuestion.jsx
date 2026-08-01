@@ -9,7 +9,7 @@ import EmptyState from "../components/EmptyState";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
-import { matchCategory, categoryLabel } from "../lib/category";
+import { categoryLabel } from "../lib/category";
 import { formatDate } from "../lib/date";
 
 const RELATED_LIMIT = 5;
@@ -22,6 +22,9 @@ function DetailQuestion() {
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [editingAnswerId, setEditingAnswerId] = useState(null);
+  const [editAnswerContent, setEditAnswerContent] = useState("");
+  const [savingAnswerEdit, setSavingAnswerEdit] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const { me } = useAuth();
@@ -40,6 +43,49 @@ function DetailQuestion() {
       window.location.reload();
     } else {
       alert("Gagal menghapus jawaban");
+    }
+  };
+
+  const startEditAnswer = (item) => {
+    setEditingAnswerId(item.id);
+    setEditAnswerContent(item.content);
+  };
+
+  const cancelEditAnswer = () => {
+    setEditingAnswerId(null);
+  };
+
+  const saveAnswerEdit = async (answerId) => {
+    if (!editAnswerContent.trim()) {
+      alert("Jawaban tidak boleh kosong.");
+      return;
+    }
+
+    setSavingAnswerEdit(true);
+    try {
+      const response = await fetch(`${API_URL}/api/answer/${answerId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: editAnswerContent }),
+      });
+
+      if (response.ok) {
+        setQuestion((prev) => ({
+          ...prev,
+          answers: prev.answers.map((a) => (a.id === answerId ? { ...a, content: editAnswerContent } : a)),
+        }));
+        setEditingAnswerId(null);
+      } else {
+        alert("Gagal menyimpan perubahan jawaban.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menyimpan perubahan jawaban.");
+    } finally {
+      setSavingAnswerEdit(false);
     }
   };
 
@@ -76,12 +122,11 @@ function DetailQuestion() {
           return;
         }
 
-        // Regular users: same category (via the shared matchCategory heuristic, see
-        // lib/category.js) first, then fill the rest with the most recent other questions.
-        const currentCategory = matchCategory(`${question.title} ${question.content}`);
-        const withCategory = others.map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
-        const sameCategory = currentCategory ? withCategory.filter((q) => q.category === currentCategory) : [];
-        const rest = withCategory.filter((q) => !sameCategory.includes(q));
+        // Regular users: same category first, then fill the rest with the most recent other
+        // questions.
+        const currentCategory = question.category;
+        const sameCategory = currentCategory ? others.filter((q) => q.category === currentCategory) : [];
+        const rest = others.filter((q) => !sameCategory.includes(q));
         if (!cancelled) setRelatedQuestions([...sameCategory, ...rest].slice(0, RELATED_LIMIT));
       } catch (err) {
         console.error(err);
@@ -188,7 +233,7 @@ function DetailQuestion() {
     }
   };
 
-  const category = question ? matchCategory(`${question.title} ${question.content}`) : null;
+  const category = question?.category ?? null;
 
   return (
     <div className="font-body-md min-h-screen flex flex-col">
@@ -310,24 +355,60 @@ function DetailQuestion() {
                                 <div className="flex items-center gap-1.5">
                                   <strong className="font-label-sm text-label-sm text-on-surface">{item.userName}</strong>
                                   {item.role === "Guru" && (
-                                    <span className="material-symbols-outlined text-secondary-container text-[16px]">verified</span>
+                                    <span className="material-symbols-outlined icon-fill text-secondary-container text-[16px]">verified</span>
                                   )}
                                 </div>
                                 <p className="text-[12px] text-outline">{item.role === "Guru" ? "Guru" : "Murid"}</p>
                               </div>
                             </div>
-                            {(me?.id === item.userId || me?.role === "Admin") && (
-                              <button
-                                onClick={() => deleteAnswer(item.id)}
-                                title="Hapus Jawaban"
-                                className="w-9 h-9 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
+                            {(me?.id === item.userId || me?.role === "Admin") && editingAnswerId !== item.id && (
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => startEditAnswer(item)}
+                                  title="Edit Jawaban"
+                                  className="w-9 h-9 rounded-full flex items-center justify-center text-primary-container hover:bg-surface-container-low transition cursor-pointer"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                                <button
+                                  onClick={() => deleteAnswer(item.id)}
+                                  title="Hapus Jawaban"
+                                  className="w-9 h-9 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              </div>
                             )}
                           </div>
 
-                          <RichContent text={item.content} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
+                          {editingAnswerId === item.id ? (
+                            <div className="space-y-3">
+                              <textarea
+                                value={editAnswerContent}
+                                onChange={(e) => setEditAnswerContent(e.target.value)}
+                                className="w-full border border-outline-variant rounded-2xl p-4 min-h-[160px] outline-none focus:border-primary-container resize-none font-body-md text-body-md"
+                              />
+                              <div className="flex justify-end gap-3">
+                                <button
+                                  type="button"
+                                  onClick={cancelEditAnswer}
+                                  className="text-on-surface-variant px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-surface-container-low transition-colors"
+                                >
+                                  Batal
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => saveAnswerEdit(item.id)}
+                                  disabled={savingAnswerEdit}
+                                  className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-bold hover:bg-tertiary transition-colors disabled:opacity-60"
+                                >
+                                  {savingAnswerEdit ? "Menyimpan..." : "Simpan"}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <RichContent text={item.content} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
+                          )}
                         </div>
 
                         <div className="pt-12">

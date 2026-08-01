@@ -7,7 +7,7 @@ import EmptyState from "../components/EmptyState";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 import { formatDate } from "../lib/date";
-import { CATEGORIES, matchCategory, categoryLabel } from "../lib/category";
+import { CATEGORIES, categoryLabel } from "../lib/category";
 
 function AnswerQueue() {
   const [questions, setQuestions] = useState([]);
@@ -24,10 +24,8 @@ function AnswerQueue() {
         if (!listRes.ok) throw new Error("Failed to fetch questions");
         const list = await listRes.json();
 
-        const unanswered = list.map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
-
         if (!cancelled) {
-          setQuestions(unanswered);
+          setQuestions(list);
         }
       } catch (err) {
         console.error(err);

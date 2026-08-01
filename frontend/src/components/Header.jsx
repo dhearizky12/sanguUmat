@@ -9,10 +9,9 @@ function isMenuActive(pathname, matchPaths) {
 }
 
 function Header() {
-  const { isAuthenticated, me } = useAuth();
+  const { isAuthenticated, me, profile } = useAuth();
   const location = useLocation();
 
-  const [profile, setProfile]= useState(null);
   const [pendingAnswerCount, setPendingAnswerCount] = useState(null);
   const isAdmin = me?.role === "Admin";
 
@@ -40,23 +39,6 @@ function Header() {
       matchPaths: ["/live"],
     },
   ];
-
-  useEffect(() => {
-    if (!isAuthenticated)
-    {
-      return;
-    }
-    fetch(
-        `${API_URL}/api/auth/profile`,
-        {
-          credentials: "include"
-        }
-      )
-      .then(res => res.json())
-      .then(data => {
-        setProfile(data);
-      });
-  }, [isAuthenticated]);
 
   useEffect(() => {
     if (me?.role !== "Guru") {
@@ -135,15 +117,15 @@ function Header() {
             </Link>
             )}
           {isAdmin && (
-            // No /admin page built yet (see BE_PLAN.md Phase 2) — show the slot so the flag
-            // is verifiable, but don't link anywhere real until the page exists.
-            <span
-              title="Segera hadir"
-              className="flex items-center gap-2 bg-surface-container-high text-outline font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full cursor-not-allowed select-none text-nowrap"
+            <Link
+              to="/admin/users"
+              className={`flex items-center gap-2 bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full hover:bg-surface-container-highest transition-colors shadow-sm cursor-pointer text-nowrap ${
+                isMenuActive(location.pathname, ["/admin"]) ? "ring-2 ring-primary-container/50" : ""
+              }`}
             >
               <span className="material-symbols-outlined text-[18px]">shield_person</span>
               <span>Panel Admin</span>
-            </span>
+            </Link>
           )}
           {isAuthenticated ? (
             <Link to="/profile" className="cursor-pointer">
@@ -151,7 +133,7 @@ function Header() {
                 alt="Foto profil"
                 className="w-10 h-10 rounded-full border border-outline-variant object-cover"
                 data-alt="profile picture"
-                src={profile?.picture ? API_URL + profile.picture : "/default-avatar.png"}
+                src={profile?.picture || "/default-avatar.png"}
                 onError={handleAvatarError}
               />
             </Link>

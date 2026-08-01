@@ -14,6 +14,7 @@ import CreateQuestion from "./pages/CreateQuestion";
 import AnswerQueue from "./pages/AnswerQueue";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import AdminUsers from "./pages/AdminUsers";
 
 function App() {
   return (
@@ -44,6 +45,11 @@ function App() {
           {/* Guru only */}
           <Route element={<RoleGuard allow={["Guru"]} />}>
             <Route path="/jawab-pertanyaan" element={<AnswerQueue />} />
+          </Route>
+
+          {/* Admin only */}
+          <Route element={<RoleGuard allow={["Admin"]} />}>
+            <Route path="/admin/users" element={<AdminUsers />} />
           </Route>
         </Routes>
       </BrowserRouter>

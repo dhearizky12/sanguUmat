@@ -6,7 +6,7 @@ import QuestionCard from "../components/QuestionCard";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
 import { API_URL } from "../lib/api";
-import { CATEGORIES, matchCategory } from "../lib/category";
+import { CATEGORIES } from "../lib/category";
 
 function Questions() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -14,6 +14,7 @@ function Questions() {
   const [inputValue, setInputValue] = useState(search);
   const [syncedSearch, setSyncedSearch] = useState(search);
   const [category, setCategory] = useState("semua");
+  const [status, setStatus] = useState("semua");
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -78,8 +79,9 @@ function Questions() {
     setInputValue(e.target.value);
   };
 
-  const categorized = questions.map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
-  const filtered = category === "semua" ? categorized : categorized.filter((q) => q.category === category);
+  const byCategory = category === "semua" ? questions : questions.filter((q) => q.category === category);
+  const filtered =
+    status === "semua" ? byCategory : byCategory.filter((q) => (status === "terjawab" ? q.isAnswered : !q.isAnswered));
 
   return (
     <div className="font-body-md min-h-screen flex flex-col">
@@ -108,7 +110,7 @@ function Questions() {
             />
           </div>
 
-          <div className="flex flex-wrap gap-2 justify-center mb-6" role="radiogroup" aria-label="Filter kategori">
+          <div className="flex flex-wrap gap-2 justify-center mb-4" role="radiogroup" aria-label="Filter kategori">
             {CATEGORIES.map((cat) => (
               <button
                 key={cat.key}
@@ -123,6 +125,30 @@ function Questions() {
                 }`}
               >
                 {cat.label}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex flex-wrap gap-2 justify-center mb-6" role="radiogroup" aria-label="Filter status">
+            {[
+              { key: "semua", label: "Semua Status" },
+              { key: "terjawab", label: "Terjawab", icon: "check_circle" },
+              { key: "menunggu", label: "Menunggu", icon: "schedule" },
+            ].map((opt) => (
+              <button
+                key={opt.key}
+                type="button"
+                role="radio"
+                aria-checked={status === opt.key}
+                onClick={() => setStatus(opt.key)}
+                className={`flex items-center gap-1 px-4 py-2 rounded-full font-label-sm text-label-sm border transition-colors ${
+                  status === opt.key
+                    ? "bg-secondary-container text-on-secondary-container border-secondary-container"
+                    : "bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container-low"
+                }`}
+              >
+                {opt.icon && <span className="material-symbols-outlined text-[16px]">{opt.icon}</span>}
+                {opt.label}
               </button>
             ))}
           </div>

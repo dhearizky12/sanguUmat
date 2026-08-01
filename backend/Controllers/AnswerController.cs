@@ -1,9 +1,9 @@
 using backend.Data;
 using backend.DTOs;
+using backend.Extensions;
 using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Security.Claims;
 
 namespace backend.Controllers
 {
@@ -23,15 +23,7 @@ namespace backend.Controllers
             int questionId,
             [FromBody] CreateAnswerRequest request)
         {
-            var googleId =
-                User.FindFirst(
-                    ClaimTypes.NameIdentifier
-                )?.Value;
-
-            var user =
-                await _db.Users
-                    .FirstOrDefaultAsync(x =>
-                        x.GoogleId == googleId);
+            var user = await this.GetCurrentUserAsync(_db);
 
             if (user == null)
             {
@@ -39,7 +31,7 @@ namespace backend.Controllers
             }
 
             // HANYA GURU
-            if (user.Role != "Guru")
+            if (user.Role != Roles.Guru)
             {
                 return Forbid();
             }
@@ -76,8 +68,7 @@ namespace backend.Controllers
         [HttpDelete("{answerId}")]
         public async Task<IActionResult>DeleteAnswer( int answerId )
         {
-            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _db.Users.FirstOrDefaultAsync( x => x.GoogleId == googleId );
+            var user = await this.GetCurrentUserAsync(_db);
             if ( user == null )
             {
                 return Unauthorized();
@@ -92,12 +83,39 @@ namespace backend.Controllers
 
             //hanya pemilik jawaban atau admin yang bisa hapus
 
-            if( answer.UserId != user.Id && user.Role != "Admin" )
+            if( answer.UserId != user.Id && user.Role != Roles.Admin )
             {
                 return Forbid();
             }
 
             _db.Answers.Remove(answer);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
+
+        [HttpPut("{answerId}")]
+        public async Task<IActionResult> UpdateAnswer(int answerId, [FromBody] UpdateAnswerRequest request)
+        {
+            var user = await this.GetCurrentUserAsync(_db);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var answer = await _db.Answers.FirstOrDefaultAsync(x => x.Id == answerId);
+
+            if (answer == null)
+            {
+                return NotFound();
+            }
+
+            //hanya pemilik jawaban atau admin yang bisa edit
+            if (answer.UserId != user.Id && user.Role != Roles.Admin)
+            {
+                return Forbid();
+            }
+
+            answer.Content = request.Content;
             await _db.SaveChangesAsync();
             return Ok();
         }
@@ -126,8 +144,7 @@ namespace backend.Controllers
         [HttpPost("{answerId}/comments")]
         public async Task<IActionResult> CreateComment(int answerId, [FromBody] CreateCommentRequest request)
         {
-            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+            var user = await this.GetCurrentUserAsync(_db);
 
             if (user == null)
             {
@@ -166,8 +183,7 @@ namespace backend.Controllers
         [HttpDelete("{answerId}/comments/{commentId}")]
         public async Task<IActionResult> DeleteComment(int answerId, int commentId)
         {
-            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+            var user = await this.GetCurrentUserAsync(_db);
 
             if (user == null)
             {
@@ -182,7 +198,7 @@ namespace backend.Controllers
             }
 
             //hanya pemilik komentar atau admin yang bisa hapus
-            if (comment.UserId != user.Id && user.Role != "Admin")
+            if (comment.UserId != user.Id && user.Role != Roles.Admin)
             {
                 return Forbid();
             }

@@ -1,6 +1,5 @@
 -- Local dev seed data: 2 dummy "Guru" users, 2 dummy askers, and 10 answered Q&A pairs
--- spanning the 5 categories used by the frontend's client-side category filter (see
--- Dashboard.jsx / BE_PLAN.md Phase 4 — there's no real Category column yet).
+-- spanning the 5 real Category values (see BE_PLAN.md Phase 4 / src/lib/category.js).
 --
 -- Not idempotent — running this twice will insert duplicate rows, since GoogleId has no
 -- unique constraint in the schema. Intended for a fresh/local dev database only, never prod.
@@ -16,49 +15,63 @@ VALUES
   ('seed-user-budi', 'budi.santoso@example.com', 'Budi Santoso', NULL, NULL, NULL, 'User', now(), now(), now(), true),
   ('seed-user-siti', 'siti.aminah@example.com', 'Siti Aminah', NULL, NULL, NULL, 'User', now(), now(), now(), true);
 
--- Questions, most recent first (CreatedAt staggered so ordering in the UI is sensible)
-INSERT INTO "Questions" ("Title", "Content", "CreatedAt", "UserId")
+-- Questions, most recent first (CreatedAt staggered so ordering in the UI is sensible).
+-- Category values match src/lib/category.js's keys directly (real field now, see
+-- BE_PLAN.md Phase 4 -- these used to be derived client-side via the matchCategory()
+-- heuristic; now assigned explicitly so a fresh setup matches what the live dev DB already
+-- has backfilled).
+INSERT INTO "Questions" ("Title", "Content", "Category", "CreatedAt", "UserId")
 SELECT * FROM (VALUES
   ('Apakah sah sholat jika imam berbicara bahasa selain Arab saat khutbah Jumat?',
    'Saya sering mendengar khutbah Jumat disampaikan dalam bahasa Indonesia. Apakah hal ini mempengaruhi keabsahan sholat Jumat?',
+   'sholat',
    now() - interval '1 day', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-budi')),
 
   ('Bagaimana hukum menjamak sholat karena alasan pekerjaan?',
    'Saya bekerja dengan jadwal shift yang padat sehingga sulit sholat tepat waktu. Apakah boleh menjamak sholat karena alasan pekerjaan?',
+   'sholat',
    now() - interval '2 days', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-siti')),
 
   ('Apakah menelan air liur membatalkan puasa?',
    'Saat berpuasa saya khawatir menelan air liur sendiri dapat membatalkan puasa. Apakah ini benar?',
+   'puasa',
    now() - interval '3 days', (SELECT "Id" FROM "Users" WHERE "Email" = 'fatikhunnizam@gmail.com' LIMIT 1)),
 
   ('Bolehkah berpuasa sunnah tanpa sahur?',
    'Terkadang saya bangun kesiangan dan tidak sempat sahur, apakah masih boleh melanjutkan niat puasa sunnah?',
+   'puasa',
    now() - interval '4 days', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-budi')),
 
   ('Bagaimana cara menghitung zakat penghasilan yang benar?',
    'Saya seorang karyawan dengan gaji bulanan. Bagaimana cara menghitung zakat penghasilan yang benar sesuai syariat?',
+   'zakat',
    now() - interval '5 days', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-siti')),
 
   ('Apakah harta warisan wajib dizakati?',
    'Saya baru menerima harta warisan dari orang tua. Apakah harta tersebut wajib dizakati?',
+   'zakat',
    now() - interval '6 days', (SELECT "Id" FROM "Users" WHERE "Email" = 'fatikhunnizam@gmail.com' LIMIT 1)),
 
   ('Apa saja syarat sah pernikahan menurut syariat Islam?',
    'Saya berencana menikah dalam waktu dekat. Apa saja rukun dan syarat yang wajib dipenuhi agar pernikahan sah secara syariat?',
+   'keluarga',
    now() - interval '7 days', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-budi')),
 
   ('Bagaimana adab menjaga keharmonisan rumah tangga menurut Islam?',
    'Apa saja anjuran syariat untuk menjaga keharmonisan dan komunikasi yang baik antara suami istri?',
+   'keluarga',
    now() - interval '8 days', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-siti')),
 
   ('Apakah diperbolehkan berinvestasi di reksa dana indeks yang memuat sebagian kecil saham tidak sesuai syariah?',
    'Saya ingin berinvestasi namun ragu karena sebagian portofolio reksa dana indeks berisi saham perusahaan yang kurang sesuai syariah.',
+   'muamalah',
    now() - interval '9 days', (SELECT "Id" FROM "Users" WHERE "Email" = 'fatikhunnizam@gmail.com' LIMIT 1)),
 
   ('Bagaimana hukum jual beli dengan sistem cicilan (kredit) dalam Islam?',
    'Apakah jual beli secara kredit dengan tambahan harga dibanding harga tunai termasuk riba?',
+   'muamalah',
    now() - interval '10 days', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-budi'))
-) AS q(title, content, created_at, user_id);
+) AS q(title, content, category, created_at, user_id);
 
 -- Answers, one per seeded question above, alternating between the two dummy Guru users.
 -- Written WhatsApp-style (JAWABAN/PENJELASAN/REFERENSI/KESIMPULAN) to match how real answers
@@ -272,16 +285,18 @@ KESIMPULAN
 -- original title/PERTANYAAN preamble (restating this same question) was trimmed off for the
 -- same reason as the other 10 answers above — the page already shows the question separately.
 
-INSERT INTO "Questions" ("Title", "Content", "CreatedAt", "UserId")
+INSERT INTO "Questions" ("Title", "Content", "Category", "CreatedAt", "UserId")
 VALUES
   ('Hukum Mengadakan Pernikahan di Bulan Muharram/Suro',
    'Bu Ustazah. Tolong dijelaskan hukum mengadakan acara pernikahan di bulan muharam atau suro? Apakah benar, dalam islam ada larangan tersebut?',
+   'keluarga',
    now() - interval '6 hours', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-siti'));
 
-INSERT INTO "Questions" ("Title", "Content", "CreatedAt", "UserId")
+INSERT INTO "Questions" ("Title", "Content", "Category", "CreatedAt", "UserId")
 VALUES
   ('Hukum Suami Menolak Ajakan Istri untuk Berhubungan Intim',
    'Apakah suami berdosa jika menolak ajakan istrinya untuk berhubungan intim? Misalnya istri yang menginginkan hubungan intim, tetapi suami menolak karena capek, sibuk, atau alasan lainnya.',
+   'keluarga',
    now() - interval '11 hours', (SELECT "Id" FROM "Users" WHERE "GoogleId" = 'seed-user-budi'));
 
 INSERT INTO "Answers" ("Content", "CreatedAt", "QuestionId", "UserId")
