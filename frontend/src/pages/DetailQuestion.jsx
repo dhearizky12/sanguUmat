@@ -56,23 +56,49 @@ function DetailQuestion() {
       return;
     }
 
-    // No "related questions" endpoint on the backend — approximate it client-side: same
-    // category (via the shared matchCategory heuristic, see lib/category.js) first, then fill
-    // the rest with the most recent other questions.
-    fetch(`${API_URL}/api/question`, { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((list) => {
+    let cancelled = false;
+
+    const loadRelated = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const list = res.ok ? await res.json() : [];
+        const others = list.filter((q) => String(q.id) !== String(id));
+
+        if (me?.role === "Guru") {
+          // For an ustadz, "related" isn't useful — what matters is what to answer next.
+          // No "unanswered" filter on the backend yet (see BE_PLAN.md), so same N+1
+          // list-then-detail pattern as AnswerQueue.jsx to find questions with zero answers.
+          const details = await Promise.all(
+            others.map((q) =>
+              fetch(`${API_URL}/api/question/${q.id}`)
+                .then((r) => (r.ok ? r.json() : null))
+                .then((detail) => (detail ? { ...q, ...detail } : null))
+                .catch(() => null)
+            )
+          );
+          const unanswered = details.filter((d) => d && d.answers && d.answers.length === 0);
+          if (!cancelled) setRelatedQuestions(unanswered.slice(0, RELATED_LIMIT));
+          return;
+        }
+
+        // Regular users: same category (via the shared matchCategory heuristic, see
+        // lib/category.js) first, then fill the rest with the most recent other questions.
         const currentCategory = matchCategory(`${question.title} ${question.content}`);
+        const withCategory = others.map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
+        const sameCategory = currentCategory ? withCategory.filter((q) => q.category === currentCategory) : [];
+        const rest = withCategory.filter((q) => !sameCategory.includes(q));
+        if (!cancelled) setRelatedQuestions([...sameCategory, ...rest].slice(0, RELATED_LIMIT));
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-        const others = list.filter((q) => String(q.id) !== String(id)).map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
+    loadRelated();
 
-        const sameCategory = currentCategory ? others.filter((q) => q.category === currentCategory) : [];
-        const rest = others.filter((q) => !sameCategory.includes(q));
-
-        setRelatedQuestions([...sameCategory, ...rest].slice(0, RELATED_LIMIT));
-      })
-      .catch((err) => console.error(err));
-  }, [question, id]);
+    return () => {
+      cancelled = true;
+    };
+  }, [question, id, me?.role]);
 
   const submitAnswer = async () => {
     const response = await fetch(`${API_URL}/api/answer/${id}`, {
@@ -93,6 +119,8 @@ function DetailQuestion() {
   };
 
   const canEditQuestion = me?.id === question?.userId && question?.answers.length === 0;
+  // Admin moderation isn't subject to the zero-answers rule — see BE_PLAN.md Phase 3.
+  const canDeleteQuestion = canEditQuestion || me?.role === "Admin";
 
   const startEditQuestion = () => {
     setEditTitle(question.title);
@@ -148,8 +176,6 @@ function DetailQuestion() {
     const confirmDelete = window.confirm("Hapus pertanyaan ini? Tindakan ini tidak bisa dibatalkan.");
     if (!confirmDelete) return;
 
-    // DELETE /api/question/{id} doesn't exist on the backend yet either (see BE_PLAN.md) —
-    // same situation as the edit above: wired to the real endpoint, fails gracefully for now.
     const response = await fetch(`${API_URL}/api/question/${id}`, {
       method: "DELETE",
       credentials: "include",
@@ -158,8 +184,12 @@ function DetailQuestion() {
     if (response.ok) {
       alert("Pertanyaan berhasil dihapus");
       navigate("/questions");
+    } else if (response.status === 409) {
+      alert("Pertanyaan sudah memiliki jawaban dan tidak bisa dihapus.");
+    } else if (response.status === 403) {
+      alert("Anda tidak memiliki izin untuk menghapus pertanyaan ini.");
     } else {
-      alert("Gagal menghapus pertanyaan. Fitur ini belum didukung oleh server.");
+      alert("Gagal menghapus pertanyaan. Silakan coba lagi.");
     }
   };
 
@@ -177,29 +207,33 @@ function DetailQuestion() {
               {/* QUESTION — a page header, not a card, so it reads as the top-level subject
                 rather than looking identical to the answer list below it. */}
               <div className="border-b border-outline-variant pb-8">
-                <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex items-center justify-between gap-3 mb-4">
                   <span className="inline-block px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
                     {categoryLabel(category)}
                   </span>
 
-                  {canEditQuestion && !isEditing && (
+                  {(canEditQuestion || canDeleteQuestion) && !isEditing && (
                     <div className="ml-auto flex items-center gap-4">
-                      <button
-                        onClick={startEditQuestion}
-                        title="Edit Pertanyaan"
-                        className="flex items-center gap-1 text-primary-container font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">edit</span>
-                        Edit
-                      </button>
-                      <button
-                        onClick={deleteQuestion}
-                        title="Hapus Pertanyaan"
-                        className="flex items-center gap-1 text-error font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">delete</span>
-                        Hapus
-                      </button>
+                      {canEditQuestion && (
+                        <button
+                          onClick={startEditQuestion}
+                          title="Edit Pertanyaan"
+                          className="flex items-center gap-1 text-primary-container font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                          Edit
+                        </button>
+                      )}
+                      {canDeleteQuestion && (
+                        <button
+                          onClick={deleteQuestion}
+                          title="Hapus Pertanyaan"
+                          className="flex items-center gap-1 text-error font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                          Hapus
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -287,7 +321,7 @@ function DetailQuestion() {
                                 <p className="text-[12px] text-outline">{item.role === "Guru" ? "Guru" : "Murid"}</p>
                               </div>
                             </div>
-                            {me?.id === item.userId && (me?.role === "Admin" || me?.role === "Guru") && (
+                            {(me?.id === item.userId || me?.role === "Admin") && (
                               <button
                                 onClick={() => deleteAnswer(item.id)}
                                 title="Hapus Jawaban"
@@ -336,11 +370,15 @@ function DetailQuestion() {
             <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
                 <h3 className="font-title-md text-title-md text-on-surface mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary-container text-[20px]">forum</span>
-                  Pertanyaan Terkait
+                  <span className="material-symbols-outlined text-primary-container text-[20px]">
+                    {me?.role === "Guru" ? "task_alt" : "forum"}
+                  </span>
+                  {me?.role === "Guru" ? "Jawab Pertanyaan Lain" : "Pertanyaan Terkait"}
                 </h3>
                 {relatedQuestions.length === 0 ? (
-                  <p className="font-body-md text-body-md text-on-surface-variant">Belum ada pertanyaan terkait.</p>
+                  <p className="font-body-md text-body-md text-on-surface-variant">
+                    {me?.role === "Guru" ? "Tidak ada pertanyaan lain yang menunggu jawaban." : "Belum ada pertanyaan terkait."}
+                  </p>
                 ) : (
                   <div className="divide-y divide-outline-variant/50">
                     {relatedQuestions.map((q) => (
@@ -355,16 +393,18 @@ function DetailQuestion() {
                 )}
               </div>
 
-              <div className="bg-primary-container rounded-xl p-6 text-center">
-                <p className="font-title-md text-title-md text-on-primary mb-2">Punya Pertanyaan Lain?</p>
-                <p className="font-body-md text-body-md text-on-primary/80 mb-4">Ajukan pertanyaan anda dan dapatkan jawaban dari para ustadz.</p>
-                <NavLink
-                  to="/question/create"
-                  className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-surface-container-low transition-colors font-bold"
-                >
-                  Ajukan Pertanyaan
-                </NavLink>
-              </div>
+              {me?.role !== "Guru" && (
+                <div className="bg-primary-container rounded-xl p-6 text-center">
+                  <p className="font-title-md text-title-md text-on-primary mb-2">Punya Pertanyaan Lain?</p>
+                  <p className="font-body-md text-body-md text-on-primary/80 mb-4">Ajukan pertanyaan anda dan dapatkan jawaban dari para ustadz.</p>
+                  <NavLink
+                    to="/question/create"
+                    className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-surface-container-low transition-colors font-bold"
+                  >
+                    Ajukan Pertanyaan
+                  </NavLink>
+                </div>
+              )}
             </aside>
           </div>
         )}

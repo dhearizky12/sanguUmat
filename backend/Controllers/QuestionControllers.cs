@@ -126,5 +126,45 @@ namespace backend.Controllers
                         })
             });
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var user = await _db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            var question = await _db.Questions
+                .Include(x => x.Answers)
+                .FirstOrDefaultAsync(x => x.Id == id);
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            var isOwner = question.UserId == user.Id;
+            var isAdmin = user.Role == "Admin";
+
+            // Owner bisa hapus hanya jika belum ada jawaban; Admin bisa hapus kapan saja
+            // (moderasi tidak boleh terhalang aturan itu).
+            if (!isOwner && !isAdmin)
+            {
+                return Forbid();
+            }
+
+            if (isOwner && !isAdmin && question.Answers.Any())
+            {
+                return Conflict();
+            }
+
+            _db.Questions.Remove(question);
+            await _db.SaveChangesAsync();
+            return Ok();
+        }
     }
 }

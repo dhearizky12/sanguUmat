@@ -129,7 +129,10 @@ function AnswerQueue() {
                       />
                       <span className="font-label-sm text-label-sm text-on-surface-variant">{q.userName}</span>
                     </div>
-                    <span className="font-label-sm text-label-sm text-primary-container font-semibold">Jawab →</span>
+                    <span className="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold px-3.5 py-1.5 rounded-full">
+                      Jawab
+                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </span>
                   </div>
                 </NavLink>
               ))}

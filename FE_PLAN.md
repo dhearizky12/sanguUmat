@@ -300,6 +300,25 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
     local Postgres DB so these sections have real content to render instead of empty states.
     The seed script is committed at `backend/seed-dummy-data.sql` — re-run it against any local
     dev DB with `psql -f backend/seed-dummy-data.sql` (not idempotent, fresh/local DB only).
+- [x] **Admin moderation: delete question/answer/comment (2026-07-21).** Three fixes/additions
+  so an Admin can moderate anything, not just their own content:
+  - `DetailQuestion.jsx`'s answer-delete condition was `me?.id === item.userId && (role ===
+    "Admin" || "Guru")` — an Admin could never see the delete option on someone else's answer
+    even though `AnswerController.DeleteAnswer` already permitted it server-side. Fixed to
+    `me?.id === item.userId || me?.role === "Admin"`.
+  - Question delete: split the combined `canEditQuestion` gate into `canEditQuestion` (owner +
+    zero-answers, unchanged — editing content stays owner-only, no Admin bypass) and a separate
+    `canDeleteQuestion` (`canEditQuestion || role === "Admin"`), so Admin now sees "Hapus"
+    regardless of answer count. `BE_PLAN.md`'s `DELETE /api/question/{id}` shipped the same day
+    to back this — see below.
+  - Comment delete: added a per-comment delete button (owner or Admin) to the still-100%-mock
+    `CommentSection.jsx`. Since there's no backend Comment model at all yet (`BE_PLAN.md` Phase
+    5), this only filters local component state — same fidelity trade-off already accepted for
+    the rest of that component (not persisted, resets on reload).
+- [x] **`DELETE /api/question/{id}` now implemented (2026-07-21).** The button built 2026-07-19
+  was wired to a 405 the whole time — backend now has the endpoint (owner-zero-answers-only,
+  or Admin unconditionally; see `BE_PLAN.md` Phase 3). Swapped the FE's generic "fitur belum
+  didukung" alert for real 403 (no permission) / 409 (has answers) messages.
 
 ## Blocked — waiting on `BE_PLAN.md`
 
@@ -308,7 +327,8 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
 - [ ] Answered/pending filter + Guru "needs your answer" queue in `Questions.jsx` — needs
   `isAnswered`/`?status=` on `GET /api/question`.
 - [ ] Edit-answer UI in `DetailQuestion.jsx` — needs `PUT /api/answer/{id}`.
-- [ ] Delete-question UI — needs `DELETE /api/question/{id}`.
+- [ ] Real comment persistence + delete (`CommentSection.jsx` is still 100% local mock) — needs
+  `BE_PLAN.md` Phase 5 (`Comment` model + GET/POST/DELETE).
 - [ ] Swap "Pertanyaan Saya" from client-side filter to `GET /api/question/mine`.
 - [ ] Replace `Dashboard.jsx`'s `matchCategory()` keyword heuristic with a real `?category=`
   filter once `BE_PLAN.md`'s `Category` field ships.

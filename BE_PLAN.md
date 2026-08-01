@@ -39,14 +39,14 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
   client-side-filter stopgap for this today — swap it out once this lands, see `FE_PLAN.md`.)
 - [ ] `PUT /api/answer/{id}` — edit an existing answer. Same owner-or-Admin permission shape as
   the existing `DeleteAnswer`.
-- [ ] `DELETE /api/question/{id}` (FE already built and wired to this exact shape, 2026-07-19 —
-  currently 405, confirmed via a direct curl, no DELETE route mapped for `api/question/{id}`).
-  Nobody, not even Admin, can currently remove a question. Permission shape is slightly
-  different from `DeleteAnswer`'s owner-or-Admin: **the owner can only delete while the
-  question has zero answers** (rejecting it once someone's answered protects that answer's
-  context — the FE hides the button client-side but this must be enforced server-side too,
-  same as the `PUT` note below), while **Admin can delete regardless of answer count**
-  (moderation shouldn't be blocked by that rule).
+- [x] **`DELETE /api/question/{id}`** (shipped 2026-07-21, `QuestionControllers.cs`). Permission
+  shape is slightly different from `DeleteAnswer`'s owner-or-Admin: the owner can only delete
+  while the question has zero answers (403 if neither owner nor Admin, 409 if owner but answers
+  exist), while Admin can delete regardless of answer count (moderation shouldn't be blocked by
+  that rule) — cascade delete on `Answers` already existed at the DB level (`FK_Answers_...`,
+  `ReferentialAction.Cascade`) so an Admin deleting an answered question is safe. FE's existing
+  wired-up button (built 2026-07-19) now works end-to-end; its generic "not supported yet" error
+  message was replaced with real 403/409 handling.
 - [ ] `PUT /api/question/{id}` — edit an existing question's `title`/`content` (added
   2026-07-19, FE already built and wired to this exact shape, currently gets a 405 since no
   PUT route is mapped for `api/question/{id}` — confirmed via a direct curl). Business rule
@@ -98,6 +98,10 @@ touches the network. Needed to make it real:
 - [ ] Consider whether `GetDetailQuestion` should just include comments inline per answer
   (avoids an extra round trip per answer card) vs. a separate endpoint fetched on demand —
   frontend's call once this exists.
+- [ ] `DELETE` for a comment (owner-or-Admin, same shape as `DeleteAnswer`) — not in the list
+  above originally, but needed now: FE added an admin/owner delete button to the mock
+  `CommentSection.jsx` (2026-07-21), currently just filtering local state since there's nothing
+  to call. Add this alongside the model/GET/POST work above rather than as a follow-up.
 
 ## Notes for whoever picks this up
 

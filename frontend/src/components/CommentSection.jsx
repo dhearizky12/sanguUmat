@@ -6,9 +6,11 @@ import { handleAvatarError } from "../lib/image";
 // Mock only — there is no Comment model/endpoint on the backend yet (see BE_PLAN.md).
 // Comments typed here live in local component state, so they demo the intended UX but do not
 // persist past a page reload.
+// No real userId behind these seed comments, so only Admin can remove them — matches the
+// server-side rule this would enforce once a real Comment model exists (see BE_PLAN.md).
 const SEED_COMMENTS = [
-  { id: "seed-1", name: "Budi Santoso", text: "Jazakallah khair atas penjelasannya, sangat membantu.", picture: null },
-  { id: "seed-2", name: "Siti Aminah", text: "Izin bertanya, apakah hukumnya sama untuk kondisi yang berbeda?", picture: null },
+  { id: "seed-1", userId: null, name: "Budi Santoso", text: "Jazakallah khair atas penjelasannya, sangat membantu.", picture: null },
+  { id: "seed-2", userId: null, name: "Siti Aminah", text: "Izin bertanya, apakah hukumnya sama untuk kondisi yang berbeda?", picture: null },
 ];
 
 function CommentSection() {
@@ -27,12 +29,19 @@ function CommentSection() {
       ...prev,
       {
         id: `local-${Date.now()}`,
+        userId: me?.id,
         name: me?.name || "Anda",
         text: trimmed,
         picture: profile?.picture,
       },
     ]);
     setDraft("");
+  };
+
+  const handleDelete = (commentId) => {
+    const confirmDelete = window.confirm("Hapus komentar ini?");
+    if (!confirmDelete) return;
+    setComments((prev) => prev.filter((c) => c.id !== commentId));
   };
 
   return (
@@ -52,6 +61,15 @@ function CommentSection() {
               <p className="font-label-sm text-label-sm text-on-surface font-semibold">{c.name}</p>
               <p className="font-body-md text-body-md text-on-surface-variant">{c.text}</p>
             </div>
+            {(me?.id === c.userId || me?.role === "Admin") && (
+              <button
+                onClick={() => handleDelete(c.id)}
+                title="Hapus Komentar"
+                className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
+              >
+                <span className="material-symbols-outlined text-[16px]">delete</span>
+              </button>
+            )}
           </div>
         ))}
       </div>

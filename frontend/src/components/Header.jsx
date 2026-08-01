@@ -13,7 +13,8 @@ function Header() {
   const location = useLocation();
 
   const [profile, setProfile]= useState(null);
-  const isAdmin = false;
+  const [pendingAnswerCount, setPendingAnswerCount] = useState(null);
+  const isAdmin = me?.role === "Admin";
 
   const menus = [
     {
@@ -28,15 +29,6 @@ function Header() {
       // (detail, create) — same menu item should read as active for all of it.
       matchPaths: ["/questions", "/question"],
     },
-    ...(me?.role === "Guru"
-      ? [
-          {
-            label: "Jawab Pertanyaan",
-            to: "/jawab-pertanyaan",
-            matchPaths: ["/jawab-pertanyaan"],
-          },
-        ]
-      : []),
     {
       label: "Artikel",
       to: "/articles",
@@ -65,6 +57,40 @@ function Header() {
         setProfile(data);
       });
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (me?.role !== "Guru") {
+      return;
+    }
+
+    let cancelled = false;
+
+    // No "unanswered count" endpoint yet (see BE_PLAN.md) — same N+1 list-then-detail
+    // pattern used in AnswerQueue.jsx, just tallied instead of listed.
+    const loadPendingCount = async () => {
+      try {
+        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const list = listRes.ok ? await listRes.json() : [];
+        const details = await Promise.all(
+          list.map((q) =>
+            fetch(`${API_URL}/api/question/${q.id}`)
+              .then((r) => (r.ok ? r.json() : null))
+              .catch(() => null)
+          )
+        );
+        const unanswered = details.filter((d) => d && d.answers && d.answers.length === 0).length;
+        if (!cancelled) setPendingAnswerCount(unanswered);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadPendingCount();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [me?.role]);
 
   return (
     <nav className="bg-surface shadow-sm top-0 z-50 sticky">
@@ -95,14 +121,6 @@ function Header() {
               </NavLink>
             );
           })}
-          {isAdmin && (
-            <NavLink
-              to="/admin"
-              className={({ isActive }) => `whitespace-nowrap ${isActive ? "font-bold border-b-2 border-primary-container" : ""}`}
-            >
-              Scholars
-            </NavLink>
-          )}
         </div>
         <div className="flex items-center gap-4 justify-end shrink-0">
           { isAuthenticated && me?.role === "User" && (
@@ -111,6 +129,32 @@ function Header() {
             <span>Ajukan Pertanyaan</span>
             </Link>
             )}
+          {isAuthenticated && me?.role === "Guru" && (
+            <Link
+              to="/jawab-pertanyaan"
+              title={pendingAnswerCount > 0 ? `${pendingAnswerCount} pertanyaan menunggu jawaban anda` : undefined}
+              className={`relative flex items-center gap-2 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-colors shadow-sm cursor-pointer text-nowrap`}
+            >
+              <span className="material-symbols-outlined text-[18px]">edit_note</span>
+              <span>Jawab Pertanyaan</span>
+              {pendingAnswerCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-error text-on-error text-[11px] font-bold leading-none">
+                  {pendingAnswerCount}
+                </span>
+              )}
+            </Link>
+            )}
+          {isAdmin && (
+            // No /admin page built yet (see BE_PLAN.md Phase 2) — show the slot so the flag
+            // is verifiable, but don't link anywhere real until the page exists.
+            <span
+              title="Segera hadir"
+              className="flex items-center gap-2 bg-surface-container-high text-outline font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full cursor-not-allowed select-none text-nowrap"
+            >
+              <span className="material-symbols-outlined text-[18px]">shield_person</span>
+              <span>Panel Admin</span>
+            </span>
+          )}
           {isAuthenticated ? (
             <Link to="/profile" className="cursor-pointer">
               <img
