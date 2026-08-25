@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using backend.Data;
+using backend.Extensions;
 using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -15,10 +16,12 @@ namespace backend.Controllers
     public class AuthController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly IConfiguration _config;
 
-        public AuthController(AppDbContext db)
+        public AuthController(AppDbContext db, IConfiguration config)
         {
             _db = db;
+            _config = config;
         }
 
         [HttpGet("login")]
@@ -42,17 +45,22 @@ namespace backend.Controllers
                 var email = User.FindFirst(ClaimTypes.Email)?.Value;
                 var name = User.FindFirst(ClaimTypes.Name)?.Value;
                 var picture = User.FindFirst("picture")?.Value;
-                var existingUser = await _db.Users.FirstOrDefaultAsync(x=> x.GoogleId == googleId);
+                var existingUser = await this.GetCurrentUserAsync(_db);
 
                 if (existingUser == null)
                 {
+                    // Solves the chicken-and-egg problem of getting a first Admin without
+                    // touching the DB by hand — see AdminEmails in appsettings.json.
+                    var adminEmails = _config.GetSection("AdminEmails").Get<string[]>() ?? Array.Empty<string>();
+                    var isBootstrapAdmin = email != null && adminEmails.Any(x => x.Equals(email, StringComparison.OrdinalIgnoreCase));
+
                     var user = new User
                     {
                         GoogleId = googleId,
                         Email = email,
                         Name = name,
                         Picture = picture,
-                        Role = "User",
+                        Role = isBootstrapAdmin ? Roles.Admin : Roles.User,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         LastLogin = DateTime.UtcNow,
@@ -100,8 +108,7 @@ namespace backend.Controllers
         [HttpPost("complete-profile")]
         public async Task<IActionResult> CompleteProfile ([FromBody] ComppleteProfileRequest request)
         {
-            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+            var user = await this.GetCurrentUserAsync(_db);
 
             if ( user == null )
             {
@@ -128,8 +135,7 @@ namespace backend.Controllers
         [HttpGet("profile")]
         public async Task<IActionResult> Profile()
         {
-            var googleID = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _db.Users.FirstOrDefaultAsync( x => x.GoogleId == googleID);
+            var user = await this.GetCurrentUserAsync(_db);
 
             if( user == null )
             {
@@ -158,9 +164,7 @@ namespace backend.Controllers
                 return BadRequest("File kosong");
             }
 
-            var googleId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            var user = await _db.Users.FirstOrDefaultAsync( x =>
-                x.GoogleId == googleId);    
+            var user = await this.GetCurrentUserAsync(_db);
 
             if ( user == null )
             {

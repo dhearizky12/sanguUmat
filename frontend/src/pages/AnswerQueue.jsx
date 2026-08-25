@@ -7,7 +7,7 @@ import EmptyState from "../components/EmptyState";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 import { formatDate } from "../lib/date";
-import { CATEGORIES, matchCategory, categoryLabel } from "../lib/category";
+import { CATEGORIES, categoryLabel } from "../lib/category";
 
 function AnswerQueue() {
   const [questions, setQuestions] = useState([]);
@@ -15,32 +15,17 @@ function AnswerQueue() {
   const [category, setCategory] = useState("semua");
 
   useEffect(() => {
-    // No "unanswered questions" endpoint yet (see BE_PLAN.md) — same N+1 pattern used
-    // elsewhere: fetch the list, then each one's detail to find out which have zero answers.
     let cancelled = false;
 
     const fetchUnanswered = async () => {
       setLoading(true);
       try {
-        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const listRes = await fetch(`${API_URL}/api/question?status=pending`, { credentials: "include" });
         if (!listRes.ok) throw new Error("Failed to fetch questions");
         const list = await listRes.json();
 
-        const details = await Promise.all(
-          list.map((q) =>
-            fetch(`${API_URL}/api/question/${q.id}`)
-              .then((r) => (r.ok ? r.json() : null))
-              .then((detail) => (detail ? { ...q, ...detail } : null))
-              .catch(() => null)
-          )
-        );
-
-        const unanswered = details
-          .filter((d) => d && d.answers && d.answers.length === 0)
-          .map((d) => ({ ...d, category: matchCategory(`${d.title} ${d.content}`) }));
-
         if (!cancelled) {
-          setQuestions(unanswered);
+          setQuestions(list);
         }
       } catch (err) {
         console.error(err);
@@ -129,7 +114,10 @@ function AnswerQueue() {
                       />
                       <span className="font-label-sm text-label-sm text-on-surface-variant">{q.userName}</span>
                     </div>
-                    <span className="font-label-sm text-label-sm text-primary-container font-semibold">Jawab →</span>
+                    <span className="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold px-3.5 py-1.5 rounded-full">
+                      Jawab
+                      <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+                    </span>
                   </div>
                 </NavLink>
               ))}

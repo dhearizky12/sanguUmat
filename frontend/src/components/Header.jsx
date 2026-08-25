@@ -9,11 +9,11 @@ function isMenuActive(pathname, matchPaths) {
 }
 
 function Header() {
-  const { isAuthenticated, me } = useAuth();
+  const { isAuthenticated, me, profile } = useAuth();
   const location = useLocation();
 
-  const [profile, setProfile]= useState(null);
-  const isAdmin = false;
+  const [pendingAnswerCount, setPendingAnswerCount] = useState(null);
+  const isAdmin = me?.role === "Admin";
 
   const menus = [
     {
@@ -28,15 +28,6 @@ function Header() {
       // (detail, create) — same menu item should read as active for all of it.
       matchPaths: ["/questions", "/question"],
     },
-    ...(me?.role === "Guru"
-      ? [
-          {
-            label: "Jawab Pertanyaan",
-            to: "/jawab-pertanyaan",
-            matchPaths: ["/jawab-pertanyaan"],
-          },
-        ]
-      : []),
     {
       label: "Artikel",
       to: "/articles",
@@ -50,21 +41,28 @@ function Header() {
   ];
 
   useEffect(() => {
-    if (!isAuthenticated)
-    {
+    if (me?.role !== "Guru") {
       return;
     }
-    fetch(
-        `${API_URL}/api/auth/profile`,
-        {
-          credentials: "include"
-        }
-      )
-      .then(res => res.json())
-      .then(data => {
-        setProfile(data);
-      });
-  }, [isAuthenticated]);
+
+    let cancelled = false;
+
+    const loadPendingCount = async () => {
+      try {
+        const listRes = await fetch(`${API_URL}/api/question?status=pending`, { credentials: "include" });
+        const list = listRes.ok ? await listRes.json() : [];
+        if (!cancelled) setPendingAnswerCount(list.length);
+      } catch (err) {
+        console.error(err);
+      }
+    };
+
+    loadPendingCount();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [me?.role]);
 
   return (
     <nav className="bg-surface shadow-sm top-0 z-50 sticky">
@@ -95,14 +93,6 @@ function Header() {
               </NavLink>
             );
           })}
-          {isAdmin && (
-            <NavLink
-              to="/admin"
-              className={({ isActive }) => `whitespace-nowrap ${isActive ? "font-bold border-b-2 border-primary-container" : ""}`}
-            >
-              Scholars
-            </NavLink>
-          )}
         </div>
         <div className="flex items-center gap-4 justify-end shrink-0">
           { isAuthenticated && me?.role === "User" && (
@@ -111,13 +101,39 @@ function Header() {
             <span>Ajukan Pertanyaan</span>
             </Link>
             )}
+          {isAuthenticated && me?.role === "Guru" && (
+            <Link
+              to="/jawab-pertanyaan"
+              title={pendingAnswerCount > 0 ? `${pendingAnswerCount} pertanyaan menunggu jawaban anda` : undefined}
+              className={`relative flex items-center gap-2 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-colors shadow-sm cursor-pointer text-nowrap`}
+            >
+              <span className="material-symbols-outlined text-[18px]">edit_note</span>
+              <span>Jawab Pertanyaan</span>
+              {pendingAnswerCount > 0 && (
+                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-error text-on-error text-[11px] font-bold leading-none">
+                  {pendingAnswerCount}
+                </span>
+              )}
+            </Link>
+            )}
+          {isAdmin && (
+            <Link
+              to="/admin/users"
+              className={`flex items-center gap-2 bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full hover:bg-surface-container-highest transition-colors shadow-sm cursor-pointer text-nowrap ${
+                isMenuActive(location.pathname, ["/admin"]) ? "ring-2 ring-primary-container/50" : ""
+              }`}
+            >
+              <span className="material-symbols-outlined text-[18px]">shield_person</span>
+              <span>Panel Admin</span>
+            </Link>
+          )}
           {isAuthenticated ? (
             <Link to="/profile" className="cursor-pointer">
               <img
                 alt="Foto profil"
                 className="w-10 h-10 rounded-full border border-outline-variant object-cover"
                 data-alt="profile picture"
-                src={profile?.picture ? API_URL + profile.picture : "/default-avatar.png"}
+                src={profile?.picture || "/default-avatar.png"}
                 onError={handleAvatarError}
               />
             </Link>

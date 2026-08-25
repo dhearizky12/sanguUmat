@@ -7,12 +7,13 @@ import EmptyState from "../components/EmptyState";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { formatDate } from "../lib/date";
-import { matchCategory, categoryLabel } from "../lib/category";
+import { CATEGORIES, categoryLabel } from "../lib/category";
 
 function CreateQuestion() {
   const { me } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
+  const [category, setCategory] = useState("");
   const [myQuestions, setMyQuestions] = useState([]);
   const [loadingMine, setLoadingMine] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -22,30 +23,17 @@ function CreateQuestion() {
       return;
     }
 
-    // No "my questions" endpoint yet (see BE_PLAN.md) — filter the full list client-side, then
-    // pull each one's detail to know whether it's been answered. Fine at the scale of "one
-    // person's own questions"; swap for GET /api/question/mine once that ships.
     let cancelled = false;
 
     const fetchMine = async () => {
       setLoadingMine(true);
       try {
-        const listRes = await fetch(`${API_URL}/api/question`, { credentials: "include" });
-        if (!listRes.ok) throw new Error("Failed to fetch questions");
-        const list = await listRes.json();
-        const mine = list.filter((q) => q.userId === me.id);
-
-        const details = await Promise.all(
-          mine.map((q) =>
-            fetch(`${API_URL}/api/question/${q.id}`)
-              .then((r) => (r.ok ? r.json() : null))
-              .then((detail) => (detail ? { ...q, ...detail } : null))
-              .catch(() => null),
-          ),
-        );
+        const res = await fetch(`${API_URL}/api/question/mine`, { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch my questions");
+        const mine = await res.json();
 
         if (!cancelled) {
-          setMyQuestions(details.filter(Boolean));
+          setMyQuestions(mine);
         }
       } catch (err) {
         console.error(err);
@@ -80,6 +68,7 @@ function CreateQuestion() {
       body: JSON.stringify({
         title,
         content,
+        category: category || null,
       }),
     });
 
@@ -87,6 +76,7 @@ function CreateQuestion() {
       alert("Pertanyaan berhasil dibuat");
       setTitle("");
       setContent("");
+      setCategory("");
       setRefreshKey((k) => k + 1);
     } else {
       alert("Gagal membuat pertanyaan");
@@ -125,6 +115,21 @@ function CreateQuestion() {
                     onChange={(e) => setContent(e.target.value)}
                   />
                 </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Kategori</label>
+                  <select
+                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors"
+                    value={category}
+                    onChange={(e) => setCategory(e.target.value)}
+                  >
+                    <option value="">Pilih kategori (opsional)</option>
+                    {CATEGORIES.slice(1).map((cat) => (
+                      <option key={cat.key} value={cat.key}>
+                        {cat.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
                 <div className="flex justify-end">
                   <button
                     type="submit"
@@ -151,14 +156,13 @@ function CreateQuestion() {
               ) : (
                 <div className="divide-y divide-outline-variant/50">
                   {myQuestions.map((q) => {
-                    const isAnswered = q.answers && q.answers.length > 0;
-                    const category = matchCategory(`${q.title} ${q.content}`);
+                    const isAnswered = q.isAnswered;
 
                     return (
                       <NavLink key={q.id} to={`/question/detail/${q.id}`} className="block py-4 first:pt-0 last:pb-0 group">
                         <div className="flex items-center justify-between gap-2 mb-2">
                           <span className="px-2 py-0.5 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[11px] font-semibold border border-primary-container/20">
-                            {categoryLabel(category)}
+                            {categoryLabel(q.category)}
                           </span>
                           <span
                             className={`flex items-center gap-1 font-label-sm text-[11px] pl-2 p-0.5 rounded-full ml-auto ${

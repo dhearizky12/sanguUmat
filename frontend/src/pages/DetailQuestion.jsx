@@ -9,7 +9,7 @@ import EmptyState from "../components/EmptyState";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
-import { matchCategory, categoryLabel } from "../lib/category";
+import { categoryLabel } from "../lib/category";
 import { formatDate } from "../lib/date";
 
 const RELATED_LIMIT = 5;
@@ -22,6 +22,9 @@ function DetailQuestion() {
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
   const [savingEdit, setSavingEdit] = useState(false);
+  const [editingAnswerId, setEditingAnswerId] = useState(null);
+  const [editAnswerContent, setEditAnswerContent] = useState("");
+  const [savingAnswerEdit, setSavingAnswerEdit] = useState(false);
   const { id } = useParams();
   const navigate = useNavigate();
   const { me } = useAuth();
@@ -43,12 +46,60 @@ function DetailQuestion() {
     }
   };
 
+  const startEditAnswer = (item) => {
+    setEditingAnswerId(item.id);
+    setEditAnswerContent(item.content);
+  };
+
+  const cancelEditAnswer = () => {
+    setEditingAnswerId(null);
+  };
+
+  const saveAnswerEdit = async (answerId) => {
+    if (!editAnswerContent.trim()) {
+      alert("Jawaban tidak boleh kosong.");
+      return;
+    }
+
+    setSavingAnswerEdit(true);
+    try {
+      const response = await fetch(`${API_URL}/api/answer/${answerId}`, {
+        method: "PUT",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ content: editAnswerContent }),
+      });
+
+      if (response.ok) {
+        setQuestion((prev) => ({
+          ...prev,
+          answers: prev.answers.map((a) => (a.id === answerId ? { ...a, content: editAnswerContent } : a)),
+        }));
+        setEditingAnswerId(null);
+      } else {
+        alert("Gagal menyimpan perubahan jawaban.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menyimpan perubahan jawaban.");
+    } finally {
+      setSavingAnswerEdit(false);
+    }
+  };
+
   useEffect(() => {
     fetch(`${API_URL}/api/Question/${id}`)
       .then((res) => res.json())
       .then((data) => {
         setQuestion(data);
       });
+
+    // Fire-and-forget: records a real view for this specific visit. Deliberately not the same
+    // request as the fetch above — that endpoint is also reused as a batch data-fetch
+    // workaround elsewhere (Dashboard.jsx etc.), which must never count as a view.
+    fetch(`${API_URL}/api/question/${id}/view`, { method: "POST" }).catch((err) => console.error(err));
   }, [id]);
 
   useEffect(() => {
@@ -56,23 +107,38 @@ function DetailQuestion() {
       return;
     }
 
-    // No "related questions" endpoint on the backend — approximate it client-side: same
-    // category (via the shared matchCategory heuristic, see lib/category.js) first, then fill
-    // the rest with the most recent other questions.
-    fetch(`${API_URL}/api/question`, { credentials: "include" })
-      .then((res) => (res.ok ? res.json() : []))
-      .then((list) => {
-        const currentCategory = matchCategory(`${question.title} ${question.content}`);
+    let cancelled = false;
 
-        const others = list.filter((q) => String(q.id) !== String(id)).map((q) => ({ ...q, category: matchCategory(`${q.title} ${q.content}`) }));
+    const loadRelated = async () => {
+      try {
+        const res = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        const list = res.ok ? await res.json() : [];
+        const others = list.filter((q) => String(q.id) !== String(id));
 
+        if (me?.role === "Guru") {
+          // For an ustadz, "related" isn't useful — what matters is what to answer next.
+          const unanswered = others.filter((q) => !q.isAnswered);
+          if (!cancelled) setRelatedQuestions(unanswered.slice(0, RELATED_LIMIT));
+          return;
+        }
+
+        // Regular users: same category first, then fill the rest with the most recent other
+        // questions.
+        const currentCategory = question.category;
         const sameCategory = currentCategory ? others.filter((q) => q.category === currentCategory) : [];
         const rest = others.filter((q) => !sameCategory.includes(q));
+        if (!cancelled) setRelatedQuestions([...sameCategory, ...rest].slice(0, RELATED_LIMIT));
+      } catch (err) {
+        console.error(err);
+      }
+    };
 
-        setRelatedQuestions([...sameCategory, ...rest].slice(0, RELATED_LIMIT));
-      })
-      .catch((err) => console.error(err));
-  }, [question, id]);
+    loadRelated();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [question, id, me?.role]);
 
   const submitAnswer = async () => {
     const response = await fetch(`${API_URL}/api/answer/${id}`, {
@@ -93,6 +159,8 @@ function DetailQuestion() {
   };
 
   const canEditQuestion = me?.id === question?.userId && question?.answers.length === 0;
+  // Admin moderation isn't subject to the zero-answers rule — see BE_PLAN.md Phase 3.
+  const canDeleteQuestion = canEditQuestion || me?.role === "Admin";
 
   const startEditQuestion = () => {
     setEditTitle(question.title);
@@ -148,8 +216,6 @@ function DetailQuestion() {
     const confirmDelete = window.confirm("Hapus pertanyaan ini? Tindakan ini tidak bisa dibatalkan.");
     if (!confirmDelete) return;
 
-    // DELETE /api/question/{id} doesn't exist on the backend yet either (see BE_PLAN.md) —
-    // same situation as the edit above: wired to the real endpoint, fails gracefully for now.
     const response = await fetch(`${API_URL}/api/question/${id}`, {
       method: "DELETE",
       credentials: "include",
@@ -158,12 +224,16 @@ function DetailQuestion() {
     if (response.ok) {
       alert("Pertanyaan berhasil dihapus");
       navigate("/questions");
+    } else if (response.status === 409) {
+      alert("Pertanyaan sudah memiliki jawaban dan tidak bisa dihapus.");
+    } else if (response.status === 403) {
+      alert("Anda tidak memiliki izin untuk menghapus pertanyaan ini.");
     } else {
-      alert("Gagal menghapus pertanyaan. Fitur ini belum didukung oleh server.");
+      alert("Gagal menghapus pertanyaan. Silakan coba lagi.");
     }
   };
 
-  const category = question ? matchCategory(`${question.title} ${question.content}`) : null;
+  const category = question?.category ?? null;
 
   return (
     <div className="font-body-md min-h-screen flex flex-col">
@@ -177,29 +247,33 @@ function DetailQuestion() {
               {/* QUESTION — a page header, not a card, so it reads as the top-level subject
                 rather than looking identical to the answer list below it. */}
               <div className="border-b border-outline-variant pb-8">
-                <div className="flex items-start justify-between gap-3 mb-4">
+                <div className="flex items-center justify-between gap-3 mb-4">
                   <span className="inline-block px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
                     {categoryLabel(category)}
                   </span>
 
-                  {canEditQuestion && !isEditing && (
+                  {(canEditQuestion || canDeleteQuestion) && !isEditing && (
                     <div className="ml-auto flex items-center gap-4">
-                      <button
-                        onClick={startEditQuestion}
-                        title="Edit Pertanyaan"
-                        className="flex items-center gap-1 text-primary-container font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">edit</span>
-                        Edit
-                      </button>
-                      <button
-                        onClick={deleteQuestion}
-                        title="Hapus Pertanyaan"
-                        className="flex items-center gap-1 text-error font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
-                      >
-                        <span className="material-symbols-outlined text-[16px]">delete</span>
-                        Hapus
-                      </button>
+                      {canEditQuestion && (
+                        <button
+                          onClick={startEditQuestion}
+                          title="Edit Pertanyaan"
+                          className="flex items-center gap-1 text-primary-container font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">edit</span>
+                          Edit
+                        </button>
+                      )}
+                      {canDeleteQuestion && (
+                        <button
+                          onClick={deleteQuestion}
+                          title="Hapus Pertanyaan"
+                          className="flex items-center gap-1 text-error font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
+                        >
+                          <span className="material-symbols-outlined text-[16px]">delete</span>
+                          Hapus
+                        </button>
+                      )}
                     </div>
                   )}
                 </div>
@@ -281,28 +355,64 @@ function DetailQuestion() {
                                 <div className="flex items-center gap-1.5">
                                   <strong className="font-label-sm text-label-sm text-on-surface">{item.userName}</strong>
                                   {item.role === "Guru" && (
-                                    <span className="material-symbols-outlined text-secondary-container text-[16px]">verified</span>
+                                    <span className="material-symbols-outlined icon-fill text-secondary-container text-[16px]">verified</span>
                                   )}
                                 </div>
                                 <p className="text-[12px] text-outline">{item.role === "Guru" ? "Guru" : "Murid"}</p>
                               </div>
                             </div>
-                            {me?.id === item.userId && (me?.role === "Admin" || me?.role === "Guru") && (
-                              <button
-                                onClick={() => deleteAnswer(item.id)}
-                                title="Hapus Jawaban"
-                                className="w-9 h-9 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
-                              >
-                                <span className="material-symbols-outlined text-[18px]">delete</span>
-                              </button>
+                            {(me?.id === item.userId || me?.role === "Admin") && editingAnswerId !== item.id && (
+                              <div className="flex items-center gap-1">
+                                <button
+                                  onClick={() => startEditAnswer(item)}
+                                  title="Edit Jawaban"
+                                  className="w-9 h-9 rounded-full flex items-center justify-center text-primary-container hover:bg-surface-container-low transition cursor-pointer"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">edit</span>
+                                </button>
+                                <button
+                                  onClick={() => deleteAnswer(item.id)}
+                                  title="Hapus Jawaban"
+                                  className="w-9 h-9 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
+                                >
+                                  <span className="material-symbols-outlined text-[18px]">delete</span>
+                                </button>
+                              </div>
                             )}
                           </div>
 
-                          <RichContent text={item.content} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
+                          {editingAnswerId === item.id ? (
+                            <div className="space-y-3">
+                              <textarea
+                                value={editAnswerContent}
+                                onChange={(e) => setEditAnswerContent(e.target.value)}
+                                className="w-full border border-outline-variant rounded-2xl p-4 min-h-[160px] outline-none focus:border-primary-container resize-none font-body-md text-body-md"
+                              />
+                              <div className="flex justify-end gap-3">
+                                <button
+                                  type="button"
+                                  onClick={cancelEditAnswer}
+                                  className="text-on-surface-variant px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-surface-container-low transition-colors"
+                                >
+                                  Batal
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => saveAnswerEdit(item.id)}
+                                  disabled={savingAnswerEdit}
+                                  className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-bold hover:bg-tertiary transition-colors disabled:opacity-60"
+                                >
+                                  {savingAnswerEdit ? "Menyimpan..." : "Simpan"}
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <RichContent text={item.content} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
+                          )}
                         </div>
 
                         <div className="pt-12">
-                          <CommentSection />
+                          <CommentSection answerId={item.id} />
                         </div>
                       </div>
                     ))}
@@ -336,11 +446,15 @@ function DetailQuestion() {
             <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
               <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
                 <h3 className="font-title-md text-title-md text-on-surface mb-4 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary-container text-[20px]">forum</span>
-                  Pertanyaan Terkait
+                  <span className="material-symbols-outlined text-primary-container text-[20px]">
+                    {me?.role === "Guru" ? "task_alt" : "forum"}
+                  </span>
+                  {me?.role === "Guru" ? "Jawab Pertanyaan Lain" : "Pertanyaan Terkait"}
                 </h3>
                 {relatedQuestions.length === 0 ? (
-                  <p className="font-body-md text-body-md text-on-surface-variant">Belum ada pertanyaan terkait.</p>
+                  <p className="font-body-md text-body-md text-on-surface-variant">
+                    {me?.role === "Guru" ? "Tidak ada pertanyaan lain yang menunggu jawaban." : "Belum ada pertanyaan terkait."}
+                  </p>
                 ) : (
                   <div className="divide-y divide-outline-variant/50">
                     {relatedQuestions.map((q) => (
@@ -355,16 +469,18 @@ function DetailQuestion() {
                 )}
               </div>
 
-              <div className="bg-primary-container rounded-xl p-6 text-center">
-                <p className="font-title-md text-title-md text-on-primary mb-2">Punya Pertanyaan Lain?</p>
-                <p className="font-body-md text-body-md text-on-primary/80 mb-4">Ajukan pertanyaan anda dan dapatkan jawaban dari para ustadz.</p>
-                <NavLink
-                  to="/question/create"
-                  className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-surface-container-low transition-colors font-bold"
-                >
-                  Ajukan Pertanyaan
-                </NavLink>
-              </div>
+              {me?.role !== "Guru" && (
+                <div className="bg-primary-container rounded-xl p-6 text-center">
+                  <p className="font-title-md text-title-md text-on-primary mb-2">Punya Pertanyaan Lain?</p>
+                  <p className="font-body-md text-body-md text-on-primary/80 mb-4">Ajukan pertanyaan anda dan dapatkan jawaban dari para ustadz.</p>
+                  <NavLink
+                    to="/question/create"
+                    className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-surface-container-low transition-colors font-bold"
+                  >
+                    Ajukan Pertanyaan
+                  </NavLink>
+                </div>
+              )}
             </aside>
           </div>
         )}

@@ -119,16 +119,13 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
     login like the rest of the app). No backend Comment model exists yet — see `BE_PLAN.md`
     Phase 5 for what real implementation needs.
 
-- [ ] **Fix the admin delete-answer permission bug.** `DetailQuestion.jsx:166` only shows the
-  delete button when `me?.id === item.userId && (me?.role === "Admin" || me?.role === "Guru")`
-  — an Admin never sees the delete option on someone else's answer, even though
-  `AnswerController.DeleteAnswer` already permits it server-side. Change the condition to
+- [x] **Fix the admin delete-answer permission bug (2026-07-21, done as part of the admin
+  moderation work above — checkbox missed at the time).** Condition changed to
   `me?.id === item.userId || me?.role === "Admin"`.
-- [ ] **Wire up the Admin nav flag.** `Header.jsx:11` hardcodes `isAdmin = false`. Change to
-  `me?.role === "Admin"` (role is already returned by `GET /api/auth/me`). Note: don't link it
-  to a real `/admin` page yet — the admin user-management page itself is **blocked** (see
-  below) until `BE_PLAN.md`'s admin endpoints exist. For now this just makes the flag correct;
-  either hide the nav item until the page exists, or point it at a simple "Segera hadir" state.
+- [x] **Wire up the Admin nav flag (2026-07-21, checkbox missed at the time).** `Header.jsx`'s
+  `isAdmin` now reads `me?.role === "Admin"`. Doesn't link to a real `/admin` page (still
+  blocked, see below) — shows a disabled "Panel Admin (Segera Hadir)" pill instead, moved
+  beside the profile picture alongside the Guru "Jawab Pertanyaan" button.
 - [x] **Render real long-form answers correctly on `DetailQuestion.jsx` (2026-07-19).** Real
   Q&A content from the actual Sangu Umat WhatsApp group is WhatsApp-style formatted text — an
   all-caps title, section labels (PERTANYAAN/JAWABAN/PENJELASAN/REFERENSI/KESIMPULAN), numbered
@@ -300,21 +297,83 @@ Status legend: `[ ]` not started · `[~]` in progress · `[x]` done
     local Postgres DB so these sections have real content to render instead of empty states.
     The seed script is committed at `backend/seed-dummy-data.sql` — re-run it against any local
     dev DB with `psql -f backend/seed-dummy-data.sql` (not idempotent, fresh/local DB only).
+- [x] **Admin moderation: delete question/answer/comment (2026-07-21).** Three fixes/additions
+  so an Admin can moderate anything, not just their own content:
+  - `DetailQuestion.jsx`'s answer-delete condition was `me?.id === item.userId && (role ===
+    "Admin" || "Guru")` — an Admin could never see the delete option on someone else's answer
+    even though `AnswerController.DeleteAnswer` already permitted it server-side. Fixed to
+    `me?.id === item.userId || me?.role === "Admin"`.
+  - Question delete: split the combined `canEditQuestion` gate into `canEditQuestion` (owner +
+    zero-answers, unchanged — editing content stays owner-only, no Admin bypass) and a separate
+    `canDeleteQuestion` (`canEditQuestion || role === "Admin"`), so Admin now sees "Hapus"
+    regardless of answer count. `BE_PLAN.md`'s `DELETE /api/question/{id}` shipped the same day
+    to back this — see below.
+  - Comment delete: added a per-comment delete button (owner or Admin) to the then-100%-mock
+    `CommentSection.jsx`. Superseded the same day — see the real-comments entry below, which
+    rewired this button to a real `DELETE` call instead of filtering local state.
+- [x] **`DELETE /api/question/{id}` now implemented (2026-07-21).** The button built 2026-07-19
+  was wired to a 405 the whole time — backend now has the endpoint (owner-zero-answers-only,
+  or Admin unconditionally; see `BE_PLAN.md` Phase 3). Swapped the FE's generic "fitur belum
+  didukung" alert for real 403 (no permission) / 409 (has answers) messages.
+- [x] **Views, comment counts, and a real answered/pending badge on question cards
+  (2026-07-21).** `BE_PLAN.md` shipped `Views` tracking, `isAnswered`/`?status=`, and a real
+  `Comment` model the same day (Phases 3/4/5) — this is the FE side of all three:
+  - `QuestionCard.jsx` (used by `Questions.jsx` and indirectly `Dashboard.jsx`) now shows a
+    Terjawab/Menunggu badge plus 👁 views / 💬 comment-count, all straight from `GET
+    /api/question`'s new fields — no extra fetch needed.
+  - `Dashboard.jsx`'s `AnsweredCard` shows the same views/comment-count row. "Paling Banyak
+    Dibaca" is now a real `sort by views desc` instead of reusing the same pool as the other
+    two sections (previously all three were intentionally identical — see now-removed note).
+  - `CommentSection.jsx` **rewritten from local mock state to the real backend**: fetches
+    `GET /api/answer/{id}/comments` on mount, `POST`s new comments (appends the returned
+    comment directly, no refetch), and the existing owner-or-Admin delete button now calls the
+    real `DELETE` instead of filtering local state. No longer resets on reload.
+  - Dropped the N+1 list-then-detail-per-item pattern (now redundant) from `CreateQuestion.jsx`
+    ("Pertanyaan Saya" reads `q.isAnswered` straight off the list response),
+    `AnswerQueue.jsx` and `Header.jsx`'s pending-count badge (both now use
+    `GET /api/question?status=pending` directly).
+  - **Correctness note:** `Views` is deliberately *not* incremented by the plain
+    `GET /api/question/{id}` fetch these N+1-workaround pages use — see `BE_PLAN.md` Phase 4.
+    Only `DetailQuestion.jsx` calls the dedicated `POST /api/question/{id}/view`, once per real
+    visit, so dashboard/queue page loads never inflate view counts.
 
-## Blocked — waiting on `BE_PLAN.md`
+- [x] **Answered/pending filter in `Questions.jsx` (2026-07-21).** Added a second filter-chip
+  row (Semua/Terjawab/Menunggu) below the category chips, filtering client-side on the
+  already-fetched `q.isAnswered` — same pattern as the category filter, no extra round trip.
 
-- [ ] Admin user-management page (real `DetailAdmin.jsx` build-out + a `RoleGuard` component
-  alongside `AuthGuard.jsx`) — needs `GET/PATCH /api/admin/users`.
-- [ ] Answered/pending filter + Guru "needs your answer" queue in `Questions.jsx` — needs
-  `isAnswered`/`?status=` on `GET /api/question`.
-- [ ] Edit-answer UI in `DetailQuestion.jsx` — needs `PUT /api/answer/{id}`.
-- [ ] Delete-question UI — needs `DELETE /api/question/{id}`.
-- [ ] Swap "Pertanyaan Saya" from client-side filter to `GET /api/question/mine`.
-- [ ] Replace `Dashboard.jsx`'s `matchCategory()` keyword heuristic with a real `?category=`
-  filter once `BE_PLAN.md`'s `Category` field ships.
-- [ ] Replace `Dashboard.jsx`'s N+1 "fetch 10 questions then detail-fetch each" with a proper
-  `isAnswered`/`?status=` query once `BE_PLAN.md` ships it.
-- [ ] Give "Jawab-jawaban Terbaru" / "Kumpulan Jawaban Penting" / "Paling Banyak Dibaca" real,
-  distinct data once `BE_PLAN.md` ships an answered-at signal, category, and view counts —
-  right now they're intentionally identical (see note above) since there's nothing to
-  distinguish them by yet.
+- [x] **Edit-answer UI in `DetailQuestion.jsx` (2026-07-21).** `BE_PLAN.md` shipped
+  `PUT /api/answer/{id}` — each answer card now has an Edit button (owner-or-Admin, same
+  permission gate as delete) that swaps the answer body for a textarea + Simpan/Batal, matching
+  the question-edit form's existing styling. Updates local state directly on save (no full page
+  reload, unlike `deleteAnswer`/`deleteQuestion` which still do).
+
+- [x] **Swapped "Pertanyaan Saya" to `GET /api/question/mine` (2026-07-21).** `CreateQuestion.jsx`
+  no longer filters the full question list client-side by `userId === me.id`.
+
+- [x] **Replaced `matchCategory()` with the real `Category` field everywhere (2026-07-21).**
+  `BE_PLAN.md` shipped a real `Category` column + `?category=` filter — every caller
+  (`Dashboard.jsx`, `Questions.jsx`, `AnswerQueue.jsx`, `DetailQuestion.jsx`,
+  `CreateQuestion.jsx`'s "Pertanyaan Saya") now reads `q.category` directly instead of guessing
+  from title/content keywords. `matchCategory()` itself deleted from `lib/category.js` — no
+  callers left. Also added the category `<select>` to `CreateQuestion.jsx`'s form itself
+  (optional; unset/unrecognized values become "uncategorized" server-side, not rejected), so
+  new questions can actually carry a real category going forward instead of relying on backfill.
+
+- [x] **Admin user-management page (2026-07-21).** Built as a new page, `src/pages/AdminUsers.jsx`
+  at `/admin/users` (not `DetailAdmin.jsx`/`/detail-admin/:adminId` as originally sketched —
+  that route's `:adminId` param implies a per-user profile view, a different, still-unbuilt
+  feature; reusing it for the admin panel would've conflated the two). Gated by
+  `RoleGuard allow={["Admin"]}`, same component already proven for the Guru queue. Search +
+  role-filter chips, a table of users (name/email/joined/last-login), and a per-row role
+  `<select>` wired to `PATCH /api/admin/users/{id}/role` — disabled on the signed-in admin's
+  own row (backend also rejects that server-side, this just avoids a round trip for the
+  obviously-blocked case). `Header.jsx`'s "Panel Admin" pill now links here for real instead of
+  showing "(Segera Hadir)".
+
+## Known gaps — no backend field planned yet
+
+- [ ] Give "Kumpulan Jawaban Penting" a real distinct signal (still reuses the same answered
+  pool as "Jawab-jawaban Terbaru", just Guru-authored — no dedicated importance/verification
+  field exists). "Paling Banyak Dibaca" no longer needs this — it's a real views-based sort now.
+- [ ] `AnsweredAt` timestamp — "latest answered" still relies on question `CreatedAt` recency,
+  not true answered-at order (`BE_PLAN.md` Phase 4).

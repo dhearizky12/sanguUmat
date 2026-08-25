@@ -7,6 +7,8 @@ namespace backend.Models
         public string Content { get; set; } = "";
 
         public DateTime CreatedAt {get; set;}
+        public int Views {get; set;} = 0;
+        public string? Category {get; set;}
 
         public int UserId {get;set;}
         public User User {get; set;}
