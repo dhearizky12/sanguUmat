@@ -1,8 +1,21 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { useAuth } from "../hooks/useAuth";
 import { useEffect, useState } from "react";
+import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
+
+const NAV_ITEMS = [
+  { label: "Beranda", to: "/", matchPaths: ["/"] },
+  {
+    label: "Tanya Jawab",
+    to: "/questions",
+    // Covers both the "/questions" listing and everything under "/question/..."
+    // (detail, create) — same menu item should read as active for all of it.
+    matchPaths: ["/questions", "/question"],
+  },
+  { label: "Artikel", to: "/articles", matchPaths: ["/articles", "/detail-article"] },
+  { label: "Ngaji Bareng", to: "/live", matchPaths: ["/live"] },
+];
 
 function isMenuActive(pathname, matchPaths) {
   return matchPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
@@ -11,34 +24,9 @@ function isMenuActive(pathname, matchPaths) {
 function Header() {
   const { isAuthenticated, me, profile } = useAuth();
   const location = useLocation();
-
+  const [menuOpen, setMenuOpen] = useState(false);
   const [pendingAnswerCount, setPendingAnswerCount] = useState(null);
   const isAdmin = me?.role === "Admin";
-
-  const menus = [
-    {
-      label: "Beranda",
-      to: "/",
-      matchPaths: ["/"],
-    },
-    {
-      label: "Tanya Jawab",
-      to: "/questions",
-      // Covers both the "/questions" listing and everything under "/question/..."
-      // (detail, create) — same menu item should read as active for all of it.
-      matchPaths: ["/questions", "/question"],
-    },
-    {
-      label: "Artikel",
-      to: "/articles",
-      matchPaths: ["/articles", "/detail-article"],
-    },
-    {
-      label: "Ngaji Bareng",
-      to: "/live",
-      matchPaths: ["/live"],
-    },
-  ];
 
   useEffect(() => {
     if (me?.role !== "Guru") {
@@ -65,92 +53,169 @@ function Header() {
   }, [me?.role]);
 
   return (
-    <nav className="bg-surface shadow-sm top-0 z-50 sticky">
-      <div className="max-w-container-max mx-auto px-gutter flex items-center justify-between gap-4 w-full h-20">
-        <div className="flex items-center gap-2 cursor-pointer shrink-0">
-          <div className="rounded-lg flex items-center justify-center">
-            <span>
-            <img
-                src="/logo.png"
-                alt="Sangu Umat Logo"
-                className="w-12 h-12 object-contain"
-              />
-            </span>
-          </div>
-          <span className="text-title-md font-bold text-primary-container">Sangu Umat</span>
-        </div>
-        <div className="hidden md:flex flex-1 justify-center items-center gap-6 h-full min-w-0">
-          {menus.map((menu) => {
-            const isActive = isMenuActive(location.pathname, menu.matchPaths);
+    <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-sm border-b border-stone-line">
+      <div className="max-w-container-max mx-auto px-gutter min-h-[68px] py-2.5 flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
+        <Link to="/" className="flex items-center gap-2.5 shrink-0 min-w-0">
+          <span className="w-6 h-6 shrink-0 bg-forest [box-shadow:inset_0_0_0_1px_#0C4A38,inset_0_0_0_3px_#FBFAF5,inset_0_0_0_4px_#B08A2E]" />
+          <span className="font-serif text-xl font-medium tracking-tight text-forest">Sangu Umat</span>
+        </Link>
 
+        <nav className="hidden md:flex items-center justify-center gap-6 flex-1 label-mono">
+          {NAV_ITEMS.map((item) => {
+            const active = isMenuActive(location.pathname, item.matchPaths);
             return (
               <NavLink
-                key={menu.to}
-                to={menu.to}
-                className={`flex items-center h-full whitespace-nowrap text-primary-container text-body-md hover:text-primary-container transition-transform duration-200 active:scale-95 ${isActive && "font-bold border-b-2 border-primary-container"}`}
+                key={item.to}
+                to={item.to}
+                className={`pb-0.5 transition-colors ${
+                  active ? "text-forest border-b-[1.5px] border-gold-deep" : "text-ink-muted hover:text-ink"
+                }`}
               >
-                {menu.label}
+                {item.label}
               </NavLink>
             );
           })}
-        </div>
-        <div className="flex items-center gap-4 justify-end shrink-0">
-          { isAuthenticated && me?.role === "User" && (
-            < Link to="/question/create"
-              className="bg-primary-container text-on-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm cursor-pointer text-nowrap">
-            <span>Ajukan Pertanyaan</span>
+        </nav>
+
+        <div className="hidden md:flex items-center flex-wrap gap-4">
+          {isAuthenticated && me?.role === "User" && (
+            <Link
+              to="/question/create"
+              className="label-mono bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
+            >
+              Ajukan Pertanyaan
             </Link>
-            )}
+          )}
           {isAuthenticated && me?.role === "Guru" && (
             <Link
               to="/jawab-pertanyaan"
               title={pendingAnswerCount > 0 ? `${pendingAnswerCount} pertanyaan menunggu jawaban anda` : undefined}
-              className={`relative flex items-center gap-2 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full hover:opacity-90 transition-colors shadow-sm cursor-pointer text-nowrap`}
+              className="relative label-mono bg-gold text-forest-darker px-3.5 py-2.5 whitespace-nowrap hover:bg-cream-text transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">edit_note</span>
-              <span>Jawab Pertanyaan</span>
+              Jawab Pertanyaan
               {pendingAnswerCount > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-[20px] h-5 px-1 flex items-center justify-center rounded-full bg-error text-on-error text-[11px] font-bold leading-none">
+                <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-live text-cream-text text-[10px] font-mono leading-none">
                   {pendingAnswerCount}
                 </span>
               )}
             </Link>
-            )}
+          )}
           {isAdmin && (
             <Link
               to="/admin/users"
-              className={`flex items-center gap-2 bg-surface-container-high text-on-surface font-label-sm text-label-sm font-bold px-6 py-2.5 rounded-full hover:bg-surface-container-highest transition-colors shadow-sm cursor-pointer text-nowrap ${
-                isMenuActive(location.pathname, ["/admin"]) ? "ring-2 ring-primary-container/50" : ""
+              className={`label-mono border px-3.5 py-2.5 whitespace-nowrap transition-colors ${
+                isMenuActive(location.pathname, ["/admin"])
+                  ? "border-forest text-forest bg-cream-hover"
+                  : "border-stone-border text-ink-muted hover:bg-cream-hover"
               }`}
             >
-              <span className="material-symbols-outlined text-[18px]">shield_person</span>
-              <span>Panel Admin</span>
+              Panel Admin
             </Link>
           )}
           {isAuthenticated ? (
-            <Link to="/profile" className="cursor-pointer">
+            <Link to="/profile" className="shrink-0">
               <img
                 alt="Foto profil"
-                className="w-10 h-10 rounded-full border border-outline-variant object-cover"
+                className="w-9 h-9 rounded-full border border-stone-line object-cover"
                 data-alt="profile picture"
                 src={profile?.picture || "/default-avatar.png"}
                 onError={handleAvatarError}
               />
             </Link>
           ) : (
-            <Link
-              to="/login"
-              className="hidden md:flex text-primary font-label-sm text-label-sm px-6 py-2.5 rounded-full transition-colors border border-primary cursor-pointer items-center"
-            >
-              <span className="material-symbols-outlined -my-3 mr-2" data-icon="login">
-                login
-              </span>
-              <div>Masuk</div>
-            </Link>
+            <>
+              <Link to="/login" className="label-mono text-ink-muted hover:text-ink transition-colors">
+                Masuk
+              </Link>
+              <Link
+                to="/question/create"
+                className="label-mono bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
+              >
+                Ajukan Pertanyaan
+              </Link>
+            </>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={() => setMenuOpen((open) => !open)}
+          aria-label="Menu"
+          className="md:hidden w-11 h-11 shrink-0 flex items-center justify-center border border-stone-border text-forest text-xl hover:bg-cream-hover"
+        >
+          {menuOpen ? "✕" : "≡"}
+        </button>
       </div>
-    </nav>
+
+      {menuOpen && (
+        <div className="md:hidden border-t border-stone-line">
+          <div className="max-w-container-max mx-auto px-gutter pt-1.5 pb-5 flex flex-col">
+            {NAV_ITEMS.map((item) => {
+              const active = isMenuActive(location.pathname, item.matchPaths);
+              return (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  onClick={() => setMenuOpen(false)}
+                  className={`label-mono py-3.5 border-b border-stone-line-soft ${active ? "text-forest" : "text-ink-muted"}`}
+                >
+                  {item.label}
+                </NavLink>
+              );
+            })}
+
+            {isAuthenticated && me?.role === "Guru" && (
+              <Link
+                to="/jawab-pertanyaan"
+                onClick={() => setMenuOpen(false)}
+                className="label-mono py-3.5 border-b border-stone-line-soft text-forest"
+              >
+                Jawab Pertanyaan
+                {pendingAnswerCount > 0 ? ` (${pendingAnswerCount})` : ""}
+              </Link>
+            )}
+            {isAdmin && (
+              <Link
+                to="/admin/users"
+                onClick={() => setMenuOpen(false)}
+                className="label-mono py-3.5 border-b border-stone-line-soft text-forest"
+              >
+                Panel Admin
+              </Link>
+            )}
+
+            <div className="flex flex-wrap gap-3 pt-5">
+              {isAuthenticated ? (
+                <Link
+                  to="/profile"
+                  onClick={() => setMenuOpen(false)}
+                  className="flex-1 min-w-[120px] text-center label-mono border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
+                >
+                  Profil Saya
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/login"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex-1 min-w-[120px] text-center label-mono border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
+                  >
+                    Masuk
+                  </Link>
+                  <Link
+                    to="/question/create"
+                    onClick={() => setMenuOpen(false)}
+                    className="flex-1 min-w-[160px] text-center label-mono bg-forest text-cream-text py-3.5 hover:bg-ink transition-colors"
+                  >
+                    Ajukan Pertanyaan
+                  </Link>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+    </header>
   );
 }
 

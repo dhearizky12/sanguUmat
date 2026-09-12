@@ -77,6 +77,86 @@
   --spacing-gutter: 24px;
   --spacing-margin-mobile: 16px;
   --spacing-base: 8px;
+
+  /* ---------------------------------------------------------
+     EDITORIAL THEME (Claude Design refresh)
+     New surfaces are built with these tokens; legacy Material
+     tokens above stay untouched until their pages are migrated.
+  --------------------------------------------------------- */
+  --font-serif: "Newsreader", Georgia, serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
+
+  --color-ink: #17201c;
+  --color-ink-soft: #565d54;
+  --color-ink-muted: #6b7269;
+  --color-ink-faint: #7c776a;
+
+  --color-forest: #0c4a38;
+  --color-forest-deep: #073a2b;
+  --color-forest-darker: #05271d;
+  --color-forest-line: #14614a;
+
+  --color-gold: #e8c96f;
+  --color-gold-deep: #b08a2e;
+  --color-gold-dark: #8a6a18;
+  --color-gold-muted: #c9a94e;
+
+  --color-cream: #fbfaf5;
+  --color-cream-warm: #f4f1e7;
+  --color-cream-hover: #f2eee2;
+  --color-cream-text: #f7f3e8;
+  --color-cream-link: #e8dfc8;
+  --color-parchment: #efeadc;
+
+  --color-stone-line: #e3decf;
+  --color-stone-line-soft: #e9e4d6;
+  --color-stone-border: #c6bfac;
+  --color-stone-dotted: #cfc9b8;
+
+  --color-sage: #a9c2b6;
+  --color-sage-dim: #9db6a9;
+  --color-sage-dark: #8faa9c;
+
+  --color-live: #c0392b;
+}
+
+/* =========================================================
+   EDITORIAL THEME UTILITIES
+========================================================= */
+
+@utility label-mono {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+@utility girih-pattern-gold {
+  background-color: var(--color-forest-deep);
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23E8C96F%27%20stroke-opacity=%270.16%27%20stroke-width=%271%27%3E%3Cpolygon%20points=%2760%2C18%2066.7%2C43.9%2089.7%2C30.3%2076.1%2C53.3%20102%2C60%2076.1%2C66.7%2089.7%2C89.7%2066.7%2C77.4%2060%2C102%2053.3%2C77.4%2030.3%2C89.7%2043.9%2C66.7%2018%2C60%2043.9%2C53.3%2030.3%2C30.3%2053.3%2C43.9%27/%3E%3Cpolygon%20points=%270%2C-14%2014%2C0%200%2C14%20-14%2C0%27/%3E%3Cpolygon%20points=%27120%2C-14%20134%2C0%20120%2C14%20106%2C0%27/%3E%3Cpolygon%20points=%270%2C106%2014%2C120%200%2C134%20-14%2C120%27/%3E%3Cpolygon%20points=%27120%2C106%20134%2C120%20120%2C134%20106%2C120%27/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+@utility girih-pattern-gold-soft {
+  background-color: var(--color-forest-deep);
+  background-image: url("data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23E8C96F%27%20stroke-opacity=%270.10%27%20stroke-width=%271%27%3E%3Cpolygon%20points=%2760%2C18%2066.7%2C43.9%2089.7%2C30.3%2076.1%2C53.3%20102%2C60%2076.1%2C66.7%2089.7%2C89.7%2066.7%2C77.4%2060%2C102%2053.3%2C77.4%2030.3%2C89.7%2043.9%2C66.7%2018%2C60%2043.9%2C53.3%2030.3%2C30.3%2053.3%2C43.9%27/%3E%3Cpolygon%20points=%270%2C-14%2014%2C0%200%2C14%20-14%2C0%27/%3E%3Cpolygon%20points=%27120%2C-14%20134%2C0%20120%2C14%20106%2C0%27/%3E%3Cpolygon%20points=%270%2C106%2014%2C120%200%2C134%20-14%2C120%27/%3E%3Cpolygon%20points=%27120%2C106%20134%2C120%20120%2C134%20106%2C120%27/%3E%3C/g%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+@keyframes sgPulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.82);
+  }
+}
+
+.animate-sg-pulse {
+  animation: sgPulse 1.8s ease-in-out infinite;
 }
 
 /* =========================================================
