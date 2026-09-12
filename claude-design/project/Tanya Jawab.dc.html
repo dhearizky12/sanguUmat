@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #FBFAF5; }
+  * { box-sizing: border-box; }
+  a { color: #0C4A38; text-decoration: none; }
+  a:hover { color: #8A6A18; }
+  input, select, button { font-family: inherit; }
+  ::placeholder { color: #7C776A; opacity: 1; }
+</style>
+</helmet>
+
+<div style="font-family: Newsreader, Georgia, serif; color: #17201C; background: #FBFAF5; min-height: 100vh;">
+
+  <header style="position: sticky; top: 0; z-index: 40; background: rgba(251,250,245,.94); backdrop-filter: blur(8px); border-bottom: 1px solid #E3DECF;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 24px); min-height: 68px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;">
+      <a href="Sangu%20Umat.dc.html" style="display: flex; align-items: center; gap: 11px; flex: 0 0 auto; min-width: 0;">
+        <span style="width: 24px; height: 24px; flex: 0 0 auto; background: #0C4A38; display: block; box-shadow: inset 0 0 0 1px #0C4A38, inset 0 0 0 3px #FBFAF5, inset 0 0 0 4px #B08A2E;"></span>
+        <span style="font-size: 20px; font-weight: 500; letter-spacing: -.01em; color: #0C4A38;">Sangu Umat</span>
+      </a>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <nav style="display: flex; align-items: center; justify-content: center; gap: 8px 24px; flex: 1 1 240px; flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase;">
+          <a href="Sangu%20Umat.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Beranda</a>
+          <a href="#" style="color: #0C4A38; padding-bottom: 2px; border-bottom: 1.5px solid #B08A2E;">Tanya Jawab</a>
+          <a href="Artikel.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Artikel</a>
+          <a href="Ngaji%20Bareng.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Ngaji Bareng</a>
+        </nav>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; flex: 0 0 auto;">
+          <a href="Masuk.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: #6B7269;" style-hover="color: #17201C;">Masuk</a>
+          <a href="Ajukan%20Pertanyaan.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 10px 14px; white-space: nowrap;" style-hover="background: #17201C; color: #F7F3E8;">Ajukan Pertanyaan</a>
+        </div>
+      </sc-if>
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="Menu" style="flex: 0 0 auto; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid #C6BFAC; cursor: pointer; font-size: 20px; line-height: 1; color: #0C4A38;" style-hover="background: #F2EEE2;">{{ burgerLabel }}</button>
+      </sc-if>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top: 1px solid #E3DECF; background: #FBFAF5;">
+        <div style="max-width: 1160px; margin: 0 auto; padding: 6px clamp(16px, 4vw, 24px) 22px; display: flex; flex-direction: column;">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+            <a href="{{ n.href }}" onClick="{{ n.pick }}" style="{{ n.style }}" style-hover="color: #17201C;">{{ n.label }}</a>
+          </sc-for>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 20px;">
+            <a href="Masuk.dc.html" onClick="{{ closeMenu }}" style="flex: 1 1 120px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 14px 16px;" style-hover="background: #F2EEE2;">Masuk</a>
+            <a href="Ajukan%20Pertanyaan.dc.html" onClick="{{ closeMenu }}" style="flex: 1 1 160px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 14px 16px;" style-hover="background: #17201C;">Ajukan Pertanyaan</a>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </header>
+
+  <section style="background: #F4F1E7; border-bottom: 1px solid #E3DECF;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: clamp(26px, 4vw, 44px) clamp(18px, 5vw, 28px) clamp(24px, 4vw, 38px); display: flex; flex-direction: column; gap: 20px;">
+      <div style="display: flex; align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #7C776A;">
+        <a href="Sangu%20Umat.dc.html" style="color: #7C776A;" style-hover="color: #17201C;">Beranda</a>
+        <span>/</span>
+        <span style="color: #17201C;">Tanya Jawab</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px;">
+        <h1 style="margin: 0; font-size: clamp(34px, 5vw, 52px); line-height: 1.06; font-weight: 400; letter-spacing: -.02em;">Tanya Jawab</h1>
+        <p style="margin: 0; max-width: 52ch; font-size: 16px; line-height: 1.6; color: #565D54;">Telusuri 1.248 jawaban yang sudah ditelaah dewan ustadz. Saring berdasarkan kategori, ustadz, atau urutkan sesuai kebutuhanmu.</p>
+      </div>
+      <div style="width: 100%; display: flex; flex-wrap: wrap; align-items: stretch; background: #FBFAF5; border: 1px solid #C6BFAC;">
+        <input type="text" value="{{ q }}" onChange="{{ onSearch }}" placeholder="Cari pertanyaan, misalnya: menjamak sholat" style="flex: 1 1 220px; min-width: 0; border: 0; outline: none; background: transparent; padding: 0 clamp(14px, 4vw, 20px); height: 56px; font-size: 17px; color: #17201C;">
+        <sc-if value="{{ hasQuery }}" hint-placeholder-val="{{ false }}">
+          <button onClick="{{ onClearQuery }}" aria-label="Hapus pencarian" style="flex: 0 0 auto; border: 0; background: transparent; cursor: pointer; padding: 0 14px; font-size: 17px; color: #7C776A;" style-hover="color: #17201C;">✕</button>
+        </sc-if>
+        <button onClick="{{ noop }}" style="flex: 0 0 auto; border: 0; cursor: pointer; background: #0C4A38; color: #F7F3E8; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; padding: 0 clamp(18px, 5vw, 26px);" style-hover="background: #17201C;">Cari</button>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width: 1160px; margin: 0 auto; padding: clamp(28px, 4vw, 48px) clamp(18px, 5vw, 28px) clamp(48px, 7vw, 84px);">
+    <div style="{{ layoutStyle }}">
+
+      <aside style="{{ asideStyle }}">
+        <div style="display: flex; flex-direction: column;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid #17201C;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Kategori</span>
+            <a href="#" onClick="{{ clearCategory }}" style="{{ clearCatStyle }}">Semua</a>
+          </div>
+          <div style="display: flex; align-items: stretch; border: 1px solid #E3DECF; background: #FFFDF7; margin-top: 12px;">
+            <input type="text" value="{{ catQuery }}" onChange="{{ onCatQuery }}" placeholder="Cari kategori" style="flex: 1 1 auto; min-width: 0; border: 0; outline: none; background: transparent; padding: 0 12px; height: 40px; font-size: 15px; color: #17201C;">
+            <sc-if value="{{ catQueryOn }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ clearCatQuery }}" aria-label="Hapus pencarian kategori" style="border: 0; background: transparent; cursor: pointer; padding: 0 10px; font-size: 14px; color: #7C776A;" style-hover="color: #17201C;">✕</button>
+            </sc-if>
+          </div>
+          <div style="{{ catListStyle }}">
+            <sc-for list="{{ categories }}" as="c" hint-placeholder-count="8">
+              <a href="#" onClick="{{ c.pick }}" style="{{ c.style }}" style-hover="background: #F2EEE2;">
+                <span aria-hidden="true" style="{{ c.boxStyle }}">{{ c.mark }}</span>
+                <span style="flex: 1 1 auto; font-size: 16px; min-width: 0;">{{ c.name }}</span>
+                <span style="flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7C776A;">{{ c.count }}</span>
+              </a>
+            </sc-for>
+          </div>
+          <sc-if value="{{ catEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 14px 6px; font-size: 15px; color: #7C776A;">Kategori tidak ditemukan.</div>
+          </sc-if>
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; padding-top: 11px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; color: #9B958A; flex: 1 1 100%;">{{ catCountMeta }}</span>
+            <sc-if value="{{ catHasMore }}" hint-placeholder-val="{{ false }}">
+              <a href="#" onClick="{{ toggleCatAll }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: #0C4A38; border-bottom: 1px solid #C6BFAC; align-self: auto; white-space: nowrap" style-hover="color: #8A6A18;">{{ catMoreLabel }}</a>
+            </sc-if>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column; padding-top: 30px;">
+          <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 10px; border-bottom: 1px solid #17201C;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Ustadz</span>
+            <a href="#" onClick="{{ clearUstadz }}" style="{{ clearUstadzStyle }}">Semua</a>
+          </div>
+          <div style="display: flex; align-items: stretch; border: 1px solid #E3DECF; background: #FFFDF7; margin-top: 12px;">
+            <input type="text" value="{{ ustadzQuery }}" onChange="{{ onUstadzQuery }}" placeholder="Cari ustadz" style="flex: 1 1 auto; min-width: 0; border: 0; outline: none; background: transparent; padding: 0 12px; height: 40px; font-size: 15px; color: #17201C;">
+            <sc-if value="{{ ustadzQueryOn }}" hint-placeholder-val="{{ false }}">
+              <button onClick="{{ clearUstadzQuery }}" aria-label="Hapus pencarian ustadz" style="border: 0; background: transparent; cursor: pointer; padding: 0 10px; font-size: 14px; color: #7C776A;" style-hover="color: #17201C;">✕</button>
+            </sc-if>
+          </div>
+          <div style="{{ ustadzListStyle }}">
+            <sc-for list="{{ ustadzList }}" as="u" hint-placeholder-count="5">
+              <a href="#" onClick="{{ u.pick }}" style="{{ u.style }}" style-hover="background: #F2EEE2;">
+                <span aria-hidden="true" style="{{ u.boxStyle }}">{{ u.mark }}</span>
+                <span style="flex: 1 1 auto; font-size: 16px; min-width: 0;">{{ u.name }}</span>
+                <span style="flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7C776A;">{{ u.count }}</span>
+              </a>
+            </sc-for>
+          </div>
+          <sc-if value="{{ ustadzEmpty }}" hint-placeholder-val="{{ false }}">
+            <div style="padding: 14px 6px; font-size: 15px; color: #7C776A;">Ustadz tidak ditemukan.</div>
+          </sc-if>
+          <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; padding-top: 11px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .1em; color: #9B958A; flex: 1 1 100%;">{{ ustadzCountMeta }}</span>
+            <sc-if value="{{ ustadzHasMore }}" hint-placeholder-val="{{ false }}">
+              <a href="#" onClick="{{ toggleUstadzAll }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: #0C4A38; border-bottom: 1px solid #C6BFAC;" style-hover="color: #8A6A18;">{{ ustadzMoreLabel }}</a>
+            </sc-if>
+          </div>
+        </div>
+      </aside>
+
+      <div style="display: flex; flex-direction: column; min-width: 0;">
+        <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px 20px; padding-bottom: 12px; border-bottom: 1px solid #17201C;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #6B7269;">{{ resultMeta }}</span>
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px 14px;">
+            <label style="display: flex; align-items: center; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: #6B7269;">
+              Urutkan
+              <select value="{{ sort }}" onChange="{{ onSort }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; color: #17201C; background: #FBFAF5; border: 1px solid #C6BFAC; padding: 9px 10px; cursor: pointer;">
+                <option value="terbaru">Terbaru</option>
+                <option value="terlama">Terlama</option>
+                <option value="populer">Paling banyak dibaca</option>
+                <option value="singkat">Waktu baca tersingkat</option>
+                <option value="abjad">Judul A–Z</option>
+              </select>
+            </label>
+            <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+              <div style="display: flex; align-items: stretch; border: 1px solid #C6BFAC;">
+                <button onClick="{{ setOneCol }}" aria-label="Satu kolom" title="Satu kolom" style="{{ oneColStyle }}" style-hover="background: #F2EEE2;">
+                  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="4" fill="none" stroke="currentColor" stroke-width="1.4"></rect><rect x="1.5" y="9.5" width="13" height="4" fill="none" stroke="currentColor" stroke-width="1.4"></rect></svg>
+                </button>
+                <button onClick="{{ setTwoCol }}" aria-label="Dua kolom" title="Dua kolom" style="{{ twoColStyle }}" style-hover="background: #F2EEE2;">
+                  <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="1.5" y="2.5" width="5.5" height="11" fill="none" stroke="currentColor" stroke-width="1.4"></rect><rect x="9" y="2.5" width="5.5" height="11" fill="none" stroke="currentColor" stroke-width="1.4"></rect></svg>
+                </button>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+
+        <sc-if value="{{ hasFilters }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 16px 0 2px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: #7C776A;">Saringan aktif</span>
+            <sc-for list="{{ activeFilters }}" as="f" hint-placeholder-count="2">
+              <button onClick="{{ f.remove }}" style="display: flex; align-items: center; gap: 8px; cursor: pointer; background: #F0E4BE; border: 1px solid #DCC98C; color: #7A5E12; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; text-transform: uppercase; padding: 7px 11px;" style-hover="background: #E7D8A8;">
+                {{ f.label }}
+                <span aria-hidden="true">✕</span>
+              </button>
+            </sc-for>
+            <a href="#" onClick="{{ resetAll }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase; color: #6B7269; border-bottom: 1px solid #C6BFAC;" style-hover="color: #17201C;">Hapus semua</a>
+          </div>
+        </sc-if>
+
+        <div style="{{ listStyle }}">
+          <sc-for list="{{ questions }}" as="item" hint-placeholder-count="8">
+            <a href="#" style="{{ item.style }}" style-hover="background: #F4F1E7; border-left: 2px solid #B08A2E;">
+              <div style="display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;">
+                <span style="color: #0C4A38;">{{ item.topic }}</span>
+                <span style="color: #7C776A;">{{ item.date }}</span>
+                <span style="color: #7C776A;">{{ item.reads }} dibaca</span>
+              </div>
+              <h3 style="margin: 0; font-size: clamp(19px, 2.2vw, 24px); font-weight: 400; line-height: 1.28; letter-spacing: -.01em; color: #17201C; max-width: 40ch; text-wrap: pretty;">{{ item.title }}</h3>
+              <p style="margin: 0; font-size: 16px; line-height: 1.62; color: #565D54; max-width: 74ch; text-wrap: pretty;">{{ item.excerpt }}</p>
+              <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .08em; color: #6B7269;">
+                <span>Dijawab oleh</span>
+                <span style="display: inline-flex; align-items: center; gap: 5px; color: #0C4A38;">
+                  <span style="width: 15px; height: 15px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;" title="Ustadz terverifikasi">
+                    <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 1.6l2.47 1.79 3.03-.28 1.15 2.82 2.6 1.6-.6 2.99.98 2.9-2.35 1.94-.78 2.95-3.05.28L12 22.4l-2.45-1.81-3.05-.28-.78-2.95L3.37 15.4l.98-2.9-.6-2.99 2.6-1.6L7.5 5.09l3.03.28L12 1.6z" fill="#0C4A38"></path><path d="M8.2 12.3l2.6 2.6 5-5.2" fill="none" stroke="#FBFAF5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                  </span>
+                  {{ item.ustadz }}
+                </span>
+                <span style="color: #7C776A;">· {{ item.read }} baca</span>
+              </div>
+            </a>
+          </sc-for>
+        </div>
+
+        <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 24px; border: 1px dashed #CFC9B8; padding: 56px 28px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+            <div style="font-size: 22px;">Belum ada jawaban yang cocok.</div>
+            <p style="margin: 0; max-width: 46ch; font-size: 16px; line-height: 1.6; color: #6B7269;">Coba longgarkan saringan atau ajukan pertanyaanmu langsung kepada para ustadz.</p>
+            <a href="#" onClick="{{ resetAll }}" style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 12px 20px;" style-hover="background: #F2EEE2;">Atur ulang saringan</a>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ hasResults }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; padding-top: 30px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #7C776A;">{{ pageMeta }}</span>
+            <div style="display: flex; align-items: stretch; gap: 8px;">
+              <button onClick="{{ prevPage }}" style="{{ prevStyle }}">Sebelumnya</button>
+              <sc-for list="{{ pages }}" as="p" hint-placeholder-count="3">
+                <button onClick="{{ p.go }}" style="{{ p.style }}">{{ p.label }}</button>
+              </sc-for>
+              <button onClick="{{ nextPage }}" style="{{ nextStyle }}">Berikutnya</button>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-top: 1px solid #E3DECF; background: #F4F1E7;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 5vw, 64px) clamp(18px, 5vw, 28px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px;">
+      <div style="display: flex; flex-direction: column; gap: 8px; max-width: 46ch;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #8A6A18;">Tidak menemukan jawabannya?</div>
+        <h2 style="margin: 0; font-size: clamp(24px, 3vw, 34px); font-weight: 400; letter-spacing: -.015em;">Ajukan pertanyaanmu, ustadz kami akan menjawab.</h2>
+        <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #565D54;">Rata-rata dijawab dalam 2 hari kerja, lengkap dengan rujukan dalil.</p>
+      </div>
+      <a href="Ajukan%20Pertanyaan.dc.html" style="flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 16px clamp(18px, 5vw, 28px);" style-hover="background: #17201C;">Ajukan Pertanyaan</a>
+    </div>
+  </section>
+
+  <footer style="background: #05271D; color: #A9C2B6;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 48px clamp(18px, 5vw, 28px) 36px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 36px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span style="display: flex; align-items: center; gap: 11px;">
+          <span style="width: 24px; height: 24px; background: #05271D; display: block; box-shadow: inset 0 0 0 1px #E8C96F, inset 0 0 0 3px #05271D, inset 0 0 0 4px #E8C96F;"></span>
+          <span style="font-size: 20px; color: #F7F3E8;">Sangu Umat</span>
+        </span>
+        <span style="font-size: 15px; line-height: 1.6; max-width: 32ch;">Menjembatani kearifan tradisional dengan kejelasan modern.</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Jelajahi</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Tanya Jawab</a>
+        <a href="Artikel.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Artikel</a>
+        <a href="Ngaji%20Bareng.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Ngaji Bareng</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Tentang</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Dewan Ustadz</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Metode Verifikasi</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Keanggotaan</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Bantuan</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Hubungi Kami</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Kebijakan Privasi</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Syarat Layanan</a>
+      </div>
+    </div>
+    <div style="border-top: 1px solid #0C4A38;">
+      <div style="max-width: 1160px; margin: 0 auto; padding: 20px clamp(18px, 5vw, 28px); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #8FAA9C;">Sangu Umat © 2026</div>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{}">
+const NAV = [
+  ["Beranda", "Sangu%20Umat.dc.html"], ["Tanya Jawab", "#"],
+  ["Artikel", "Artikel.dc.html"], ["Ngaji Bareng", "Ngaji%20Bareng.dc.html"]
+];
+
+const QUESTIONS = [
+  { topic: "Sholat", days: 2, reads: 3402, readMin: 6, title: "Bagaimana cara menjamak sholat ketika sedang perjalanan dinas?", excerpt: "Perjalanan dinas yang memenuhi jarak safar membolehkan jamak taqdim maupun ta'khir. Yang perlu diperhatikan adalah niat, urutan sholat, dan kapan status musafir berakhir ketika sudah menetap di kota tujuan.", ustadz: "Ustadz Abdul Hakim" },
+  { topic: "Keuangan & Muamalah", days: 3, reads: 2918, readMin: 9, title: "Apakah keuntungan dari investasi saham syariah termasuk riba?", excerpt: "Selama emiten lolos penyaringan usaha dan rasio utang berbasis bunga, keuntungan dari kenaikan harga maupun dividen dinilai sebagai hasil kepemilikan usaha, bukan pinjaman berbunga.", ustadz: "Ustadz Faiz Rahman" },
+  { topic: "Zakat", days: 5, reads: 5140, readMin: 5, title: "Berapa nisab zakat penghasilan untuk gaji bulanan?", excerpt: "Mayoritas lembaga zakat menyetarakan nisab penghasilan dengan 85 gram emas per tahun, lalu membaginya per bulan. Kadar yang dikeluarkan 2,5% dari penghasilan bruto setelah kebutuhan pokok.", ustadz: "Ustadzah Nur Aisyah" },
+  { topic: "Puasa", days: 7, reads: 1870, readMin: 4, title: "Apakah muntah dengan tidak sengaja membatalkan puasa?", excerpt: "Muntah yang tidak disengaja tidak membatalkan puasa selama tidak ada yang tertelan kembali. Berbeda halnya bila muntah dipancing dengan sengaja, maka puasanya batal dan wajib diqadha.", ustadz: "Ustadz Abdul Hakim" },
+  { topic: "Akhlak", days: 8, reads: 2233, readMin: 7, title: "Bagaimana hukum membalas ghibah di media sosial?", excerpt: "Membela diri diperbolehkan sebatas menjelaskan fakta yang menyangkut diri sendiri. Yang dilarang adalah membalas dengan membuka aib pihak lain, sebab itu menambah keburukan, bukan menutupnya.", ustadz: "Ustadz Zainal Muttaqin" },
+  { topic: "Thaharah", days: 14, reads: 4061, readMin: 5, title: "Sahkah wudhu jika kuku memakai cat kuku?", excerpt: "Lapisan yang menghalangi air sampai ke kulit membuat wudhu tidak sah. Produk yang terbukti meloloskan air menjadi pengecualian, namun perlu kehati-hatian dalam memastikan klaim tersebut.", ustadz: "Ustadzah Nur Aisyah" },
+  { topic: "Keluarga & Pernikahan", days: 15, reads: 6588, readMin: 8, title: "Bagaimana adab menyelesaikan perselisihan antara suami dan istri?", excerpt: "Al-Qur'an menuntun penyelesaian bertahap: nasihat, menjaga jarak sementara, hingga menghadirkan penengah dari kedua keluarga. Tujuannya perbaikan hubungan, bukan menang dalam perdebatan.", ustadz: "Ustadz Faiz Rahman" },
+  { topic: "Isu Kontemporer", days: 21, reads: 3727, readMin: 6, title: "Bolehkah menggunakan kecerdasan buatan untuk menulis khutbah?", excerpt: "Alat bantu penyusunan diperbolehkan, tetapi tanggung jawab isi tetap pada khatib. Setiap dalil dan kutipan wajib diperiksa sanadnya sebelum disampaikan kepada jamaah.", ustadz: "Ustadz Zainal Muttaqin" },
+  { topic: "Sholat", days: 23, reads: 4890, readMin: 5, title: "Sahkah sholat yang dikerjakan sambil duduk karena sakit punggung?", excerpt: "Kemampuan menjadi ukuran. Bila berdiri menimbulkan mudarat atau memperlambat kesembuhan, sholat sambil duduk tetap sah tanpa mengurangi pahala, dengan tetap menyempurnakan rukun yang mampu dikerjakan.", ustadz: "Ustadz Abdul Hakim" },
+  { topic: "Keuangan & Muamalah", days: 26, reads: 7215, readMin: 10, title: "Bagaimana hukum membeli rumah dengan KPR bank konvensional?", excerpt: "Akad kredit berbunga tergolong riba menurut mayoritas ulama. Skema syariah seperti murabahah atau musyarakah mutanaqisah menjadi jalan keluar, dan kondisi darurat dinilai kasus per kasus.", ustadz: "Ustadz Faiz Rahman" },
+  { topic: "Jenazah", days: 29, reads: 1544, readMin: 6, title: "Apa saja kewajiban keluarga terhadap jenazah sebelum dimakamkan?", excerpt: "Empat hal menjadi fardhu kifayah: memandikan, mengafani, menyolatkan, dan menguburkan. Utang serta wasiat almarhum sebaiknya diselesaikan secepatnya sebelum pemakaman.", ustadz: "Ustadz Zainal Muttaqin" },
+  { topic: "Makanan & Minuman", days: 33, reads: 3096, readMin: 4, title: "Halalkah makanan yang mengandung perisa beralkohol?", excerpt: "Alkohol sebagai pelarut perisa dalam kadar sangat kecil dan tidak memabukkan umumnya ditoleransi. Yang dilarang adalah khamr dan produk yang sengaja diberi kandungan memabukkan.", ustadz: "Ustadzah Nur Aisyah" },
+  { topic: "Haji & Umrah", days: 38, reads: 2410, readMin: 8, title: "Bolehkah menunaikan haji dengan dana pinjaman?", excerpt: "Haji diwajibkan bagi yang mampu, dan berutang menandakan kemampuan itu belum terpenuhi. Bila utang tetap diambil, pastikan akadnya bebas riba dan kemampuan melunasi benar-benar ada.", ustadz: "Ustadz Faiz Rahman" },
+  { topic: "Aqidah", days: 44, reads: 1988, readMin: 7, title: "Bagaimana menyikapi ucapan selamat hari raya agama lain?", excerpt: "Para ulama berbeda pendapat. Sebagian membolehkan sebagai bentuk muamalah sosial selama tidak mengandung pengakuan keyakinan, sebagian lain melarang untuk menutup pintu kesamaran.", ustadz: "Ustadz Zainal Muttaqin" },
+  { topic: "Puasa", days: 51, reads: 5602, readMin: 6, title: "Bagaimana mengqadha puasa yang tertinggal bertahun-tahun?", excerpt: "Qadha tetap wajib berapa pun jumlahnya, boleh dicicil tanpa harus berurutan. Keterlambatan tanpa uzur menurut sebagian ulama menambah kewajiban fidyah untuk setiap hari yang tertunda.", ustadz: "Ustadz Abdul Hakim" },
+  { topic: "Zakat", days: 58, reads: 2755, readMin: 5, title: "Bolehkah zakat disalurkan kepada kerabat sendiri?", excerpt: "Kerabat yang bukan tanggungan nafkah dan termasuk delapan asnaf boleh menerima zakat, bahkan lebih utama. Yang tidak dibolehkan adalah menyalurkannya kepada orang tua, anak, atau istri.", ustadz: "Ustadzah Nur Aisyah" }
+];
+
+const PER_PAGE = 8;
+
+const SORTS = {
+  terbaru: (a, b) => a.days - b.days,
+  terlama: (a, b) => b.days - a.days,
+  populer: (a, b) => b.reads - a.reads,
+  singkat: (a, b) => a.readMin - b.readMin,
+  abjad: (a, b) => a.title.localeCompare(b.title, "id")
+};
+
+const SORT_LABEL = {
+  terbaru: "Terbaru", terlama: "Terlama", populer: "Paling banyak dibaca",
+  singkat: "Waktu baca tersingkat", abjad: "Judul A\u2013Z"
+};
+
+function ago(days) {
+  if (days < 7) return days + " hari lalu";
+  if (days < 30) return Math.round(days / 7) + " minggu lalu";
+  return Math.round(days / 30) + " bulan lalu";
+}
+
+function num(n) {
+  return n.toLocaleString("id-ID");
+}
+
+class Component extends DCLogic {
+  state = {
+    q: "", cats: [], ustadzs: [], sort: "terbaru", page: 1, cols: null, narrow: false, menuOpen: false,
+    catQuery: "", ustadzQuery: "", catAll: false, ustadzAll: false
+  };
+
+  toggleIn(key, name) {
+    this.setState(st => {
+      const list = st[key];
+      const next = list.includes(name) ? list.filter(v => v !== name) : list.concat(name);
+      return { [key]: next, page: 1 };
+    });
+  }
+
+  // Facets stay usable at any cardinality: type-to-search, top-N by count,
+  // selected values pinned, and a scrolling "lihat semua" list.
+  facet(names, countsMap, selected, query, expanded, capacity) {
+    const nq = query.trim().toLowerCase();
+    const matched = names
+      .filter(n => !nq || n.toLowerCase().includes(nq))
+      .sort((a, b) => (countsMap[b] || 0) - (countsMap[a] || 0) || a.localeCompare(b, "id"));
+    let visible = expanded || nq ? matched.slice(0, 200) : matched.slice(0, capacity);
+    const pinned = selected.filter(v => !visible.includes(v));
+    if (pinned.length) visible = pinned.concat(visible);
+    return {
+      matched, visible,
+      hasMore: !nq && matched.length > capacity,
+      countMeta: visible.length < matched.length
+        ? "Menampilkan " + visible.length + " dari " + num(matched.length)
+        : num(matched.length) + " pilihan" + (visible.length > 9 ? " \u00b7 gulir" : ""),
+      moreLabel: expanded ? "Tampilkan lebih sedikit" : "Lihat semua"
+    };
+  }
+
+  componentDidMount() {
+    this._onResize = () => {
+      const narrow = window.innerWidth < 900;
+      if (narrow !== this.state.narrow) this.setState({ narrow, menuOpen: false });
+    };
+    this._onResize();
+    window.addEventListener("resize", this._onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+  }
+
+  set(patch) {
+    this.setState(Object.assign({ page: 1 }, patch));
+  }
+
+  colBtn(active) {
+    return {
+      border: 0, cursor: "pointer", padding: "8px 11px", lineHeight: 0,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      background: active ? "#0C4A38" : "transparent",
+      color: active ? "#F7F3E8" : "#6B7269"
+    };
+  }
+
+  pageBtn(active, disabled) {
+    return {
+      cursor: disabled ? "default" : "pointer",
+      border: "1px solid " + (active ? "#0C4A38" : "#C6BFAC"),
+      background: active ? "#0C4A38" : "transparent",
+      color: disabled ? "#B5AF9E" : (active ? "#F7F3E8" : "#17201C"),
+      fontFamily: "'IBM Plex Mono', monospace", fontSize: "10.5px",
+      letterSpacing: ".13em", textTransform: "uppercase", padding: "10px 13px"
+    };
+  }
+
+  clearStyle(on) {
+    return {
+      fontFamily: "'IBM Plex Mono', monospace", fontSize: "10.5px", letterSpacing: ".13em",
+      textTransform: "uppercase", color: on ? "#8A6A18" : "#B5AF9E",
+      borderBottom: on ? "1px solid #C6BFAC" : "1px solid transparent"
+    };
+  }
+
+  rowStyle(active) {
+    return {
+      display: "flex", alignItems: "center", gap: "10px",
+      padding: "10px 8px 10px 6px", borderBottom: "1px solid #E9E4D6",
+      color: active ? "#8A6A18" : "#17201C",
+      background: active ? "#F2EEE2" : "transparent"
+    };
+  }
+
+  boxStyle(active) {
+    return {
+      flex: "0 0 auto", width: "14px", height: "14px",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      border: "1px solid " + (active ? "#0C4A38" : "#C6BFAC"),
+      background: active ? "#0C4A38" : "transparent",
+      color: "#F7F3E8", fontSize: "10px", lineHeight: 1
+    };
+  }
+
+  renderVals() {
+    const s = this.state;
+    const q = s.q.trim().toLowerCase();
+    const narrow = s.narrow;
+    const cols = s.cols ?? 2;
+    const twoUp = cols === 2 && !narrow;
+
+    const matchesQ = it => !q || (it.title + " " + it.excerpt + " " + it.topic + " " + it.ustadz).toLowerCase().includes(q);
+    const base = QUESTIONS.filter(it => matchesQ(it));
+
+    const counts = {};
+    const uCounts = {};
+    base.forEach(it => {
+      counts[it.topic] = (counts[it.topic] || 0) + 1;
+      uCounts[it.ustadz] = (uCounts[it.ustadz] || 0) + 1;
+    });
+
+    const filtered = base
+      .filter(it => (!s.cats.length || s.cats.includes(it.topic)) && (!s.ustadzs.length || s.ustadzs.includes(it.ustadz)))
+      .sort(SORTS[s.sort] || SORTS.terbaru);
+
+    const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
+    const page = Math.min(s.page, totalPages);
+    const start = (page - 1) * PER_PAGE;
+    const shown = filtered.slice(start, start + PER_PAGE);
+
+    const cats = Array.from(new Set(QUESTIONS.map(it => it.topic))).sort((a, b) => a.localeCompare(b, "id"));
+    const ustadzNames = Array.from(new Set(QUESTIONS.map(it => it.ustadz))).sort((a, b) => a.localeCompare(b, "id"));
+
+    const catFacet = this.facet(cats, counts, s.cats, s.catQuery, s.catAll, 8);
+    const ustadzFacet = this.facet(ustadzNames, uCounts, s.ustadzs, s.ustadzQuery, s.ustadzAll, 5);
+    // Cap at 7 whole rows + a half-row peek so the cut reads as "scrollable", not clipped.
+    const ROW = 42.2, SCROLL_AT = 9, WHOLE = 7;
+    const scrolling = n => n > SCROLL_AT
+      ? {
+          display: "flex", flexDirection: "column", paddingTop: "4px",
+          maxHeight: Math.round(WHOLE * ROW + ROW / 2 + 4) + "px", overflowY: "auto",
+          borderBottom: "1px solid #E9E4D6",
+          maskImage: "linear-gradient(to bottom, #000 calc(100% - 26px), transparent)",
+          WebkitMaskImage: "linear-gradient(to bottom, #000 calc(100% - 26px), transparent)"
+        }
+      : { display: "flex", flexDirection: "column", paddingTop: "4px" };
+    const catScroll = scrolling(catFacet.visible.length);
+    const ustadzScroll = scrolling(ustadzFacet.visible.length);
+
+    const activeFilters = [];
+    s.cats.forEach(name => activeFilters.push({ label: name, remove: () => this.toggleIn("cats", name) }));
+    s.ustadzs.forEach(name => activeFilters.push({ label: name, remove: () => this.toggleIn("ustadzs", name) }));
+    if (q) activeFilters.push({ label: "\u201C" + s.q.trim() + "\u201D", remove: () => this.set({ q: "" }) });
+
+    return {
+      narrow,
+      wide: !narrow,
+      menuOpen: narrow && s.menuOpen,
+      burgerLabel: s.menuOpen ? "\u2715" : "\u2261",
+      toggleMenu: e => { e.preventDefault(); this.setState(st => ({ menuOpen: !st.menuOpen })); },
+      closeMenu: () => this.setState({ menuOpen: false }),
+      navItems: NAV.map(([label, href], i) => ({
+        label, href,
+        style: {
+          display: "block", padding: "14px 0", fontSize: "13px", letterSpacing: ".13em",
+          textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace",
+          color: i === 1 ? "#0C4A38" : "#6B7269", borderBottom: "1px solid #E9E4D6"
+        },
+        pick: () => this.setState({ menuOpen: false })
+      })),
+
+      q: s.q,
+      hasQuery: q.length > 0,
+      noop: e => e.preventDefault(),
+      onSearch: e => this.set({ q: e.target.value }),
+      onClearQuery: e => { e.preventDefault(); this.set({ q: "" }); },
+
+      layoutStyle: narrow
+        ? { display: "flex", flexDirection: "column", gap: "34px" }
+        : { display: "grid", gridTemplateColumns: "232px minmax(0, 1fr)", gap: "clamp(32px, 5vw, 60px)", alignItems: "start" },
+      asideStyle: narrow
+        ? { display: "flex", flexDirection: "column" }
+        : { display: "flex", flexDirection: "column", position: "sticky", top: "88px" },
+      catListStyle: catScroll,
+      clearCatStyle: this.clearStyle(s.cats.length > 0),
+      clearUstadzStyle: this.clearStyle(s.ustadzs.length > 0),
+      clearCategory: e => { e.preventDefault(); this.set({ cats: [] }); },
+      clearUstadz: e => { e.preventDefault(); this.set({ ustadzs: [] }); },
+
+      catQuery: s.catQuery,
+      catQueryOn: s.catQuery.trim().length > 0,
+      onCatQuery: e => this.setState({ catQuery: e.target.value }),
+      clearCatQuery: e => { e.preventDefault(); this.setState({ catQuery: "" }); },
+      catEmpty: catFacet.visible.length === 0,
+      catCountMeta: catFacet.countMeta,
+      catHasMore: catFacet.hasMore,
+      catMoreLabel: catFacet.moreLabel,
+      toggleCatAll: e => { e.preventDefault(); this.setState(st => ({ catAll: !st.catAll })); },
+      categories: catFacet.visible.map(name => ({
+        name,
+        count: counts[name] || 0,
+        style: this.rowStyle(s.cats.includes(name)),
+        boxStyle: this.boxStyle(s.cats.includes(name)),
+        mark: s.cats.includes(name) ? "\u2713" : "",
+        pick: e => { e.preventDefault(); this.toggleIn("cats", name); }
+      })),
+
+      ustadzQuery: s.ustadzQuery,
+      ustadzQueryOn: s.ustadzQuery.trim().length > 0,
+      onUstadzQuery: e => this.setState({ ustadzQuery: e.target.value }),
+      clearUstadzQuery: e => { e.preventDefault(); this.setState({ ustadzQuery: "" }); },
+      ustadzEmpty: ustadzFacet.visible.length === 0,
+      ustadzCountMeta: ustadzFacet.countMeta,
+      ustadzHasMore: ustadzFacet.hasMore,
+      ustadzMoreLabel: ustadzFacet.moreLabel,
+      toggleUstadzAll: e => { e.preventDefault(); this.setState(st => ({ ustadzAll: !st.ustadzAll })); },
+      ustadzListStyle: ustadzScroll,
+      ustadzList: ustadzFacet.visible.map(name => ({
+        name,
+        count: uCounts[name] || 0,
+        style: this.rowStyle(s.ustadzs.includes(name)),
+        boxStyle: this.boxStyle(s.ustadzs.includes(name)),
+        mark: s.ustadzs.includes(name) ? "\u2713" : "",
+        pick: e => { e.preventDefault(); this.toggleIn("ustadzs", name); }
+      })),
+
+      sort: s.sort,
+      sortLabel: SORT_LABEL[s.sort],
+      onSort: e => this.set({ sort: e.target.value }),
+
+      setOneCol: e => { e.preventDefault(); this.setState({ cols: 1 }); },
+      setTwoCol: e => { e.preventDefault(); this.setState({ cols: 2 }); },
+      oneColStyle: this.colBtn(cols === 1),
+      twoColStyle: this.colBtn(cols === 2),
+
+      hasFilters: activeFilters.length > 0,
+      activeFilters,
+      resetAll: e => { e.preventDefault(); this.set({ q: "", cats: [], ustadzs: [], catQuery: "", ustadzQuery: "" }); },
+
+      resultMeta: filtered.length + " dari " + QUESTIONS.length + " jawaban",
+      empty: filtered.length === 0,
+      hasResults: filtered.length > 0,
+      pageMeta: filtered.length === 0 ? "" : ("Halaman " + page + " dari " + totalPages),
+
+      listStyle: twoUp
+        ? { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", columnGap: "clamp(28px, 4vw, 44px)" }
+        : { display: "flex", flexDirection: "column" },
+      questions: shown.map(it => ({
+        topic: it.topic,
+        title: it.title,
+        excerpt: it.excerpt,
+        ustadz: it.ustadz,
+        date: ago(it.days),
+        reads: num(it.reads),
+        read: it.readMin + " menit",
+        style: {
+          display: "flex", flexDirection: "column", gap: "11px",
+          padding: "clamp(18px, 3vw, 26px) 0 clamp(18px, 3vw, 26px) clamp(12px, 3vw, 18px)",
+          borderBottom: "1px solid #E3DECF", borderLeft: "2px solid transparent"
+        }
+      })),
+
+      pages: Array.from({ length: totalPages }, (_, i) => ({
+        label: String(i + 1),
+        style: this.pageBtn(page === i + 1, false),
+        go: e => { e.preventDefault(); this.setState({ page: i + 1 }); }
+      })),
+      prevStyle: this.pageBtn(false, page === 1),
+      nextStyle: this.pageBtn(false, page === totalPages),
+      prevPage: e => { e.preventDefault(); if (page > 1) this.setState({ page: page - 1 }); },
+      nextPage: e => { e.preventDefault(); if (page < totalPages) this.setState({ page: page + 1 }); }
+    };
+  }
+}
+
+</script>
+</body>
+</html>

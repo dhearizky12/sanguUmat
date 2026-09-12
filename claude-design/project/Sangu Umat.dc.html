@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #FBFAF5; }
+  * { box-sizing: border-box; }
+  a { color: #0C4A38; text-decoration: none; }
+  a:hover { color: #8A6A18; }
+  input { font-family: inherit; }
+  ::placeholder { color: #7C776A; opacity: 1; }
+  @keyframes sgPulse { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.82); } }
+</style>
+</helmet>
+
+<div style="font-family: Newsreader, Georgia, serif; color: #17201C; background: #FBFAF5; min-height: 100vh;">
+
+  <header style="position: sticky; top: 0; z-index: 40; background: rgba(251,250,245,.94); backdrop-filter: blur(8px); border-bottom: 1px solid #E3DECF;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 24px); min-height: 68px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;">
+      <a href="#" style="display: flex; align-items: center; gap: 11px; flex: 0 0 auto; min-width: 0;">
+        <span style="width: 24px; height: 24px; flex: 0 0 auto; background: #0C4A38; display: block; box-shadow: inset 0 0 0 1px #0C4A38, inset 0 0 0 3px #FBFAF5, inset 0 0 0 4px #B08A2E;"></span>
+        <span style="font-size: 20px; font-weight: 500; letter-spacing: -.01em; color: #0C4A38;">Sangu Umat</span>
+      </a>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <nav style="display: flex; align-items: center; justify-content: center; gap: 8px 24px; flex: 1 1 240px; flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase;">
+          <a href="#" style="color: #0C4A38; padding-bottom: 2px; border-bottom: 1.5px solid #B08A2E;">Beranda</a>
+          <a href="Tanya%20Jawab.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Tanya Jawab</a>
+          <a href="Artikel.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Artikel</a>
+          <a href="Ngaji%20Bareng.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Ngaji Bareng</a>
+        </nav>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; flex: 0 0 auto;">
+          <a href="Masuk.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: #6B7269;" style-hover="color: #17201C;">Masuk</a>
+          <a href="Ajukan%20Pertanyaan.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 10px 14px; white-space: nowrap;" style-hover="background: #17201C; color: #F7F3E8;">Ajukan Pertanyaan</a>
+        </div>
+      </sc-if>
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="Menu" style="flex: 0 0 auto; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid #C6BFAC; cursor: pointer; font-size: 20px; line-height: 1; color: #0C4A38;" style-hover="background: #F2EEE2;">{{ burgerLabel }}</button>
+      </sc-if>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top: 1px solid #E3DECF; background: #FBFAF5;">
+        <div style="max-width: 1160px; margin: 0 auto; padding: 6px clamp(16px, 4vw, 24px) 22px; display: flex; flex-direction: column;">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+            <a href="{{ n.href }}" onClick="{{ n.pick }}" style="{{ n.style }}" style-hover="color: #17201C;">{{ n.label }}</a>
+          </sc-for>
+          <div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 20px;">
+            <a href="Masuk.dc.html" onClick="{{ closeMenu }}" style="flex: 1 1 120px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 14px 16px;" style-hover="background: #F2EEE2;">Masuk</a>
+            <a href="Ajukan%20Pertanyaan.dc.html" onClick="{{ closeMenu }}" style="flex: 1 1 160px; text-align: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 14px 16px;" style-hover="background: #17201C;">Ajukan Pertanyaan</a>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </header>
+
+  <section style="background-color: #073A2B; background-image: url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23E8C96F%27%20stroke-opacity=%270.16%27%20stroke-width=%271%27%3E%3Cpolygon%20points=%2760%2C18%2066.7%2C43.9%2089.7%2C30.3%2076.1%2C53.3%20102%2C60%2076.1%2C66.7%2089.7%2C89.7%2066.7%2C77.4%2060%2C102%2053.3%2C77.4%2030.3%2C89.7%2043.9%2C66.7%2018%2C60%2043.9%2C53.3%2030.3%2C30.3%2053.3%2C43.9%27/%3E%3Cpolygon%20points=%270%2C-14%2014%2C0%200%2C14%20-14%2C0%27/%3E%3Cpolygon%20points=%27120%2C-14%20134%2C0%20120%2C14%20106%2C0%27/%3E%3Cpolygon%20points=%270%2C106%2014%2C120%200%2C134%20-14%2C120%27/%3E%3Cpolygon%20points=%27120%2C106%20134%2C120%20120%2C134%20106%2C120%27/%3E%3C/g%3E%3C/svg%3E); background-size: 120px 120px; border-bottom: 1px solid #05271D;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: clamp(48px, 9vw, 104px) clamp(18px, 5vw, 28px) clamp(40px, 7vw, 80px); display: flex; flex-direction: column; align-items: center; text-align: center; gap: 26px;">
+      <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .2em; text-transform: uppercase; color: #C9A94E;">Tanya Jawab Islam &middot; Terverifikasi Ustadz</div>
+      <h1 style="margin: 0; max-width: 16ch; font-size: clamp(38px, 6.4vw, 68px); line-height: 1.04; font-weight: 400; letter-spacing: -.02em; color: #F7F3E8; text-wrap: balance;">Temukan kejelasan dalam <em style="font-style: italic; color: #E8C96F;">setiap pertanyaan</em> tentang Islam.</h1>
+      <p style="margin: 0; max-width: 56ch; font-size: 17px; line-height: 1.6; color: #A9C2B6;">Mulai dengan mencari. Ribuan pertanyaan seputar Al-Qur'an, hadis, fiqih, dan muamalah sudah dijawab dan ditelaah oleh para ustadz.</p>
+
+      <div style="width: 100%; max-width: 720px; margin-top: 8px; display: flex; flex-wrap: wrap; align-items: stretch; background: #FBFAF5; border: 1px solid #B08A2E; box-shadow: 0 18px 44px -24px rgba(0,0,0,.6);">
+        <input type="text" value="{{ q }}" onChange="{{ onSearch }}" placeholder="Cari pertanyaan, misalnya: menjamak sholat" style="flex: 1 1 200px; min-width: 0; border: 0; outline: none; background: transparent; padding: 0 clamp(14px, 4vw, 22px); height: clamp(54px, 12vw, 62px); font-size: clamp(16px, 4vw, 18px); color: #17201C;" />
+        <button onClick="{{ onClear }}" style="flex: 0 0 auto; border: 0; cursor: pointer; background: #0C4A38; color: #F7F3E8; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; padding: 0 clamp(18px, 5vw, 26px);" style-hover="background: #17201C;">Cari</button>
+      </div>
+
+      <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px 22px; font-size: 15px; color: #A9C2B6;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #9DB6A9;">Sering dicari</span>
+        <sc-for list="{{ suggestions }}" as="s" hint-placeholder-count="4">
+          <a href="#tanya" onClick="{{ s.pick }}" style="color: #E8DFC8; border-bottom: 1px solid rgba(232,201,111,.4);" style-hover="color: #E8C96F; border-bottom: 1px solid #E8C96F;">{{ s.label }}</a>
+        </sc-for>
+      </div>
+
+      <div style="margin-top: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #8FAA9C;">1.248 jawaban terverifikasi &nbsp;/&nbsp; 34 ustadz &nbsp;/&nbsp; diperbarui hari ini</div>
+    </div>
+  </section>
+
+  <sc-if value="{{ liveNow }}" hint-placeholder-val="{{ true }}">
+    <section style="background: #05271D; border-bottom: 1px solid #0C4A38;">
+      <div style="max-width: 1160px; margin: 0 auto; padding: 16px clamp(18px, 5vw, 28px); display: flex; flex-wrap: wrap; align-items: center; gap: 14px 22px;">
+        <span style="display: flex; align-items: center; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #E8C96F;">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #E8C96F; animation: sgPulse 1.8s ease-in-out infinite;"></span>
+          Ngaji berlangsung
+        </span>
+        <span style="flex: 1 1 320px; min-width: 0; font-size: 18px; color: #F7F3E8;">Tafsir Surah Al-Kahfi, ayat 32&ndash;45 &nbsp;<span style="color: #9DB6A9; font-size: 15px;">bersama Ustadz Abdul Hakim &middot; 214 jamaah</span></span>
+        <a href="#ngaji" style="flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #05271D; background: #E8C96F; padding: 10px 18px;" style-hover="background: #F7F3E8; color: #05271D;">Gabung sekarang</a>
+      </div>
+    </section>
+  </sc-if>
+
+  <sc-if value="{{ showTopicIndex }}" hint-placeholder-val="{{ true }}">
+    <section style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 6vw, 76px) clamp(18px, 5vw, 28px) 0;">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; border-bottom: 1px solid #17201C; padding-bottom: 12px;">
+        <h2 style="margin: 0; font-size: clamp(24px, 3vw, 32px); font-weight: 400; letter-spacing: -.015em;">Daftar Isi Pembahasan</h2>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #6B7269;">Pilih bab untuk menyaring jawaban</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(280px, 100%), 1fr)); gap: 0 48px; padding: 8px 0 0;">
+        <sc-for list="{{ topics }}" as="t" hint-placeholder-count="12">
+          <a href="#tanya" onClick="{{ t.pick }}" style="{{ t.rowStyle }}" style-hover="background: #F2EEE2;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #7C776A; width: 22px; flex: 0 0 auto;">{{ t.no }}</span>
+            <span style="flex: 0 0 auto; font-size: 17px;">{{ t.name }}</span>
+            <span style="flex: 1 1 auto; border-bottom: 1px dotted #CFC9B8; transform: translateY(-4px);"></span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 12px; color: #6B7269; flex: 0 0 auto;">{{ t.count }}</span>
+          </a>
+        </sc-for>
+      </div>
+    </section>
+  </sc-if>
+
+  <section id="tanya" style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) clamp(18px, 5vw, 28px);">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; border-bottom: 1px solid #17201C; padding-bottom: 12px; margin-bottom: 4px;">
+      <h2 style="margin: 0; font-size: clamp(24px, 3vw, 32px); font-weight: 400; letter-spacing: -.015em;">{{ listTitle }}</h2>
+      <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 10px 18px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #6B7269;">{{ listMeta }}</span>
+        <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; align-items: stretch; border: 1px solid #C6BFAC;">
+            <button onClick="{{ setOneCol }}" aria-label="Satu kolom" title="Satu kolom" style="{{ oneColStyle }}" style-hover="background: #F2EEE2;">
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="1.5" y="2.5" width="13" height="4" fill="none" stroke="currentColor" stroke-width="1.4"></rect><rect x="1.5" y="9.5" width="13" height="4" fill="none" stroke="currentColor" stroke-width="1.4"></rect></svg>
+            </button>
+            <button onClick="{{ setTwoCol }}" aria-label="Dua kolom" title="Dua kolom" style="{{ twoColStyle }}" style-hover="background: #F2EEE2;">
+              <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true"><rect x="1.5" y="2.5" width="5.5" height="11" fill="none" stroke="currentColor" stroke-width="1.4"></rect><rect x="9" y="2.5" width="5.5" height="11" fill="none" stroke="currentColor" stroke-width="1.4"></rect></svg>
+            </button>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+
+    <div style="{{ listStyle }}">
+      <sc-for list="{{ questions }}" as="item" hint-placeholder-count="6">
+        <a href="#" style="{{ item.style }}" style-hover="background: #F4F1E7; border-left: 2px solid #B08A2E;">
+          <div style="display: flex; flex-wrap: wrap; gap: 6px 14px; align-items: baseline; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase;">
+            <span style="color: #0C4A38;">{{ item.topic }}</span>
+            <span style="color: #7C776A;">{{ item.date }}</span>
+            <span style="color: #7C776A;">{{ item.reads }} dibaca</span>
+          </div>
+          <h3 style="margin: 0; font-size: clamp(20px, 2.4vw, 26px); font-weight: 400; line-height: 1.28; letter-spacing: -.01em; color: #17201C; max-width: 40ch; text-wrap: pretty;">{{ item.title }}</h3>
+          <p style="margin: 0; font-size: 16px; line-height: 1.62; color: #565D54; max-width: 74ch; text-wrap: pretty;">{{ item.excerpt }}</p>
+          <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 4px 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .08em; color: #6B7269;">
+            <span>Dijawab oleh</span>
+            <span style="display: inline-flex; align-items: center; gap: 5px; color: #0C4A38;">
+              <span style="width: 15px; height: 15px; flex: 0 0 auto; display: inline-flex; align-items: center; justify-content: center;" title="Ustadz terverifikasi">
+                <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true"><path d="M12 1.6l2.47 1.79 3.03-.28 1.15 2.82 2.6 1.6-.6 2.99.98 2.9-2.35 1.94-.78 2.95-3.05.28L12 22.4l-2.45-1.81-3.05-.28-.78-2.95L3.37 15.4l.98-2.9-.6-2.99 2.6-1.6L7.5 5.09l3.03.28L12 1.6z" fill="#0C4A38"></path><path d="M8.2 12.3l2.6 2.6 5-5.2" fill="none" stroke="#FBFAF5" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+              </span>
+              {{ item.ustadz }}
+            </span>
+            <span style="color: #7C776A;">&middot; {{ item.read }} baca</span>
+          </div>
+        </a>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ empty }}" hint-placeholder-val="{{ false }}">
+      <div style="border: 1px dashed #CFC9B8; padding: 56px 28px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+        <div style="font-size: 22px;">Belum ada jawaban yang cocok.</div>
+        <p style="margin: 0; max-width: 46ch; font-size: 16px; line-height: 1.6; color: #6B7269;">Coba kata kunci lain, atau ajukan pertanyaanmu langsung kepada para ustadz.</p>
+        <a href="Ajukan%20Pertanyaan.dc.html" style="margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 12px 20px;" style-hover="background: #17201C;">Ajukan Pertanyaan</a>
+      </div>
+    </sc-if>
+
+    <div style="margin-top: 34px; display: flex; justify-content: center;">
+      <a href="Tanya%20Jawab.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 13px 26px;" style-hover="border: 1px solid #0C4A38; background: #F2EEE2;">Lihat semua jawaban</a>
+    </div>
+  </section>
+
+  <section id="ngaji" style="background-color: #073A2B; background-image: url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23E8C96F%27%20stroke-opacity=%270.10%27%20stroke-width=%271%27%3E%3Cpolygon%20points=%2760%2C18%2066.7%2C43.9%2089.7%2C30.3%2076.1%2C53.3%20102%2C60%2076.1%2C66.7%2089.7%2C89.7%2066.7%2C77.4%2060%2C102%2053.3%2C77.4%2030.3%2C89.7%2043.9%2C66.7%2018%2C60%2043.9%2C53.3%2030.3%2C30.3%2053.3%2C43.9%27/%3E%3Cpolygon%20points=%270%2C-14%2014%2C0%200%2C14%20-14%2C0%27/%3E%3Cpolygon%20points=%27120%2C-14%20134%2C0%20120%2C14%20106%2C0%27/%3E%3Cpolygon%20points=%270%2C106%2014%2C120%200%2C134%20-14%2C120%27/%3E%3Cpolygon%20points=%27120%2C106%20134%2C120%20120%2C134%20106%2C120%27/%3E%3C/g%3E%3C/svg%3E); background-size: 120px 120px;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) clamp(18px, 5vw, 28px);">
+      <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; border-bottom: 1px solid #14614A; padding-bottom: 12px; margin-bottom: 36px;">
+        <h2 style="margin: 0; font-size: clamp(24px, 3vw, 32px); font-weight: 400; letter-spacing: -.015em; color: #F7F3E8;">Ngaji Bareng</h2>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #9DB6A9;">Kajian langsung &amp; rekaman</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(320px, 100%), 1fr)); gap: clamp(28px, 4vw, 44px); align-items: start;">
+        <div style="display: flex; flex-direction: column; gap: 18px;">
+          <div style="aspect-ratio: 16 / 9; width: 100%; background-color: #0C4A38; background-image: repeating-linear-gradient(135deg, rgba(247,243,232,.05) 0 10px, transparent 10px 20px); border: 1px solid #14614A; display: flex; align-items: center; justify-content: center; position: relative;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #9DB6A9;">video kajian langsung</span>
+            <span style="position: absolute; top: 14px; left: 14px; display: flex; align-items: center; gap: 8px; background: #C0392B; color: #FFF; font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .18em; text-transform: uppercase; padding: 6px 10px;">
+              <span style="width: 6px; height: 6px; border-radius: 50%; background: #FFF; animation: sgPulse 1.8s ease-in-out infinite;"></span>Live
+            </span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #C9A94E;">Sedang berlangsung &middot; 214 jamaah</div>
+            <h3 style="margin: 0; font-size: 27px; font-weight: 400; line-height: 1.25; color: #F7F3E8;">Tafsir Surah Al-Kahfi, ayat 32&ndash;45</h3>
+            <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #A9C2B6; max-width: 48ch;">Ustadz Abdul Hakim membahas kisah dua pemilik kebun dan pelajaran tentang kesombongan harta. Pertanyaan dibuka di akhir sesi.</p>
+            <a href="#" style="align-self: flex-start; margin-top: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #E8C96F; color: #05271D; padding: 13px 22px;" style-hover="background: #F7F3E8;">Gabung kajian</a>
+          </div>
+        </div>
+
+        <div style="display: flex; flex-direction: column;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #9DB6A9; padding-bottom: 14px;">Rekaman terbaru</div>
+          <sc-for list="{{ sessions }}" as="s" hint-placeholder-count="4">
+            <a href="#" style="display: flex; gap: 18px; align-items: center; padding: 16px 0; border-top: 1px solid #14614A;" style-hover="background: rgba(247,243,232,.05);">
+              <span style="flex: 0 0 76px; height: 50px; background-color: #0C4A38; background-image: repeating-linear-gradient(135deg, rgba(247,243,232,.06) 0 8px, transparent 8px 16px); border: 1px solid #14614A;"></span>
+              <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 5px;">
+                <span style="font-size: 18px; color: #F7F3E8; line-height: 1.3;">{{ s.title }}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .08em; color: #9DB6A9;">{{ s.ustadz }} &middot; {{ s.length }}</span>
+              </span>
+            </a>
+          </sc-for>
+          <a href="Ngaji%20Bareng.dc.html" style="margin-top: 22px; align-self: flex-start; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #E8DFC8; border-bottom: 1px solid rgba(232,201,111,.5);" style-hover="color: #E8C96F;">Semua rekaman kajian</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="artikel" style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 6vw, 80px) clamp(18px, 5vw, 28px);">
+    <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 20px; flex-wrap: wrap; border-bottom: 1px solid #17201C; padding-bottom: 12px; margin-bottom: 40px;">
+      <h2 style="margin: 0; font-size: clamp(24px, 3vw, 32px); font-weight: 400; letter-spacing: -.015em;">Artikel Pilihan</h2>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #6B7269;">Pembahasan mendalam</span>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr)); gap: 44px; align-items: start;">
+      <a href="#" style="display: flex; flex-direction: column; gap: 16px;">
+        <span style="aspect-ratio: 3 / 2; width: 100%; background-color: #EFEADC; background-image: repeating-linear-gradient(135deg, rgba(23,32,28,.05) 0 9px, transparent 9px 18px); border: 1px solid #E3DECF; display: flex; align-items: center; justify-content: center; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #7C776A;">foto artikel utama</span>
+        <span style="display: flex; flex-direction: column; gap: 10px;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #0C4A38;">Teologi &middot; 12 menit baca</span>
+          <span style="font-size: clamp(24px, 2.6vw, 31px); line-height: 1.22; letter-spacing: -.015em; color: #17201C; max-width: 22ch;">Memahami Maqasid al-Shariah di Era Modern</span>
+          <span style="font-size: 16px; line-height: 1.62; color: #565D54; max-width: 50ch;">Eksplorasi tujuan-tujuan luhur hukum Islam dan bagaimana hal itu memandu penalaran hukum kontemporer.</span>
+        </span>
+      </a>
+
+      <div style="display: flex; flex-direction: column;">
+        <sc-for list="{{ articles }}" as="a" hint-placeholder-count="3">
+          <a href="#" style="display: flex; gap: 18px; align-items: flex-start; padding: 20px 0; border-top: 1px solid #E3DECF;" style-hover="background: #F4F1E7;">
+            <span style="flex: 0 0 84px; height: 64px; background-color: #EFEADC; background-image: repeating-linear-gradient(135deg, rgba(23,32,28,.05) 0 8px, transparent 8px 16px); border: 1px solid #E3DECF;"></span>
+            <span style="flex: 1 1 auto; min-width: 0; display: flex; flex-direction: column; gap: 7px;">
+              <span style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #0C4A38;">
+                {{ a.kicker }}
+                <sc-if value="{{ a.locked }}" hint-placeholder-val="{{ false }}">
+                  <span style="background: #F0E4BE; color: #7A5E12; padding: 3px 8px; letter-spacing: .1em;">Khusus Anggota</span>
+                </sc-if>
+              </span>
+              <span style="font-size: 20px; line-height: 1.3; color: #17201C; text-wrap: pretty;">{{ a.title }}</span>
+              <span style="font-size: 15px; line-height: 1.55; color: #6B7269; text-wrap: pretty;">{{ a.excerpt }}</span>
+            </span>
+          </a>
+        </sc-for>
+      </div>
+    </div>
+  </section>
+
+  <section style="border-top: 1px solid #E3DECF; background: #F4F1E7;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 5vw, 64px) clamp(18px, 5vw, 28px); display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 24px;">
+      <div style="display: flex; flex-direction: column; gap: 8px; max-width: 46ch;">
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #8A6A18;">Tidak menemukan jawabannya?</div>
+        <h2 style="margin: 0; font-size: clamp(24px, 3vw, 34px); font-weight: 400; letter-spacing: -.015em;">Ajukan pertanyaanmu, ustadz kami akan menjawab.</h2>
+        <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #565D54;">Rata-rata dijawab dalam 2 hari kerja, lengkap dengan rujukan dalil.</p>
+      </div>
+      <a href="Ajukan%20Pertanyaan.dc.html" style="flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 16px clamp(18px, 5vw, 28px);" style-hover="background: #17201C;">Ajukan Pertanyaan</a>
+    </div>
+  </section>
+
+  <footer style="background: #05271D; color: #A9C2B6;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 48px clamp(18px, 5vw, 28px) 36px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 36px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span style="display: flex; align-items: center; gap: 11px;">
+          <span style="width: 24px; height: 24px; background: #05271D; display: block; box-shadow: inset 0 0 0 1px #E8C96F, inset 0 0 0 3px #05271D, inset 0 0 0 4px #E8C96F;"></span>
+          <span style="font-size: 20px; color: #F7F3E8;">Sangu Umat</span>
+        </span>
+        <span style="font-size: 15px; line-height: 1.6; max-width: 32ch;">Menjembatani kearifan tradisional dengan kejelasan modern.</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Jelajahi</span>
+        <a href="Tanya%20Jawab.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Tanya Jawab</a>
+        <a href="Artikel.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Artikel</a>
+        <a href="Ngaji%20Bareng.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Ngaji Bareng</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Tentang</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Dewan Ustadz</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Metode Verifikasi</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Keanggotaan</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Bantuan</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Hubungi Kami</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Kebijakan Privasi</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Syarat Layanan</a>
+      </div>
+    </div>
+    <div style="border-top: 1px solid #0C4A38;">
+      <div style="max-width: 1160px; margin: 0 auto; padding: 20px clamp(18px, 5vw, 28px); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #8FAA9C;">Sangu Umat &copy; 2026</div>
+    </div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;liveNow&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;showTopicIndex&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Konten&quot;},&quot;compact&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:false,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Tata letak&quot;},&quot;listColumns&quot;:{&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;1&quot;,&quot;2&quot;],&quot;default&quot;:&quot;2&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Tata letak&quot;}}">
+const TOPICS = [
+  ["Sholat", 184], ["Puasa", 96], ["Zakat", 78], ["Keluarga & Pernikahan", 142],
+  ["Keuangan & Muamalah", 121], ["Thaharah", 53], ["Akhlak", 64], ["Haji & Umrah", 41],
+  ["Aqidah", 37], ["Makanan & Minuman", 46], ["Jenazah", 28], ["Isu Kontemporer", 59]
+];
+
+const QUESTIONS = [
+  { topic: "Sholat", date: "2 hari lalu", reads: "3.402", title: "Bagaimana cara menjamak sholat ketika sedang perjalanan dinas?", excerpt: "Perjalanan dinas yang memenuhi jarak safar membolehkan jamak taqdim maupun ta'khir. Yang perlu diperhatikan adalah niat, urutan sholat, dan kapan status musafir berakhir ketika sudah menetap di kota tujuan.", ustadz: "Ustadz Abdul Hakim", read: "6 menit" },
+  { topic: "Keuangan & Muamalah", date: "3 hari lalu", reads: "2.918", title: "Apakah keuntungan dari investasi saham syariah termasuk riba?", excerpt: "Selama emiten lolos penyaringan usaha dan rasio utang berbasis bunga, keuntungan dari kenaikan harga maupun dividen dinilai sebagai hasil kepemilikan usaha, bukan pinjaman berbunga.", ustadz: "Ustadz Faiz Rahman", read: "9 menit" },
+  { topic: "Zakat", date: "5 hari lalu", reads: "5.140", title: "Berapa nisab zakat penghasilan untuk gaji bulanan?", excerpt: "Mayoritas lembaga zakat menyetarakan nisab penghasilan dengan 85 gram emas per tahun, lalu membaginya per bulan. Kadar yang dikeluarkan 2,5% dari penghasilan bruto setelah kebutuhan pokok.", ustadz: "Ustadzah Nur Aisyah", read: "5 menit" },
+  { topic: "Puasa", date: "1 minggu lalu", reads: "1.870", title: "Apakah muntah dengan tidak sengaja membatalkan puasa?", excerpt: "Muntah yang tidak disengaja tidak membatalkan puasa selama tidak ada yang tertelan kembali. Berbeda halnya bila muntah dipancing dengan sengaja, maka puasanya batal dan wajib diqadha.", ustadz: "Ustadz Abdul Hakim", read: "4 menit" },
+  { topic: "Akhlak", date: "1 minggu lalu", reads: "2.233", title: "Bagaimana hukum membalas ghibah di media sosial?", excerpt: "Membela diri diperbolehkan sebatas menjelaskan fakta yang menyangkut diri sendiri. Yang dilarang adalah membalas dengan membuka aib pihak lain, sebab itu menambah keburukan, bukan menutupnya.", ustadz: "Ustadz Zainal Muttaqin", read: "7 menit" },
+  { topic: "Thaharah", date: "2 minggu lalu", reads: "4.061", title: "Sahkah wudhu jika kuku memakai cat kuku?", excerpt: "Lapisan yang menghalangi air sampai ke kulit membuat wudhu tidak sah. Produk yang terbukti meloloskan air menjadi pengecualian, namun perlu kehati-hatian dalam memastikan klaim tersebut.", ustadz: "Ustadzah Nur Aisyah", read: "5 menit" },
+  { topic: "Keluarga & Pernikahan", date: "2 minggu lalu", reads: "6.588", title: "Bagaimana adab menyelesaikan perselisihan antara suami dan istri?", excerpt: "Al-Qur'an menuntun penyelesaian bertahap: nasihat, menjaga jarak sementara, hingga menghadirkan penengah dari kedua keluarga. Tujuannya perbaikan hubungan, bukan menang dalam perdebatan.", ustadz: "Ustadz Faiz Rahman", read: "8 menit" },
+  { topic: "Isu Kontemporer", date: "3 minggu lalu", reads: "3.727", title: "Bolehkah menggunakan kecerdasan buatan untuk menulis khutbah?", excerpt: "Alat bantu penyusunan diperbolehkan, tetapi tanggung jawab isi tetap pada khatib. Setiap dalil dan kutipan wajib diperiksa sanadnya sebelum disampaikan kepada jamaah.", ustadz: "Ustadz Zainal Muttaqin", read: "6 menit" }
+];
+
+const SESSIONS = [
+  { title: "Fiqih Muamalah Kontemporer #7", ustadz: "Ustadz Faiz Rahman", length: "58 menit" },
+  { title: "Riyadhus Shalihin: Bab Sabar", ustadz: "Ustadz Abdul Hakim", length: "1 jam 12 menit" },
+  { title: "Tanya Jawab Zakat Penghasilan", ustadz: "Ustadzah Nur Aisyah", length: "44 menit" },
+  { title: "Sirah Nabawiyah: Piagam Madinah", ustadz: "Ustadz Zainal Muttaqin", length: "1 jam 3 menit" }
+];
+
+const ARTICLES = [
+  { kicker: "Muamalah", locked: true, title: "Hukum Investasi Saham Syariah bagi Pemula", excerpt: "Kriteria penyaringan emiten, akad yang mendasarinya, dan hal yang membuat sebuah transaksi keluar dari koridor syariah." },
+  { kicker: "Keluarga", locked: true, title: "Adab Menjaga Keharmonisan Rumah Tangga", excerpt: "Panduan praktis membangun komunikasi, membagi peran, dan menyelesaikan konflik dengan tuntunan Nabi." },
+  { kicker: "Ibadah", locked: false, title: "Keutamaan Sholat Berjamaah di Masjid", excerpt: "Dalil keutamaannya, hukum bagi laki-laki dan perempuan, serta uzur yang diterima untuk meninggalkannya." }
+];
+
+const SUGGESTIONS = ["menjamak sholat", "zakat penghasilan", "saham syariah", "wudhu"];
+
+const NAV = [
+  ["Beranda", "#"], ["Tanya Jawab", "Tanya%20Jawab.dc.html"], ["Artikel", "Artikel.dc.html"], ["Ngaji Bareng", "Ngaji%20Bareng.dc.html"]
+];
+
+class Component extends DCLogic {
+  state = { q: "", topic: "", narrow: false, menuOpen: false, cols: null };
+
+  colBtn(active) {
+    return {
+      border: 0, cursor: "pointer", padding: "8px 11px", lineHeight: 0,
+      display: "flex", alignItems: "center", justifyContent: "center",
+      background: active ? "#0C4A38" : "transparent",
+      color: active ? "#F7F3E8" : "#6B7269"
+    };
+  }
+
+  componentDidMount() {
+    this._onResize = () => {
+      const narrow = window.innerWidth < 900;
+      if (narrow !== this.state.narrow) this.setState({ narrow, menuOpen: false });
+    };
+    this._onResize();
+    window.addEventListener("resize", this._onResize);
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+  }
+
+  setTopic(name) {
+    this.setState(s => ({ topic: s.topic === name ? "" : name, q: "" }));
+  }
+
+  renderVals() {
+    const q = this.state.q.trim().toLowerCase();
+    const topic = this.state.topic;
+    const compact = this.props.compact ?? false;
+
+    const filtered = QUESTIONS.filter(item => {
+      const okTopic = !topic || item.topic === topic;
+      const okQ = !q || (item.title + " " + item.excerpt + " " + item.topic).toLowerCase().includes(q);
+      return okTopic && okQ;
+    });
+
+    const pad = compact ? 18 : 28;
+
+    const cols = this.state.cols ?? (String(this.props.listColumns ?? "2") === "1" ? 1 : 2);
+    const twoUp = cols === 2 && !this.state.narrow;
+
+    const narrow = this.state.narrow;
+    const menuOpen = this.state.menuOpen;
+
+    return {
+      q: this.state.q,
+      narrow,
+      wide: !narrow,
+      menuOpen: narrow && menuOpen,
+      burgerLabel: menuOpen ? "\u2715" : "\u2261",
+      toggleMenu: e => { e.preventDefault(); this.setState(s => ({ menuOpen: !s.menuOpen })); },
+      closeMenu: () => this.setState({ menuOpen: false }),
+      navItems: NAV.map(([label, href], i) => ({
+        label, href,
+        style: {
+          display: "block", padding: "14px 0", fontSize: "13px", letterSpacing: ".13em",
+          textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace",
+          color: i === 0 ? "#0C4A38" : "#6B7269",
+          borderBottom: "1px solid #E9E4D6"
+        },
+        pick: () => this.setState({ menuOpen: false })
+      })),
+      liveNow: this.props.liveNow ?? true,
+      showTopicIndex: this.props.showTopicIndex ?? true,
+      onSearch: e => this.setState({ q: e.target.value, topic: "" }),
+      onClear: () => this.setState({ q: "", topic: "" }),
+      suggestions: SUGGESTIONS.map(label => ({
+        label,
+        pick: e => { e.preventDefault(); this.setState({ q: label, topic: "" }); }
+      })),
+      topics: TOPICS.map(([name, count], i) => ({
+        no: String(i + 1).padStart(2, "0"),
+        name,
+        count,
+        rowStyle: {
+          display: "flex", alignItems: "baseline", gap: "12px",
+          padding: "13px 10px 13px 6px",
+          borderBottom: "1px solid #E9E4D6",
+          color: topic === name ? "#8A6A18" : "#17201C",
+          background: topic === name ? "#F2EEE2" : "transparent"
+        },
+        pick: e => { e.preventDefault(); this.setTopic(name); }
+      })),
+      listTitle: topic ? topic : (q ? "Hasil pencarian" : "Jawaban Terbaru"),
+      listMeta: filtered.length + " dari " + QUESTIONS.length + " jawaban",
+      empty: filtered.length === 0,
+      setOneCol: e => { e.preventDefault(); this.setState({ cols: 1 }); },
+      setTwoCol: e => { e.preventDefault(); this.setState({ cols: 2 }); },
+      oneColStyle: this.colBtn(cols === 1),
+      twoColStyle: this.colBtn(cols === 2),
+      listStyle: twoUp
+        ? { display: "grid", gridTemplateColumns: "repeat(2, minmax(0, 1fr))", columnGap: "clamp(28px, 4vw, 48px)" }
+        : { display: "flex", flexDirection: "column" },
+      questions: filtered.map(item => ({
+        ...item,
+        style: {
+          display: "flex", flexDirection: "column", gap: compact ? "7px" : "11px",
+          padding: "clamp(" + (pad - 8) + "px, 3vw, " + pad + "px) 0 clamp(" + (pad - 8) + "px, 3vw, " + pad + "px) clamp(12px, 3vw, 18px)",
+          borderBottom: "1px solid #E3DECF",
+          borderLeft: "2px solid transparent"
+        }
+      })),
+      sessions: SESSIONS,
+      articles: ARTICLES
+    };
+  }
+}
+
+</script>
+</body>
+</html>

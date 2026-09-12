@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #FBFAF5; }
+  * { box-sizing: border-box; }
+  a { color: #0C4A38; text-decoration: none; }
+  a:hover { color: #8A6A18; }
+  input, select, button { font-family: inherit; }
+  ::placeholder { color: #7C776A; opacity: 1; }
+  @keyframes sgPulse { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+</style>
+</helmet>
+
+<div style="font-family: Newsreader, Georgia, serif; color: #17201C; background: #FBFAF5; min-height: 100vh; display: flex; flex-direction: column;">
+
+  <header style="border-bottom: 1px solid #E3DECF;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 24px); min-height: 68px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;">
+      <a href="Sangu%20Umat.dc.html" style="display: flex; align-items: center; gap: 11px; flex: 0 0 auto; min-width: 0;">
+        <span style="width: 24px; height: 24px; flex: 0 0 auto; background: #0C4A38; display: block; box-shadow: inset 0 0 0 1px #0C4A38, inset 0 0 0 3px #FBFAF5, inset 0 0 0 4px #B08A2E;"></span>
+        <span style="font-size: 20px; font-weight: 500; letter-spacing: -.01em; color: #0C4A38;">Sangu Umat</span>
+      </a>
+      <a href="Sangu%20Umat.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: #6B7269;" style-hover="color: #17201C;">← Kembali ke beranda</a>
+    </div>
+  </header>
+
+  <main style="flex: 1 1 auto; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(420px, 100%), 1fr));">
+
+    <section style="display: flex; align-items: center; justify-content: center; padding: clamp(32px, 6vw, 72px) clamp(18px, 5vw, 28px);">
+      <div style="width: 100%; max-width: 420px; display: flex; flex-direction: column; gap: clamp(22px, 3vw, 30px);">
+
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+          <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #8A6A18;">{{ eyebrow }}</div>
+          <h1 style="margin: 0; font-size: clamp(30px, 4vw, 40px); line-height: 1.1; font-weight: 400; letter-spacing: -.02em;">{{ heading }}</h1>
+          <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #565D54; max-width: 42ch; text-wrap: pretty;">{{ sub }}</p>
+        </div>
+
+        <sc-if value="{{ atChoose }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: 22px;">
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <button onClick="{{ goGoogle }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; width: 100%; min-height: 56px; padding: 14px 18px; background: #FFFDF7; border: 1px solid #C6BFAC; color: #17201C; font-size: 17px;" style-hover="background: #F2EEE2;">
+                <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path fill="#4285F4" d="M23 12.2c0-.8-.1-1.6-.2-2.3H12v4.4h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.5z"></path><path fill="#34A853" d="M12 23.5c3.1 0 5.6-1 7.5-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.8 1.1a6.7 6.7 0 0 1-6.3-4.6H2v3A11.5 11.5 0 0 0 12 23.5z"></path><path fill="#FBBC05" d="M5.7 14.3a6.9 6.9 0 0 1 0-4.4v-3H2a11.5 11.5 0 0 0 0 10.4l3.7-3z"></path><path fill="#EA4335" d="M12 5.4c1.7 0 3.3.6 4.5 1.8l3.3-3.3A11.5 11.5 0 0 0 2 6.9l3.7 3A6.7 6.7 0 0 1 12 5.4z"></path></svg>
+                {{ googleLabel }}
+              </button>
+              <button onClick="{{ goPhone }}" style="display: flex; align-items: center; justify-content: center; gap: 12px; cursor: pointer; width: 100%; min-height: 56px; padding: 14px 18px; background: #0C4A38; border: 1px solid #0C4A38; color: #F7F3E8; font-size: 17px;" style-hover="background: #17201C;">
+                <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true"><path fill="#F7F3E8" d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2zm0 2a8 8 0 0 1 0 16 8 8 0 0 1-4.3-1.3l-.4-.2-2.6.7.7-2.5-.2-.4A8 8 0 0 1 12 4zm-3.3 4.3c-.2 0-.5.1-.7.3-.3.3-.8.8-.8 1.8s.7 2 1 2.4c.3.4 1.6 2.5 4 3.4 2 .8 2.4.7 2.8.6.5 0 1.5-.6 1.7-1.2.2-.6.2-1.1.2-1.2l-.4-.3-1.7-.8c-.2-.1-.4-.1-.6.1l-.7.9c-.1.2-.3.2-.5.1-.4-.1-1.3-.5-2-1.2-.6-.6-1-1.2-1.1-1.5-.1-.2 0-.3.1-.4l.5-.6.2-.5-.7-1.7c-.2-.4-.4-.4-.5-.4h-.3z"></path></svg>
+                {{ waLabel }}
+              </button>
+            </div>
+
+            <div style="display: flex; align-items: flex-start; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; line-height: 1.7; letter-spacing: .06em; color: #7C776A;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 7px; height: 7px; margin-top: 6px; background: #B08A2E;"></span>
+              <span style="flex: 1 1 auto;">Belum punya akun? Akun otomatis dibuat saat Anda masuk pertama kali. Lewat WhatsApp selalu memakai kode OTP sekali pakai, tanpa kata sandi.</span>
+            </div>
+
+            <p style="margin: 0; font-size: 14px; line-height: 1.65; color: #7C776A; max-width: 44ch;">Dengan melanjutkan, Anda menyetujui <a href="#">Syarat Layanan</a> dan <a href="#">Kebijakan Privasi</a> Sangu Umat.</p>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ atPhone }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <label style="display: flex; flex-direction: column; gap: 9px;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Nomor WhatsApp</span>
+              <span style="display: flex; align-items: stretch; border: 1px solid #C6BFAC; background: #FFFDF7;">
+                <span style="flex: 0 0 auto; display: flex; align-items: center; padding: 0 14px; border-right: 1px solid #E3DECF; font-family: 'IBM Plex Mono', monospace; font-size: 14px; color: #565D54;">+62</span>
+                <input type="tel" inputMode="numeric" value="{{ phone }}" onChange="{{ onPhone }}" placeholder="81234567890" style="flex: 1 1 auto; min-width: 0; border: 0; outline: none; background: transparent; height: 56px; padding: 0 14px; font-size: 19px; letter-spacing: .04em; color: #17201C;">
+              </span>
+            </label>
+            <sc-if value="{{ phoneError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .06em; color: #C0392B;">Masukkan nomor WhatsApp yang benar, minimal 9 angka setelah +62.</div>
+            </sc-if>
+            <button onClick="{{ sendOtp }}" style="{{ primaryStyle }}" style-hover="background: #17201C;">Kirim kode OTP</button>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase;">
+              <a href="#" onClick="{{ backToChoose }}" style="color: #6B7269;" style-hover="color: #17201C;">← Cara lain</a>
+              <span style="color: #B5AF9E;">Kode dikirim ke WhatsApp, bukan SMS</span>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ atOtp }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div style="display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 12px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .08em; color: #6B7269;">
+              <span style="color: #17201C;">{{ phonePretty }}</span>
+              <a href="#" onClick="{{ backToPhone }}" style="border-bottom: 1px solid #C6BFAC; letter-spacing: .13em; text-transform: uppercase; font-size: 10px; color: #6B7269;" style-hover="color: #17201C;">Ganti nomor</a>
+            </div>
+            <div style="display: flex; gap: clamp(6px, 2vw, 10px);">
+              <sc-for list="{{ digits }}" as="d" hint-placeholder-count="6">
+                <input type="text" inputMode="numeric" maxLength="1" value="{{ d.value }}" ref="{{ d.ref }}" onChange="{{ d.onChange }}" onKeyDown="{{ d.onKeyDown }}" onPaste="{{ d.onPaste }}" aria-label="{{ d.label }}" style="{{ d.style }}">
+              </sc-for>
+            </div>
+            <sc-if value="{{ otpError }}" hint-placeholder-val="{{ false }}">
+              <div style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .06em; color: #C0392B;">Kode salah atau sudah kedaluwarsa. Coba lagi.</div>
+            </sc-if>
+            <button onClick="{{ verifyOtp }}" style="{{ verifyStyle }}">{{ verifyLabel }}</button>
+            <div style="display: flex; flex-wrap: wrap; gap: 10px 18px; align-items: center; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;">
+              <sc-if value="{{ canResend }}" hint-placeholder-val="{{ false }}">
+                <a href="#" onClick="{{ resend }}" style="color: #0C4A38; border-bottom: 1px solid #C6BFAC;" style-hover="color: #8A6A18;">Kirim ulang kode</a>
+              </sc-if>
+              <sc-if value="{{ counting }}" hint-placeholder-val="{{ true }}">
+                <span style="color: #B5AF9E;">Kirim ulang dalam {{ countdown }}</span>
+              </sc-if>
+              <a href="#" onClick="{{ backToChoose }}" style="color: #6B7269;" style-hover="color: #17201C;">Batal</a>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ atDone }}" hint-placeholder-val="{{ false }}">
+          <div style="display: flex; flex-direction: column; gap: 18px;">
+            <div style="border: 1px solid #DCC98C; background: #F0E4BE; padding: clamp(20px, 3vw, 26px); display: flex; flex-direction: column; gap: 8px;">
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #7A5E12;">Terverifikasi</span>
+              <span style="font-size: 21px; line-height: 1.3;">{{ doneTitle }}</span>
+              <span style="font-size: 15px; line-height: 1.6; color: #6B5A2A;">{{ doneSub }}</span>
+            </div>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+              <a href="{{ doneHref }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 15px 24px;" style-hover="background: #17201C; color: #F7F3E8;">{{ doneCta }}</a>
+              <a href="#" onClick="{{ backToChoose }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 15px 20px;" style-hover="background: #F2EEE2;">Ulangi dari awal</a>
+            </div>
+          </div>
+        </sc-if>
+
+      </div>
+    </section>
+
+    <aside style="background-color: #073A2B; background-image: url(data:image/svg+xml,%3Csvg%20xmlns=%27http://www.w3.org/2000/svg%27%20width=%27120%27%20height=%27120%27%20viewBox=%270%200%20120%20120%27%3E%3Cg%20fill=%27none%27%20stroke=%27%23E8C96F%27%20stroke-opacity=%270.10%27%20stroke-width=%271%27%3E%3Cpolygon%20points=%2760%2C18%2066.7%2C43.9%2089.7%2C30.3%2076.1%2C53.3%20102%2C60%2076.1%2C66.7%2089.7%2C89.7%2066.7%2C77.4%2060%2C102%2053.3%2C77.4%2030.3%2C89.7%2043.9%2C66.7%2018%2C60%2043.9%2C53.3%2030.3%2C30.3%2053.3%2C43.9%27/%3E%3Cpolygon%20points=%270%2C-14%2014%2C0%200%2C14%20-14%2C0%27/%3E%3Cpolygon%20points=%27120%2C-14%20134%2C0%20120%2C14%20106%2C0%27/%3E%3Cpolygon%20points=%270%2C106%2014%2C120%200%2C134%20-14%2C120%27/%3E%3Cpolygon%20points=%27120%2C106%20134%2C120%20120%2C134%20106%2C120%27/%3E%3C/g%3E%3C/svg%3E); background-size: 120px 120px; display: flex; align-items: center;">
+      <div style="width: 100%; max-width: 460px; margin: 0 auto; padding: clamp(40px, 7vw, 84px) clamp(22px, 5vw, 40px); display: flex; flex-direction: column; gap: clamp(22px, 3vw, 32px);">
+        <h2 style="margin: 0; font-size: clamp(24px, 3vw, 33px); font-weight: 400; line-height: 1.24; letter-spacing: -.015em; color: #F7F3E8; max-width: 26ch; text-wrap: pretty;">Satu akun untuk tanya jawab, artikel, dan ngaji bareng.</h2>
+        <div style="display: flex; flex-direction: column;">
+          <sc-for list="{{ perks }}" as="p" hint-placeholder-count="3">
+            <div style="display: flex; gap: 14px; padding: 18px 0; border-top: 1px solid #14614A;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 9px; height: 9px; margin-top: 7px; background: #E8C96F;"></span>
+              <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 5px; min-width: 0;">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #E8C96F;">{{ p.tag }}</span>
+                <span style="font-size: 16px; line-height: 1.6; color: #A9C2B6;">{{ p.text }}</span>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #8FAA9C;">Butuh bantuan? <a href="#" style="color: #E8C96F; border-bottom: 1px solid #14614A;">Hubungi kami</a></div>
+      </div>
+    </aside>
+  </main>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;otpLength&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 6, &quot;min&quot;: 4, &quot;max&quot;: 8, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;OTP&quot; },
+  &quot;resendSeconds&quot;: { &quot;editor&quot;: &quot;int&quot;, &quot;default&quot;: 45, &quot;min&quot;: 15, &quot;max&quot;: 120, &quot;unit&quot;: &quot;s&quot;, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;OTP&quot; }
+}">
+const PERKS = [
+  { tag: "Tanya Jawab", text: "Ajukan pertanyaan langsung ke dewan ustadz dan pantau jawabannya." },
+  { tag: "Ngaji Bareng", text: "Pengingat sebelum kajian dimulai, plus rekaman penuh tanpa jeda." },
+  { tag: "Catatan", text: "Simpan artikel dan catatan ngaji untuk dibaca lagi nanti." }
+];
+
+class Component extends DCLogic {
+  state = {
+    step: "choose", phone: "", phoneError: false,
+    code: [], otpError: false, verifying: false, left: 0, next: ""
+  };
+
+  get len() { return Math.max(4, Math.min(8, this.props.otpLength ?? 6)); }
+
+  componentDidMount() {
+    this.refs2 = [];
+    let next = "";
+    try { next = new URLSearchParams(location.search).get("next") || ""; } catch (e) { next = ""; }
+    if (/^[a-z0-9._%\-\s]+\.dc\.html$/i.test(decodeURIComponent(next))) this.setState({ next });
+  }
+  componentWillUnmount() { clearInterval(this._t); clearTimeout(this._go); }
+
+  finish(name) {
+    try { localStorage.setItem("sanguUmat.session", JSON.stringify({ name, at: Date.now() })); } catch (e) {}
+    this.setState({ step: "done" });
+    if (this.state.next) {
+      this._go = setTimeout(() => { location.href = this.state.next; }, 1600);
+    }
+  }
+
+  startCountdown() {
+    clearInterval(this._t);
+    this.setState({ left: this.props.resendSeconds ?? 45 });
+    this._t = setInterval(() => {
+      this.setState(s => {
+        if (s.left <= 1) { clearInterval(this._t); return { left: 0 }; }
+        return { left: s.left - 1 };
+      });
+    }, 1000);
+  }
+
+  focusAt(i) {
+    const el = this.refs2 && this.refs2[i];
+    if (el && el.focus) { el.focus(); el.select && el.select(); }
+  }
+
+  setDigit(i, ch) {
+    this.setState(s => {
+      const code = s.code.slice();
+      code[i] = ch;
+      return { code, otpError: false };
+    });
+  }
+
+  submitOtp() {
+    const filled = this.state.code.filter(c => c).length === this.len;
+    if (!filled) { this.setState({ otpError: true }); return; }
+    this.setState({ verifying: true, otpError: false });
+    setTimeout(() => { this.setState({ verifying: false }); this.finish("Rifqi Maulana"); }, 900);
+  }
+
+  renderVals() {
+    const s = this.state, len = this.len;
+    const digitsFilled = s.code.filter(c => c).length === len;
+    if (!this.refs2) this.refs2 = [];
+
+    const primary = (enabled) => ({
+      cursor: enabled ? "pointer" : "default", width: "100%", minHeight: "56px", padding: "16px 20px",
+      border: "1px solid " + (enabled ? "#0C4A38" : "#C6BFAC"),
+      background: enabled ? "#0C4A38" : "#EFEADC",
+      color: enabled ? "#F7F3E8" : "#9A9384",
+      fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px",
+      letterSpacing: ".16em", textTransform: "uppercase"
+    });
+
+    const heads = {
+      choose: ["Masuk", "Selamat datang di Sangu Umat",
+        s.next
+          ? "Halaman yang Anda tuju hanya untuk pengguna yang sudah masuk. Pilih satu cara di bawah, lalu kami kembalikan ke halaman itu."
+          : "Pilih satu cara di bawah. Belum punya akun akan otomatis dibuatkan."],
+      phone: ["WhatsApp", "Nomor WhatsApp Anda", "Kami kirim kode " + len + " angka lewat WhatsApp. Kode berlaku 5 menit."],
+      otp: ["Verifikasi", "Masukkan kode OTP", "Buka WhatsApp Anda dan ketik ulang " + len + " angka yang baru dikirim."],
+      done: ["Berhasil", "Anda sudah masuk", ""]
+    };
+    const h = heads[s.step] || heads.choose;
+
+    return {
+      eyebrow: h[0], heading: h[1], sub: h[2],
+      atChoose: s.step === "choose", atPhone: s.step === "phone", atOtp: s.step === "otp", atDone: s.step === "done",
+      perks: PERKS,
+
+      googleLabel: "Lanjut dengan Google",
+      waLabel: "Lanjut dengan WhatsApp",
+      goGoogle: e => { e.preventDefault(); this.finish("Rifqi Maulana"); },
+      doneHref: s.next || "Sangu%20Umat.dc.html",
+      doneCta: s.next ? "Lanjutkan" : "Ke beranda",
+      goPhone: e => { e.preventDefault(); this.setState({ step: "phone", otpError: false }); },
+
+      phone: s.phone,
+      phoneError: s.phoneError,
+      onPhone: e => this.setState({ phone: e.target.value.replace(/[^0-9]/g, "").slice(0, 13), phoneError: false }),
+      primaryStyle: primary(true),
+      sendOtp: e => {
+        e.preventDefault();
+        if (s.phone.replace(/^0+/, "").length < 9) { this.setState({ phoneError: true }); return; }
+        this.setState({ step: "otp", code: [], otpError: false });
+        this.startCountdown();
+        setTimeout(() => this.focusAt(0), 60);
+      },
+      backToChoose: e => { e.preventDefault(); clearInterval(this._t); this.setState({ step: "choose", code: [], otpError: false, verifying: false }); },
+      backToPhone: e => { e.preventDefault(); clearInterval(this._t); this.setState({ step: "phone", code: [] }); },
+
+      phonePretty: "+62 " + s.phone.replace(/^0+/, "").replace(/(\d{3})(?=\d)/g, "$1 ").trim(),
+      digits: Array.from({ length: len }, (_, i) => ({
+        value: s.code[i] || "",
+        label: "Angka ke-" + (i + 1),
+        ref: el => { this.refs2[i] = el; },
+        style: {
+          flex: "1 1 0", minWidth: 0, height: "clamp(56px, 12vw, 64px)", textAlign: "center",
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: "22px", color: "#17201C",
+          background: "#FFFDF7", outline: "none",
+          border: "1px solid " + (s.otpError ? "#C0392B" : (s.code[i] ? "#0C4A38" : "#C6BFAC"))
+        },
+        onChange: e => {
+          const v = e.target.value.replace(/[^0-9]/g, "");
+          if (!v) { this.setDigit(i, ""); return; }
+          this.setDigit(i, v.slice(-1));
+          if (i < len - 1) setTimeout(() => this.focusAt(i + 1), 0);
+        },
+        onKeyDown: e => {
+          if (e.key === "Backspace" && !s.code[i] && i > 0) { e.preventDefault(); this.setDigit(i - 1, ""); this.focusAt(i - 1); }
+          if (e.key === "ArrowLeft" && i > 0) this.focusAt(i - 1);
+          if (e.key === "ArrowRight" && i < len - 1) this.focusAt(i + 1);
+          if (e.key === "Enter") this.submitOtp();
+        },
+        onPaste: e => {
+          const t = (e.clipboardData.getData("text") || "").replace(/[^0-9]/g, "");
+          if (!t) return;
+          e.preventDefault();
+          this.setState(st => {
+            const code = st.code.slice();
+            for (let k = 0; k < len - i; k++) if (t[k]) code[i + k] = t[k];
+            return { code, otpError: false };
+          });
+          setTimeout(() => this.focusAt(Math.min(len - 1, i + t.length)), 0);
+        }
+      })),
+      otpError: s.otpError,
+      verifyStyle: primary(digitsFilled && !s.verifying),
+      verifyLabel: s.verifying ? "Memeriksa…" : "Verifikasi & masuk",
+      verifyOtp: e => { e.preventDefault(); if (!s.verifying) this.submitOtp(); },
+      canResend: s.left === 0,
+      counting: s.left > 0,
+      countdown: "00:" + String(s.left).padStart(2, "0"),
+      resend: e => { e.preventDefault(); this.setState({ code: [], otpError: false }); this.startCountdown(); this.focusAt(0); },
+
+      doneTitle: "Verifikasi berhasil",
+      doneSub: s.next
+        ? "Mengalihkan Anda kembali ke halaman yang dituju…"
+        : "Lain kali masuk lewat WhatsApp, kami akan mengirim kode OTP baru."
+    };
+  }
+}
+</script>
+</body>
+</html>
