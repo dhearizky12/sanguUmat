@@ -22,7 +22,7 @@ has no backend at all yet.
 
 ## Sequence
 
-### 1. `restyle-to-new-design` — frontend only
+### 1. `restyle-to-new-design` — frontend only — ✓ archived 2026-09-26
 Extract the design system (Tailwind theme tokens plus shared primitives), then
 port the eighteen remaining files onto it. Clears the half-redesigned state and
 settles one styling vocabulary before new features add surface. Also pays off
