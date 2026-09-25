@@ -1,14 +1,14 @@
 ## 1. Extract the design system
 
-- [ ] 1.1 Reconcile the theme with the canvases: set the container token to the
+- [x] 1.1 Reconcile the theme with the canvases: set the container token to the
       design's 1160px, and add tokens for the "Khusus Anggota" badge
       (`#F0E4BE` background, `#7A5E12` text) and any other canvas colour with no
       token yet.
-- [ ] 1.2 Move the pulsing live indicator into the theme as an animation token;
+- [x] 1.2 Move the pulsing live indicator into the theme as an animation token;
       delete the hand-written `.animate-sg-pulse` rule and its `@keyframes`.
-- [ ] 1.3 Add a token for the responsive page gutter the canvases use
+- [x] 1.3 Add a token for the responsive page gutter the canvases use
       (`clamp(18px, 5vw, 28px)`), so no page hardcodes it.
-- [ ] 1.4 Confirm Newsreader and IBM Plex Mono load with the weights and optical
+- [x] 1.4 Confirm Newsreader and IBM Plex Mono load with the weights and optical
       sizes the canvases ask for, and that each has a real fallback stack.
 
 ## 2. Build the shared primitives
@@ -17,9 +17,10 @@
       repeated in every canvas section.
 - [ ] 2.2 `MonoLabel` — the uppercase IBM Plex Mono label, replacing the
       `label-mono` utility at its call sites.
-- [ ] 2.3 `LogoMark` — the inset-shadow square, in its forest and gold
-      variants, replacing the two long arbitrary-value strings in `Header` and
-      `Footer`.
+- [x] 2.3 `LogoMark` — the real logo (`public/logo.png`) in place of the
+      canvases' inset-shadow square, with a forest tone and a light tone for
+      dark backgrounds, replacing the two long arbitrary-value strings in
+      `Header` and `Footer`.
 - [ ] 2.4 `PlaceholderTexture` — the diagonal repeating gradient used for
       missing images and video, replacing the four copies.
 - [ ] 2.5 `AutoGrid` — the `repeat(auto-fit, minmax(min(Npx, 100%), 1fr))` grid,

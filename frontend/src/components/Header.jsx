@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
+import LogoMark from "./LogoMark";
 
 const NAV_ITEMS = [
   { label: "Beranda", to: "/", matchPaths: ["/"] },
@@ -54,9 +55,9 @@ function Header() {
 
   return (
     <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-sm border-b border-stone-line">
-      <div className="max-w-container-max mx-auto px-gutter min-h-[68px] py-2.5 flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
+      <div className="max-w-container-max mx-auto px-page min-h-[68px] py-2.5 flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
         <Link to="/" className="flex items-center gap-2.5 shrink-0 min-w-0">
-          <span className="w-6 h-6 shrink-0 bg-forest [box-shadow:inset_0_0_0_1px_#0C4A38,inset_0_0_0_3px_#FBFAF5,inset_0_0_0_4px_#B08A2E]" />
+          <LogoMark />
           <span className="font-serif text-xl font-medium tracking-tight text-forest">Sangu Umat</span>
         </Link>
 
@@ -149,7 +150,7 @@ function Header() {
 
       {menuOpen && (
         <div className="md:hidden border-t border-stone-line">
-          <div className="max-w-container-max mx-auto px-gutter pt-1.5 pb-5 flex flex-col">
+          <div className="max-w-container-max mx-auto px-page pt-1.5 pb-5 flex flex-col">
             {NAV_ITEMS.map((item) => {
               const active = isMenuActive(location.pathname, item.matchPaths);
               return (

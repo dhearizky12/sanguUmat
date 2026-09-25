@@ -3,9 +3,9 @@
 function LiveBanner() {
   return (
     <section className="bg-forest-darker border-b border-forest">
-      <div className="max-w-container-max mx-auto px-gutter py-4 flex flex-wrap items-center gap-x-6 gap-y-3.5">
+      <div className="max-w-container-max mx-auto px-page py-4 flex flex-wrap items-center gap-x-6 gap-y-3.5">
         <span className="flex items-center gap-2 label-mono text-gold">
-          <span className="w-1.5 h-1.5 rounded-full bg-gold animate-sg-pulse" />
+          <span className="w-1.5 h-1.5 rounded-full bg-gold animate-live-pulse" />
           Ngaji berlangsung
         </span>
         <span className="flex-1 min-w-[280px] text-lg text-cream-text">

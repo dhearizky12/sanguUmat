@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import LogoMark from "./LogoMark";
 
 const EXPLORE_LINKS = [
   { label: "Tanya Jawab", to: "/questions" },
@@ -35,12 +36,12 @@ function Footer() {
   return (
     <footer className="bg-forest-darker text-sage mt-auto">
       <div
-        className="max-w-container-max mx-auto px-gutter py-12 grid gap-9"
+        className="max-w-container-max mx-auto px-page py-12 grid gap-9"
         style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))" }}
       >
         <div className="flex flex-col gap-3">
           <span className="flex items-center gap-2.5">
-            <span className="w-6 h-6 bg-forest-darker [box-shadow:inset_0_0_0_1px_#E8C96F,inset_0_0_0_3px_#05271D,inset_0_0_0_4px_#E8C96F]" />
+            <LogoMark tone="light" />
             <span className="font-serif text-xl text-cream-text">Sangu Umat</span>
           </span>
           <p className="text-[15px] leading-relaxed max-w-[32ch]">Menjembatani kearifan tradisional dengan kejelasan modern.</p>
@@ -51,7 +52,7 @@ function Footer() {
         <FooterColumn title="Bantuan" links={HELP_LINKS} />
       </div>
       <div className="border-t border-forest">
-        <div className="max-w-container-max mx-auto px-gutter py-5 label-mono text-sage-dark">Sangu Umat &copy; 2026</div>
+        <div className="max-w-container-max mx-auto px-page py-5 label-mono text-sage-dark">Sangu Umat &copy; 2026</div>
       </div>
     </footer>
   );

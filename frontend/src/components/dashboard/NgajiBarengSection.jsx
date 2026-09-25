@@ -13,7 +13,7 @@ const SESSIONS = [
 function NgajiBarengSection() {
   return (
     <section id="ngaji" className="girih-pattern-gold-soft">
-      <div className="max-w-container-max mx-auto px-gutter py-10 md:py-16">
+      <div className="max-w-container-max mx-auto px-page py-10 md:py-16">
         <div className="flex items-baseline justify-between gap-5 flex-wrap border-b border-forest-line pb-3 mb-9">
           <h2 className="font-serif text-2xl md:text-[32px] font-normal tracking-tight text-cream-text">Ngaji Bareng</h2>
           <span className="label-mono text-sage-dim">Kajian langsung &amp; rekaman</span>
@@ -27,7 +27,7 @@ function NgajiBarengSection() {
             <div className="relative aspect-video w-full bg-forest border border-forest-line flex items-center justify-center [background-image:repeating-linear-gradient(135deg,rgba(247,243,232,.05)_0_10px,transparent_10px_20px)]">
               <span className="label-mono text-sage-dim">video kajian langsung</span>
               <span className="absolute top-3.5 left-3.5 flex items-center gap-2 bg-live text-cream-text label-mono px-2.5 py-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-cream-text animate-sg-pulse" />
+                <span className="w-1.5 h-1.5 rounded-full bg-cream-text animate-live-pulse" />
                 Live
               </span>
             </div>

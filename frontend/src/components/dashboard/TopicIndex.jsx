@@ -2,7 +2,7 @@
 // through everything. Selecting the active topic again clears the filter.
 function TopicIndex({ topics, activeKey, onSelect }) {
   return (
-    <section className="max-w-container-max mx-auto px-gutter pt-10 md:pt-16">
+    <section className="max-w-container-max mx-auto px-page pt-10 md:pt-16">
       <div className="flex items-baseline justify-between gap-5 flex-wrap border-b border-ink pb-3">
         <h2 className="font-serif text-2xl md:text-[32px] font-normal tracking-tight text-ink">Daftar Isi Pembahasan</h2>
         <span className="label-mono text-ink-muted">Pilih kategori untuk menyaring jawaban</span>

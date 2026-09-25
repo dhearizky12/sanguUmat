@@ -52,7 +52,7 @@ function HeroSearch({ answeredCount }) {
 
   return (
     <section className="relative girih-pattern-gold border-b border-forest-darker">
-      <div className="max-w-container-max mx-auto px-gutter py-16 md:py-24 flex flex-col items-center text-center gap-6">
+      <div className="max-w-container-max mx-auto px-page py-16 md:py-24 flex flex-col items-center text-center gap-6">
         <div className="label-mono tracking-[0.2em] text-gold-muted">Tanya Jawab Islam &middot; Terverifikasi Ustadz</div>
 
         <h1 className="font-serif font-normal text-cream-text max-w-[16ch] text-[clamp(38px,6.4vw,68px)] leading-[1.04] tracking-tight text-balance">

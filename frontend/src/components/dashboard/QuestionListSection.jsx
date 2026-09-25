@@ -27,7 +27,7 @@ function QuestionListSection({ questions, loading, totalCount, activeCategoryLab
   const meta = `${questions.length} dari ${totalCount} jawaban`;
 
   return (
-    <section id="tanya" className="max-w-container-max mx-auto px-gutter py-10 md:py-16">
+    <section id="tanya" className="max-w-container-max mx-auto px-page py-10 md:py-16">
       <div className="flex items-baseline justify-between gap-5 flex-wrap border-b border-ink pb-3 mb-1">
         <h2 className="font-serif text-2xl md:text-[32px] font-normal tracking-tight text-ink">{title}</h2>
         <div className="flex items-center flex-wrap gap-x-4 gap-y-2">

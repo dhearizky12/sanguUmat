@@ -33,7 +33,7 @@ const ARTICLES = [
 
 function ArticlesSection() {
   return (
-    <section id="artikel" className="max-w-container-max mx-auto px-gutter py-10 md:py-16">
+    <section id="artikel" className="max-w-container-max mx-auto px-page py-10 md:py-16">
       <div className="flex items-baseline justify-between gap-5 flex-wrap border-b border-ink pb-3 mb-10">
         <h2 className="font-serif text-2xl md:text-[32px] font-normal tracking-tight text-ink">Artikel Pilihan</h2>
         <span className="label-mono text-ink-muted">Pembahasan mendalam</span>
