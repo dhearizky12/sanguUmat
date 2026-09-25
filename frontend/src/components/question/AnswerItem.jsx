@@ -2,7 +2,7 @@ import { useState } from "react";
 import RichContent from "../RichContent";
 import CommentSection from "../CommentSection";
 import { API_URL, pictureUrl } from "../../lib/api";
-import { DEFAULT_AVATAR, handleAvatarError } from "../../lib/image";
+import Avatar from "../Avatar";
 import Button from "../Button";
 import MonoLabel from "../MonoLabel";
 import VerifiedBadge from "../VerifiedBadge";
@@ -76,19 +76,14 @@ function AnswerItem({ answer, canManage, onUpdated }) {
     <article className="py-8 border-b border-stone-line">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <img
-            src={pictureUrl(answer.userPicture) ?? DEFAULT_AVATAR}
-            alt=""
-            onError={handleAvatarError}
-            className="size-10 shrink-0 rounded-full object-cover border border-stone-line"
-          />
+          <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} />
           <div className="flex flex-col gap-0.5 min-w-0">
             <span className="inline-flex items-center gap-1.5 font-serif text-lg text-ink">
               {answer.userName}
               {answer.role === "Guru" && <VerifiedBadge />}
             </span>
             <MonoLabel size="xs" className="text-ink-faint">
-              {answer.role === "Guru" ? "Guru" : "Murid"}
+              {answer.role === "Guru" ? "Guru" : "Anggota"}
             </MonoLabel>
           </div>
         </div>

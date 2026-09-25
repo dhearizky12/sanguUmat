@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL, pictureUrl } from "../lib/api";
-import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
+import Avatar from "./Avatar";
 import Button from "./Button";
 import MonoLabel from "./MonoLabel";
 
@@ -90,12 +90,7 @@ function CommentSection({ answerId }) {
         <div className="flex flex-col mb-4 border-t border-stone-line-soft">
           {comments.map((c) => (
             <div key={c.id} className="flex items-start gap-3 py-3.5 border-b border-stone-line-soft">
-              <img
-                alt=""
-                className="size-8 rounded-full object-cover shrink-0 border border-stone-line"
-                src={pictureUrl(c.userPicture) ?? DEFAULT_AVATAR}
-                onError={handleAvatarError}
-              />
+              <Avatar src={pictureUrl(c.userPicture)} name={c.userName} size={32} />
               <div className="flex-1 min-w-0 flex flex-col gap-0.5">
                 <span className="text-[15px] font-medium text-ink">{c.userName}</span>
                 <p className="text-base leading-relaxed text-ink-soft text-pretty">{c.content}</p>

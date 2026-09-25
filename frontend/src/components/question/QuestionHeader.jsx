@@ -7,7 +7,7 @@ import MonoLabel from "../MonoLabel";
 import RichContent from "../RichContent";
 import { FieldLabel, Input, TextArea } from "../Field";
 import { API_URL, pictureUrl } from "../../lib/api";
-import { DEFAULT_AVATAR, handleAvatarError } from "../../lib/image";
+import Avatar from "../Avatar";
 import { categoryLabel } from "../../lib/category";
 import { formatDate } from "../../lib/date";
 import { formatCount } from "../../lib/format";
@@ -129,12 +129,7 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
 
             <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
               <Byline>
-                <img
-                  src={pictureUrl(question.userPicture) ?? DEFAULT_AVATAR}
-                  alt=""
-                  onError={handleAvatarError}
-                  className="size-7 rounded-full object-cover border border-stone-line"
-                />
+                <Avatar src={pictureUrl(question.userPicture)} name={question.userName} size={28} />
                 <span>Ditanyakan oleh</span>
                 <span className="text-forest">{question.userName}</span>
               </Byline>

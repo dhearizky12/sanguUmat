@@ -2,7 +2,7 @@ import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
-import { handleAvatarError } from "../lib/image";
+import Avatar from "./Avatar";
 import Brand from "./Brand";
 import MonoLabel from "./MonoLabel";
 import Button from "./Button";
@@ -117,14 +117,8 @@ function Header() {
             </MonoLabel>
           )}
           {isAuthenticated ? (
-            <Link to="/profile" className="shrink-0">
-              <img
-                alt="Foto profil"
-                className="w-9 h-9 rounded-full border border-stone-line object-cover"
-                data-alt="profile picture"
-                src={profile?.picture || "/default-avatar.png"}
-                onError={handleAvatarError}
-              />
+            <Link to="/profile" aria-label="Profil saya" className="shrink-0">
+              <Avatar src={profile?.picture} name={profile?.name} size={36} />
             </Link>
           ) : (
             <>

@@ -5,7 +5,7 @@ import Header from "../components/Header";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
 import { API_URL, pictureUrl } from "../lib/api";
-import { handleAvatarError } from "../lib/image";
+import Avatar from "../components/Avatar";
 import { formatDate } from "../lib/date";
 import { CATEGORIES, categoryLabel } from "../lib/category";
 
@@ -106,12 +106,7 @@ function AnswerQueue() {
                   <p className="font-body-md text-body-md text-on-surface-variant line-clamp-2 grow">{q.content}</p>
                   <div className="flex items-center justify-between gap-3 pt-3 border-t border-outline-variant/50">
                     <div className="flex items-center gap-2">
-                      <img
-                        src={pictureUrl(q.userPicture) ?? "/default-avatar.png"}
-                        alt="Foto profil"
-                        onError={handleAvatarError}
-                        className="w-7 h-7 rounded-full object-cover"
-                      />
+                      <Avatar src={pictureUrl(q.userPicture)} name={q.userName} size={32} />
                       <span className="font-label-sm text-label-sm text-on-surface-variant">{q.userName}</span>
                     </div>
                     <span className="inline-flex items-center gap-1 bg-secondary-container text-on-secondary-container font-label-sm text-label-sm font-bold px-3.5 py-1.5 rounded-full">

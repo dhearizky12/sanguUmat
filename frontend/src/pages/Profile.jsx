@@ -5,10 +5,10 @@ import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button";
 import MonoLabel from "../components/MonoLabel";
 import { useAuth } from "../hooks/useAuth";
-import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
+import Avatar from "../components/Avatar";
 import { formatDate } from "../lib/date";
 
-const ROLE_LABELS = { User: "Murid", Guru: "Guru", Admin: "Admin" };
+const ROLE_LABELS = { User: "Anggota", Guru: "Guru", Admin: "Admin" };
 
 function DetailRow({ label, children }) {
   return (
@@ -34,12 +34,7 @@ function Profile() {
             <div className="flex flex-wrap items-end justify-between gap-6">
               <div className="flex items-center gap-5 min-w-0">
                 {/* profile.picture is already resolved by AuthProvider — no pictureUrl() here. */}
-                <img
-                  alt="Foto profil"
-                  className="size-[88px] shrink-0 rounded-full object-cover border border-stone-line bg-cream"
-                  src={profile?.picture || DEFAULT_AVATAR}
-                  onError={handleAvatarError}
-                />
+                <Avatar src={profile?.picture} name={profile?.name} size={88} />
                 <div className="flex flex-col gap-1.5 min-w-0">
                   <MonoLabel size="sm" className="tracking-[0.16em] text-gold-dark">
                     {ROLE_LABELS[profile?.role] ?? profile?.role}

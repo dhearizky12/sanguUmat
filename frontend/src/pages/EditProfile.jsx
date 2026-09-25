@@ -9,7 +9,7 @@ import { FieldLabel, Input, TextArea, FormError } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { BASE_PATH } from "../lib/basePath";
-import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
+import Avatar from "../components/Avatar";
 
 function EditProfile() {
   const { me, profile } = useAuth();
@@ -128,12 +128,7 @@ function EditProfile() {
 
             <div className="flex items-center gap-5">
               {/* profile.picture is already resolved by AuthProvider — no pictureUrl() here. */}
-              <img
-                alt="Foto profil"
-                className="size-[88px] shrink-0 rounded-full object-cover border border-stone-line bg-cream"
-                onError={handleAvatarError}
-                src={preview || profile?.picture || DEFAULT_AVATAR}
-              />
+              <Avatar src={preview || profile?.picture} name={profile?.name} size={88} />
               <div className="flex flex-col items-start gap-1.5">
                 <Button as="label" htmlFor="photo-upload" variant="outline" className="px-4 py-2.5">
                   Ganti foto

@@ -31,6 +31,9 @@
 - [x] 2.8 Verify no inline `style={{` remains in the frontend source.
 - [x] 2.9 `Button` — the solid, outline and gold mono-label buttons, replacing
       the utility strings repeated across `Header` and the dashboard.
+- [x] 2.10 `Avatar` — the user's picture, or their initial on one forest circle
+      for everyone when there is none or it fails to load; replaces
+      `default-avatar.png`.
 
 ## 3. Convert the shared components
 

@@ -1,5 +1,5 @@
 import { pictureUrl } from "../lib/api";
-import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
+import Avatar from "./Avatar";
 import { formatDate } from "../lib/date";
 import { formatCount } from "../lib/format";
 import { categoryLabel } from "../lib/category";
@@ -28,12 +28,7 @@ function QuestionCard({ slug, question }) {
       excerpt={question.content}
       byline={
         <>
-          <img
-            alt=""
-            className="size-5 rounded-full object-cover shrink-0"
-            src={pictureUrl(question.userPicture) ?? DEFAULT_AVATAR}
-            onError={handleAvatarError}
-          />
+          <Avatar src={pictureUrl(question.userPicture)} name={question.userName} size={20} />
           <span>Ditanyakan oleh</span>
           <span className="text-forest">{question.userName}</span>
           <span className="text-ink-faint">&middot; {formatCount(question.commentCount)} komentar</span>
