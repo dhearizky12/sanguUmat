@@ -44,7 +44,7 @@
 - [x] 3.4 `QuestionCard` — to the canvases' question row. Keep the base-path
       `pictureUrl()` handling and the view and comment counts.
 - [x] 3.5 `CommentSection` — keep the owner and admin delete rules intact.
-- [ ] 3.6 Exercise every page that renders these, confirming behaviour is
+- [x] 3.6 Exercise every page that renders these, confirming behaviour is
       unchanged against `openspec/specs/`.
 
 ## 4. Convert the question pages
@@ -104,6 +104,6 @@
 - [x] 9.2 Every page renders at 400px wide with no horizontal scrollbar on the
       body.
 - [x] 9.3 No English user-facing text remains on any converted page.
-- [ ] 9.4 Walk each capability in `openspec/specs/` against the running app,
+- [x] 9.4 Walk each capability in `openspec/specs/` against the running app,
       confirming the restyle changed appearance only.
-- [ ] 9.5 Compare each converted page against its canvas.
+- [x] 9.5 Compare each converted page against its canvas.
