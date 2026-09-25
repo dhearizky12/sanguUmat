@@ -89,8 +89,10 @@
   /* The uppercase mono label (see components/MonoLabel.jsx). */
   --text-mono-label: 11px;
   --text-mono-label--letter-spacing: 0.12em;
-  --text-mono-label-sm: 10px;
+  --text-mono-label-sm: 10.5px;
   --text-mono-label-sm--letter-spacing: 0.12em;
+  --text-mono-label-xs: 10px;
+  --text-mono-label-xs--letter-spacing: 0.12em;
 
   --color-ink: #17201c;
   --color-ink-soft: #565d54;

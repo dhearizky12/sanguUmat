@@ -1,14 +1,17 @@
 import { Fragment } from "react";
 import { Link } from "react-router-dom";
+import MonoLabel from "./MonoLabel";
 
 // The "Beranda / …" trail at the top of every inner page. Each item is
 // { label, to }; the last item is the current page and is not a link.
 export default function Breadcrumb({ items, className = "" }) {
   const trail = [{ label: "Beranda", to: "/" }, ...items];
   return (
-    <nav
+    <MonoLabel
+      as="nav"
+      size="sm"
       aria-label="Breadcrumb"
-      className={`flex items-center flex-wrap gap-2.5 font-mono text-[10.5px] tracking-[0.16em] uppercase text-ink-faint ${className}`}
+      className={`flex items-center flex-wrap gap-2.5 tracking-[0.16em] text-ink-faint ${className}`}
     >
       {trail.map((item, i) => {
         const last = i === trail.length - 1;
@@ -27,6 +30,6 @@ export default function Breadcrumb({ items, className = "" }) {
           </Fragment>
         );
       })}
-    </nav>
+    </MonoLabel>
   );
 }

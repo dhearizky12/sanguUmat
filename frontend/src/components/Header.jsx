@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
-import LogoMark from "./LogoMark";
+import Brand from "./Brand";
 import MonoLabel from "./MonoLabel";
 
 const NAV_ITEMS = [
@@ -57,10 +57,7 @@ function Header() {
   return (
     <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-sm border-b border-stone-line">
       <div className="max-w-container-max mx-auto px-page min-h-[68px] py-2.5 flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
-        <Link to="/" className="flex items-center gap-2.5 shrink-0 min-w-0">
-          <LogoMark />
-          <span className="font-serif text-xl font-medium tracking-tight text-forest">Sangu Umat</span>
-        </Link>
+        <Brand />
 
         <MonoLabel as="nav" className="hidden md:flex items-center justify-center gap-6 flex-1">
           {NAV_ITEMS.map((item) => {

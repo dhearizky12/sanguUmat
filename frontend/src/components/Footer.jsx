@@ -24,7 +24,7 @@ const HELP_LINKS = [
 function FooterColumn({ title, links }) {
   return (
     <div className="flex flex-col gap-2.5 text-[15px]">
-      <MonoLabel size="sm" className="text-sage-dark">{title}</MonoLabel>
+      <MonoLabel size="xs" className="text-sage-dark">{title}</MonoLabel>
       {links.map((link) => (
         <NavLink key={link.label} to={link.to} className="text-cream-link hover:text-gold transition-colors">
           {link.label}

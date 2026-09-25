@@ -57,7 +57,7 @@
 
 ## 5. Convert the account pages
 
-- [ ] 5.1 Convert `Login` to the Masuk canvas, Google path only. Leave out the
+- [x] 5.1 Convert `Login` to the Masuk canvas, Google path only. Leave out the
       WhatsApp OTP path and every element belonging to it.
 - [ ] 5.2 Convert `Profile`.
 - [ ] 5.3 Convert `EditProfile`, keeping the avatar upload and the

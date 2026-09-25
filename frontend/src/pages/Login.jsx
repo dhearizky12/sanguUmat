@@ -1,4 +1,27 @@
+import { Link } from "react-router-dom";
 import { API_URL } from "../lib/api";
+import AutoGrid from "../components/AutoGrid";
+import Brand from "../components/Brand";
+import MonoLabel from "../components/MonoLabel";
+
+// The Masuk canvas, Google path only. The canvas's WhatsApp OTP path (phone
+// entry, code boxes, resend countdown) has no backend yet and is left out.
+const PERKS = [
+  { tag: "Tanya Jawab", text: "Ajukan pertanyaan langsung ke dewan ustadz dan pantau jawabannya." },
+  { tag: "Ngaji Bareng", text: "Pengingat sebelum kajian dimulai, plus rekaman penuh tanpa jeda." },
+  { tag: "Catatan", text: "Simpan artikel dan catatan ngaji untuk dibaca lagi nanti." },
+];
+
+function GoogleMark() {
+  return (
+    <svg viewBox="0 0 24 24" width="19" height="19" aria-hidden="true">
+      <path className="fill-google-blue" d="M23 12.2c0-.8-.1-1.6-.2-2.3H12v4.4h6.2a5.3 5.3 0 0 1-2.3 3.5v2.9h3.7c2.2-2 3.4-5 3.4-8.5z" />
+      <path className="fill-google-green" d="M12 23.5c3.1 0 5.6-1 7.5-2.8l-3.7-2.9c-1 .7-2.3 1.1-3.8 1.1a6.7 6.7 0 0 1-6.3-4.6H2v3A11.5 11.5 0 0 0 12 23.5z" />
+      <path className="fill-google-yellow" d="M5.7 14.3a6.9 6.9 0 0 1 0-4.4v-3H2a11.5 11.5 0 0 0 0 10.4l3.7-3z" />
+      <path className="fill-google-red" d="M12 5.4c1.7 0 3.3.6 4.5 1.8l3.3-3.3A11.5 11.5 0 0 0 2 6.9l3.7 3A6.7 6.7 0 0 1 12 5.4z" />
+    </svg>
+  );
+}
 
 function Login() {
   const loginGoogle = () => {
@@ -6,99 +29,87 @@ function Login() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      <div className="max-w-xs md:max-w-md bg-surface-container-lowest rounded-xl shadow border border-outline-variant/30 overflow-hidden flex flex-col">
-        <div className="relative h-48 bg-surface-container w-full flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0">
-            <img
-              alt="Interior masjid yang tenang dengan arsitektur Islam yang indah"
-              className="w-full h-full object-cover"
-              src="https://lh3.googleusercontent.com/aida-public/AB6AXuDUK50KTJ2hOmuiEacp8LVdISdlSX4ofDO200fpD5TteuACUrexv1EzCUbzGmHjNvDHJe8ZFlZMY7JLpA2bBIovDQ3kVmMV7C8kTWQXXCWgagKR-SWcHb7gn0jSswryFAWP2iKJir4Rdz6sqFMOfCgJ1NQIJN6mO20wz1OF4B9OZOI7biMmPxe3GZws8M7iEKEDeyWiwqkCkbMOSRmKy6F122zjK96ezBAdwC_--JG16GUvxqTkka377faRSzgfy-Cn2AhDcos9Zyc"
-            />
-            <div className="absolute inset-0 bg-primary-container/10 mix-blend-multiply"></div>
-            <div className="absolute inset-0 bg-linear-to-b from-primary-container/40 to-background"></div>
-          </div>
-          <div className="relative z-10 flex flex-col items-center gap-2">
-            <div className="w-16 h-16 bg-surface-container-lowest rounded-full flex items-center justify-center shadow-sm border border-primary-container/10">
-              <span className="material-symbols-outlined text-primary-container text-4xl! icon-fill" data-icon="menu_book">
-                menu_book
-              </span>
+    <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
+      <header className="border-b border-stone-line">
+        <div className="max-w-container-max mx-auto px-page min-h-[68px] py-2.5 flex flex-wrap items-center justify-between gap-x-5 gap-y-2">
+          <Brand />
+          <MonoLabel as={Link} to="/" size="xs" className="tracking-[0.13em] text-ink-muted hover:text-ink transition-colors">
+            &larr; Kembali ke beranda
+          </MonoLabel>
+        </div>
+      </header>
+
+      <AutoGrid as="main" min={420} className="flex-1">
+        <section className="flex items-center justify-center py-[clamp(32px,6vw,72px)] px-page">
+          <div className="w-full max-w-[420px] flex flex-col gap-[clamp(22px,3vw,30px)]">
+            <div className="flex flex-col gap-2.5">
+              <MonoLabel as="div" size="sm" className="tracking-[0.16em] text-gold-dark">
+                Masuk
+              </MonoLabel>
+              <h1 className="text-[clamp(30px,4vw,40px)] leading-[1.1] font-normal tracking-[-0.02em]">Selamat datang di Sangu Umat</h1>
+              <p className="text-base leading-relaxed text-ink-soft max-w-[42ch] text-pretty">
+                Masuk dengan akun Google Anda untuk melanjutkan.
+              </p>
             </div>
-            <h1 className="font-headline-lg text-headline-lg-mobile md:text-headline-lg text-primary-container text-center px-4">
-              Gabung Sangu Umat
-            </h1>
+
+            <div className="flex flex-col gap-[22px]">
+              <button
+                type="button"
+                onClick={loginGoogle}
+                className="flex items-center justify-center gap-3 cursor-pointer w-full min-h-14 px-[18px] py-3.5 bg-paper border border-stone-border text-ink text-[17px] hover:bg-cream-hover transition-colors"
+              >
+                <GoogleMark />
+                Lanjut dengan Google
+              </button>
+
+              <div className="flex items-start gap-[9px] font-mono text-mono-label-sm leading-[1.7] tracking-[0.06em] text-ink-faint">
+                <span aria-hidden="true" className="shrink-0 size-[7px] mt-1.5 bg-gold-deep" />
+                <span className="flex-1">Belum punya akun? Akun otomatis dibuat saat Anda masuk pertama kali.</span>
+              </div>
+
+              <p className="text-sm leading-[1.65] text-ink-faint max-w-[44ch]">
+                Dengan melanjutkan, Anda menyetujui{" "}
+                <a href="#" className="text-forest hover:text-gold-dark transition-colors">
+                  Syarat Layanan
+                </a>{" "}
+                dan{" "}
+                <a href="#" className="text-forest hover:text-gold-dark transition-colors">
+                  Kebijakan Privasi
+                </a>{" "}
+                Sangu Umat.
+              </p>
+            </div>
           </div>
-        </div>
-        <div className="p-8 flex flex-col gap-6 bg-surface-container-lowest">
-          <div className="text-center">
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              Menjembatani kearifan tradisional dengan kejelasan modern. Masuk untuk melanjutkan perjalanan anda.
-            </p>
+        </section>
+
+        <aside className="girih-pattern-gold-soft flex items-center">
+          <div className="w-full max-w-[460px] mx-auto py-[clamp(40px,7vw,84px)] px-[clamp(22px,5vw,40px)] flex flex-col gap-[clamp(22px,3vw,32px)]">
+            <h2 className="text-[clamp(24px,3vw,33px)] font-normal leading-[1.24] tracking-[-0.015em] text-cream-text max-w-[26ch] text-pretty">
+              Satu akun untuk tanya jawab, artikel, dan ngaji bareng.
+            </h2>
+            <div className="flex flex-col">
+              {PERKS.map((perk) => (
+                <div key={perk.tag} className="flex gap-3.5 py-[18px] border-t border-forest-line">
+                  <span aria-hidden="true" className="shrink-0 size-[9px] mt-[7px] bg-gold" />
+                  <span className="flex-1 min-w-0 flex flex-col gap-[5px]">
+                    <MonoLabel size="sm" className="tracking-[0.14em] text-gold">
+                      {perk.tag}
+                    </MonoLabel>
+                    <span className="text-base leading-relaxed text-sage">{perk.text}</span>
+                  </span>
+                </div>
+              ))}
+            </div>
+            <MonoLabel as="div" size="sm" className="text-sage-dark">
+              Butuh bantuan?{" "}
+              <a href="#" className="text-gold border-b border-forest-line">
+                Hubungi kami
+              </a>
+            </MonoLabel>
           </div>
-          <div className="flex flex-col gap-4">
-            <button
-              className="cursor-pointer w-full flex items-center justify-center gap-3 bg-surface border border-outline-variant rounded-lg py-3 px-4 font-label-sm text-label-sm text-on-surface hover:bg-surface-container-low transition-colors duration-200"
-              onClick={loginGoogle}
-            >
-              <svg className="w-5 h-5 fill-current" viewBox="-3 0 262 262" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
-                <path
-                  d="M255.878 133.451c0-10.734-.871-18.567-2.756-26.69H130.55v48.448h71.947c-1.45 12.04-9.283 30.172-26.69 42.356l-.244 1.622 38.755 30.023 2.685.268c24.659-22.774 38.875-56.282 38.875-96.027"
-                  fill="#4285F4"
-                />
-                <path
-                  d="M130.55 261.1c35.248 0 64.839-11.605 86.453-31.622l-41.196-31.913c-11.024 7.688-25.82 13.055-45.257 13.055-34.523 0-63.824-22.773-74.269-54.25l-1.531.13-40.298 31.187-.527 1.465C35.393 231.798 79.49 261.1 130.55 261.1"
-                  fill="#34A853"
-                />
-                <path
-                  d="M56.281 156.37c-2.756-8.123-4.351-16.827-4.351-25.82 0-8.994 1.595-17.697 4.206-25.82l-.073-1.73L15.26 71.312l-1.335.635C5.077 89.644 0 109.517 0 130.55s5.077 40.905 13.925 58.602l42.356-32.782"
-                  fill="#FBBC05"
-                />
-                <path
-                  d="M130.55 50.479c24.514 0 41.05 10.589 50.479 19.438l36.844-35.974C195.245 12.91 165.798 0 130.55 0 79.49 0 35.393 29.301 13.925 71.947l42.211 32.783c10.59-31.477 39.891-54.251 74.414-54.251"
-                  fill="#EB4335"
-                />
-              </svg>
-              Masuk dengan Google
-            </button>
-            <button className="hidden! w-full flex items-center justify-center gap-3 bg-[#25D366]/10 border border-[#25D366]/30 rounded-lg py-3 px-4 font-label-sm text-label-sm text-[#075E54] hover:bg-[#25D366]/20 transition-colors duration-200">
-              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 510 512.459" className="w-5 h-5 fill-current">
-                <path
-                  fill="currentColor"
-                  d="M435.689 74.468C387.754 26.471 324 .025 256.071 0 116.098 0 2.18 113.906 2.131 253.916c-.024 44.758 11.677 88.445 33.898 126.946L0 512.459l134.617-35.311c37.087 20.238 78.85 30.891 121.345 30.903h.109c139.949 0 253.88-113.917 253.928-253.928.024-67.855-26.361-131.645-74.31-179.643v-.012zm-179.618 390.7h-.085c-37.868-.011-75.016-10.192-107.428-29.417l-7.707-4.577-79.886 20.953 21.32-77.889-5.017-7.987c-21.125-33.605-32.29-72.447-32.266-112.322.049-116.366 94.729-211.046 211.155-211.046 56.373.025 109.364 22.003 149.214 61.903 39.853 39.888 61.781 92.927 61.757 149.313-.05 116.377-94.728 211.058-211.057 211.058v.011zm115.768-158.067c-6.344-3.178-37.537-18.52-43.358-20.639-5.82-2.119-10.044-3.177-14.27 3.178-4.225 6.357-16.388 20.651-20.09 24.875-3.702 4.238-7.403 4.762-13.747 1.583-6.343-3.178-26.787-9.874-51.029-31.487-18.86-16.827-31.597-37.598-35.297-43.955-3.702-6.355-.39-9.789 2.775-12.943 2.849-2.848 6.344-7.414 9.522-11.116s4.225-6.355 6.343-10.581c2.12-4.238 1.06-7.937-.522-11.117-1.584-3.177-14.271-34.409-19.568-47.108-5.151-12.37-10.385-10.69-14.269-10.897-3.703-.183-7.927-.219-12.164-.219s-11.105 1.582-16.925 7.939c-5.82 6.354-22.209 21.709-22.209 52.927 0 31.22 22.733 61.405 25.911 65.642 3.177 4.237 44.745 68.318 108.389 95.812 15.135 6.538 26.957 10.446 36.175 13.368 15.196 4.834 29.027 4.153 39.96 2.52 12.19-1.825 37.54-15.353 42.824-30.172 5.283-14.818 5.283-27.529 3.701-30.172-1.582-2.641-5.819-4.237-12.163-7.414l.011-.024z"
-                />
-              </svg>
-              Masuk dengan WhatsApp
-            </button>
-          </div>
-          <div className="hidden items-center gap-4 py-2">
-            <div className="flex-1 h-px bg-outline-variant/50"></div>
-            <span className="font-label-sm text-label-sm text-outline">atau</span>
-            <div className="flex-1 h-px bg-outline-variant/50"></div>
-          </div>
-          <div className="hidden text-center">
-            <a
-              className="font-label-sm text-label-sm text-primary-container hover:text-primary transition-colors inline-flex items-center gap-1"
-              href="#"
-            >
-              Lanjutkan dengan Email
-              <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
-            </a>
-          </div>
-        </div>
-        <div className="hidden bg-surface p-4 text-center border-t border-outline-variant/20">
-          <p className="font-label-sm text-label-sm text-on-surface-variant">
-            Dengan bergabung, anda menyetujui{" "}
-            <a className="text-primary-container hover:underline" href="#">
-              Syarat & Ketentuan
-            </a>{" "}
-            &amp;
-            <a className="text-primary-container hover:underline" href="#">
-              Kebijakan Privasi
-            </a>
-          </p>
-        </div>
-      </div>
-    </main>
+        </aside>
+      </AutoGrid>
+    </div>
   );
 }
 
