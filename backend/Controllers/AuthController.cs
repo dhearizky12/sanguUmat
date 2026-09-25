@@ -201,7 +201,7 @@ namespace backend.Controllers
         {
             if (file == null || file.Length == 0)
             {
-                return BadRequest("File kosong");
+                return BadRequest("Berkas kosong");
             }
 
             var user = await this.GetCurrentUserAsync(_db);
