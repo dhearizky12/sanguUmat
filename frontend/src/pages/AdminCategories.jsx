@@ -144,7 +144,7 @@ function AdminCategories() {
         </PageHeader>
 
         <PageBody>
-          <div className="max-w-[860px] flex flex-col gap-6">
+          <div className="flex flex-col gap-6">
             <form onSubmit={add} className="flex flex-wrap items-stretch gap-3">
               <Input
                 aria-label="Nama kategori baru"
