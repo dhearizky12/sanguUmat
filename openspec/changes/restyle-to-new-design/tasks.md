@@ -72,7 +72,7 @@
 
 ## 6. Convert the Guru and Admin pages
 
-- [ ] 6.1 Convert `AnswerQueue`, keeping it reachable only by a Guru.
+- [x] 6.1 Convert `AnswerQueue`, keeping it reachable only by a Guru.
 - [ ] 6.2 Convert `AdminUsers`, keeping the role control and the
       self-demotion guard.
 - [ ] 6.3 Convert `DetailAdmin`.

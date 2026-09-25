@@ -5,6 +5,7 @@ import Header from "../components/Header";
 import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button";
 import MonoLabel from "../components/MonoLabel";
+import { FilterChip, FilterRow } from "../components/Filters";
 import QuestionCard from "../components/QuestionCard";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
@@ -17,38 +18,6 @@ const STATUSES = [
   { key: "terjawab", label: "Terjawab" },
   { key: "menunggu", label: "Menunggu jawaban" },
 ];
-
-// One toggle in a filter row: outlined, filled forest when selected.
-function FilterChip({ active, onClick, children }) {
-  return (
-    <MonoLabel
-      as="button"
-      type="button"
-      role="radio"
-      aria-checked={active}
-      size="sm"
-      onClick={onClick}
-      className={`px-3 py-2 border cursor-pointer transition-colors ${
-        active ? "bg-forest border-forest text-cream-text" : "border-stone-border text-ink-muted hover:bg-cream-hover hover:text-ink"
-      }`}
-    >
-      {children}
-    </MonoLabel>
-  );
-}
-
-function FilterRow({ label, children }) {
-  return (
-    <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
-      <MonoLabel size="sm" className="w-[72px] shrink-0 tracking-[0.13em] text-ink-faint">
-        {label}
-      </MonoLabel>
-      <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
-        {children}
-      </div>
-    </div>
-  );
-}
 
 function Questions() {
   const [searchParams, setSearchParams] = useSearchParams();
