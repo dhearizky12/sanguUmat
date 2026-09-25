@@ -89,13 +89,13 @@
 
 ## 8. Retire the old design system
 
-- [ ] 8.1 Confirm nothing references the old tokens: `bg-surface`,
+- [x] 8.1 Confirm nothing references the old tokens: `bg-surface`,
       `text-on-surface`, `primary-container`, `outline-variant`, `font-body-md`,
       `text-body-md` and their siblings.
-- [ ] 8.2 Delete those tokens and their `@utility` blocks from `index.css`.
-- [ ] 8.3 Remove the Material Symbols icon font if the conversion replaced every
+- [x] 8.2 Delete those tokens and their `@utility` blocks from `index.css`.
+- [x] 8.3 Remove the Material Symbols icon font if the conversion replaced every
       use of it.
-- [ ] 8.4 Confirm no raw hex colour remains in any component or page.
+- [x] 8.4 Confirm no raw hex colour remains in any component or page.
 
 ## 9. Verify
 
