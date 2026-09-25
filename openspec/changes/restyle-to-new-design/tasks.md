@@ -75,7 +75,7 @@
 - [x] 6.1 Convert `AnswerQueue`, keeping it reachable only by a Guru.
 - [x] 6.2 Convert `AdminUsers`, keeping the role control and the
       self-demotion guard.
-- [ ] 6.3 Convert `DetailAdmin`.
+- [x] 6.3 Convert `DetailAdmin`.
 
 ## 7. Restyle the three shells
 
