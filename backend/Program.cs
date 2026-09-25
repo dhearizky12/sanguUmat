@@ -1,3 +1,4 @@
+using backend.Auth;
 using backend.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
@@ -110,6 +111,31 @@ builder.Services.AddAuthentication(options =>
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]
         ?? throw new InvalidOperationException("Authentication:Google:ClientSecret is not configured.");
 });
+
+// Local-only stand-in for Google (dev/mock-google/server.mjs), so the UI can be signed
+// into as any seeded user without real Google accounts. Registered only in Development
+// and only when DevAuth:MockGoogleUrl is set; AuthController.Login falls back to real
+// Google whenever the mock is not answering, so stopping the mock is all it takes to
+// switch back. It reuses the Google handler, so the cookie carries exactly the claims a
+// real Google login would.
+var mockGoogleUrl = builder.Configuration["DevAuth:MockGoogleUrl"]?.TrimEnd('/');
+if (builder.Environment.IsDevelopment() && !string.IsNullOrWhiteSpace(mockGoogleUrl))
+{
+    builder.Services.AddAuthentication().AddGoogle(DevAuth.MockGoogleScheme, "Mock Google", options =>
+    {
+        options.ClientId = "mock-client";
+        options.ClientSecret = "mock-secret";
+        options.CallbackPath = "/signin-mock-google";
+        options.AuthorizationEndpoint = mockGoogleUrl + "/o/oauth2/v2/auth";
+        options.TokenEndpoint = mockGoogleUrl + "/token";
+        options.UserInformationEndpoint = mockGoogleUrl + "/userinfo";
+    });
+    builder.Services.AddHttpClient(DevAuth.MockGoogleScheme, client =>
+    {
+        client.BaseAddress = new Uri(mockGoogleUrl + "/");
+        client.Timeout = TimeSpan.FromMilliseconds(500);
+    });
+}
 
 
 

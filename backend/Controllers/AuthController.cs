@@ -8,6 +8,7 @@ using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using backend.DTOs;
+using backend.Auth;
 
 namespace backend.Controllers
 {
@@ -27,15 +28,40 @@ namespace backend.Controllers
         }
 
         [HttpGet("login")]
-        public IActionResult Login()
+        public async Task<IActionResult> Login()
         {
             return Challenge(
                 new AuthenticationProperties
                 {
                     RedirectUri = _frontendBaseUrl
                 },
-                GoogleDefaults.AuthenticationScheme
+                await IsMockGoogleUpAsync() ? DevAuth.MockGoogleScheme : GoogleDefaults.AuthenticationScheme
             );
+        }
+
+        // The mock Google scheme only exists in Development with DevAuth:MockGoogleUrl set
+        // (see Program.cs). Even then it is used only while the mock server answers, so
+        // stopping dev/mock-google/server.mjs sends login back to real Google.
+        private async Task<bool> IsMockGoogleUpAsync()
+        {
+            var schemes = HttpContext.RequestServices.GetRequiredService<IAuthenticationSchemeProvider>();
+            if (await schemes.GetSchemeAsync(DevAuth.MockGoogleScheme) == null)
+            {
+                return false;
+            }
+
+            try
+            {
+                var client = HttpContext.RequestServices
+                    .GetRequiredService<IHttpClientFactory>()
+                    .CreateClient(DevAuth.MockGoogleScheme);
+                using var response = await client.GetAsync("healthz");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex) when (ex is HttpRequestException or TaskCanceledException)
+            {
+                return false;
+            }
         }
 
         [HttpGet("me")]

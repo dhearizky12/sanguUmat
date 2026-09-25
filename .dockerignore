@@ -13,6 +13,7 @@
 
 # Not part of the image.
 deploy/
+dev/
 *.md
 sanguUmat.slnx
 

@@ -1,0 +1,32 @@
+[
+  {
+    "sub": "dev-admin",
+    "name": "Admin Pengembang",
+    "email": "admin.dev@example.com",
+    "note": "Admin (dibuat saat login pertama)"
+  },
+  {
+    "sub": "seed-guru-fajar",
+    "name": "Ustadz Fajar Rahman",
+    "email": "ustadz.fajar@example.com",
+    "note": "Guru (seed)"
+  },
+  {
+    "sub": "seed-guru-hana",
+    "name": "Ustadzah Hana Wulandari",
+    "email": "ustadzah.hana@example.com",
+    "note": "Guru (seed)"
+  },
+  {
+    "sub": "seed-user-budi",
+    "name": "Budi Santoso",
+    "email": "budi.santoso@example.com",
+    "note": "User (seed)"
+  },
+  {
+    "sub": "seed-user-siti",
+    "name": "Siti Aminah",
+    "email": "siti.aminah@example.com",
+    "note": "User (seed)"
+  }
+]
