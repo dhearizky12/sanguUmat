@@ -46,7 +46,7 @@
 
 ## 4. Convert the question pages
 
-- [ ] 4.1 Split `DetailQuestion` (493 lines) into sections before converting,
+- [x] 4.1 Split `DetailQuestion` (493 lines) into sections before converting,
       mirroring `components/dashboard/`.
 - [ ] 4.2 Convert `DetailQuestion`, preserving the owner edit and delete rules,
       the admin moderation rules, and the single view-count call per visit.
