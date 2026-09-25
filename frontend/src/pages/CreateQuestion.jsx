@@ -211,7 +211,7 @@ function CreateQuestion() {
                     onChange={clearError(setTitle)}
                     placeholder="Misalnya: Bagaimana cara menjamak sholat saat perjalanan dinas?"
                     invalid={!!error && !title.trim()}
-                    className="h-14 text-[17px]"
+                    size="lg"
                   />
                 </div>
 
@@ -224,7 +224,7 @@ function CreateQuestion() {
                     onChange={clearError(setContent)}
                     placeholder="Ceritakan situasinya: apa yang sudah dilakukan, apa yang membuat ragu, dan jawaban seperti apa yang dibutuhkan."
                     invalid={!!error && !content.trim()}
-                    className="text-[17px]"
+                    size="lg"
                   />
                 </div>
 
