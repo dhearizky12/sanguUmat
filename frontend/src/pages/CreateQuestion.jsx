@@ -11,7 +11,7 @@ import MyQuestions from "../components/ask/MyQuestions";
 import { FieldLabel, Input, Select, TextArea, FormError } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
-import { CATEGORIES } from "../lib/category";
+import { useCategories } from "../lib/category";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 import { loginPath } from "../lib/next";
 
@@ -50,6 +50,7 @@ function SignInGate() {
 
 function CreateQuestion() {
   const { isAuthenticated, loading } = useAuth();
+  const categories = useCategories();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
@@ -195,9 +196,9 @@ function CreateQuestion() {
                   </FieldLabel>
                   <Select id="ask-category" value={category} onChange={(e) => setCategory(e.target.value)}>
                     <option value="">Pilih kategori</option>
-                    {CATEGORIES.slice(1).map((cat) => (
+                    {categories.map((cat) => (
                       <option key={cat.key} value={cat.key}>
-                        {cat.label}
+                        {cat.name}
                       </option>
                     ))}
                   </Select>

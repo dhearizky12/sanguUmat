@@ -3,6 +3,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
+import AdminNav from "../components/AdminNav";
 import Avatar from "../components/Avatar";
 import Breadcrumb from "../components/Breadcrumb";
 import MonoLabel from "../components/MonoLabel";
@@ -93,11 +94,12 @@ function AdminUsers() {
       <Header />
       <main className="grow">
         <PageHeader>
-          <Breadcrumb items={[{ label: "Panel Admin" }]} />
+          <Breadcrumb items={[{ label: "Panel Admin", to: "/admin/users" }, { label: "Pengguna" }]} />
           <div className="flex flex-col gap-2.5">
             <PageTitle>Panel Admin</PageTitle>
             <PageLead>Kelola pengguna Sangu Umat dan peran mereka.</PageLead>
           </div>
+          <AdminNav />
           <Input
             type="search"
             size="lg"

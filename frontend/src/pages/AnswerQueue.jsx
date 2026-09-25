@@ -9,9 +9,10 @@ import QuestionCard from "../components/QuestionCard";
 import { FilterChip, FilterRow } from "../components/Filters";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 import { API_URL } from "../lib/api";
-import { CATEGORIES } from "../lib/category";
+import { ALL_CATEGORIES, useCategories } from "../lib/category";
 
 function AnswerQueue() {
+  const categories = useCategories();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("semua");
@@ -62,9 +63,9 @@ function AnswerQueue() {
         <PageBody>
           <div className="pb-6">
             <FilterRow label="Kategori">
-              {CATEGORIES.map((cat) => (
+              {[ALL_CATEGORIES, ...categories].map((cat) => (
                 <FilterChip key={cat.key} active={category === cat.key} onClick={() => setCategory(cat.key)}>
-                  {cat.label}
+                  {cat.name}
                 </FilterChip>
               ))}
             </FilterRow>

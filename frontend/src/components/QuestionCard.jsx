@@ -2,13 +2,14 @@ import { pictureUrl } from "../lib/api";
 import Avatar from "./Avatar";
 import { formatDate } from "../lib/date";
 import { formatCount } from "../lib/format";
-import { categoryLabel } from "../lib/category";
+import { categoryLabel, useCategories } from "../lib/category";
 import QuestionRow from "./QuestionRow";
 
 // A question from GET /api/question as a canvas question row. The list
 // response carries no answer text or answerer, so the byline credits the
 // asker instead of "Dijawab oleh".
 function QuestionCard({ slug, question }) {
+  const categories = useCategories();
   const isAnswered = Boolean(question.isAnswered);
 
   return (
@@ -16,7 +17,7 @@ function QuestionCard({ slug, question }) {
       to={`/question/detail/${slug}`}
       meta={
         <>
-          {question.category && <span className="text-forest">{categoryLabel(question.category)}</span>}
+          <span className="text-forest">{categoryLabel(categories, question.category)}</span>
           <span className="text-ink-faint">{formatDate(question.createdAt)}</span>
           <span className="text-ink-faint">{formatCount(question.views)} dibaca</span>
           <span className={isAnswered ? "text-gold-dark" : "text-ink-faint"}>

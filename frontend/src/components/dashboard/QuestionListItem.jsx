@@ -1,6 +1,6 @@
 import { formatDate } from "../../lib/date";
 import { formatCount } from "../../lib/format";
-import { categoryLabel } from "../../lib/category";
+import { categoryLabel, useCategories } from "../../lib/category";
 import QuestionRow from "../QuestionRow";
 import VerifiedBadge from "../VerifiedBadge";
 
@@ -9,6 +9,7 @@ function getFeaturedAnswer(question) {
 }
 
 function QuestionListItem({ question }) {
+  const categories = useCategories();
   const answer = getFeaturedAnswer(question);
 
   return (
@@ -16,7 +17,7 @@ function QuestionListItem({ question }) {
       to={`/question/detail/${question.id}`}
       meta={
         <>
-          <span className="text-forest">{categoryLabel(question.category)}</span>
+          <span className="text-forest">{categoryLabel(categories, question.category)}</span>
           <span className="text-ink-faint">{formatDate(question.createdAt)}</span>
           <span className="text-ink-faint">{formatCount(question.views)} dibaca</span>
         </>

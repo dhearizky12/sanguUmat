@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import EmptyState from "../EmptyState";
 import LoadingState from "../LoadingState";
 import MonoLabel from "../MonoLabel";
-import { categoryLabel } from "../../lib/category";
+import { categoryLabel, useCategories } from "../../lib/category";
 import { formatDate } from "../../lib/date";
 
 // Answered reads like the canvas's "Sudah dijawab" badge, waiting like "Menunggu tinjauan".
@@ -21,6 +21,7 @@ function StatusBadge({ answered }) {
 
 // "Pertanyaan saya" under the form: everything the signed-in user has asked, newest first.
 function MyQuestions({ questions, loading }) {
+  const categories = useCategories();
   const answered = questions.filter((q) => q.isAnswered).length;
 
   return (
@@ -52,7 +53,7 @@ function MyQuestions({ questions, loading }) {
             >
               <MonoLabel as="span" size="sm" className="flex flex-wrap items-center gap-x-3.5 gap-y-2">
                 <StatusBadge answered={q.isAnswered} />
-                <span className="text-forest">{categoryLabel(q.category)}</span>
+                <span className="text-forest">{categoryLabel(categories, q.category)}</span>
                 <span className="text-ink-faint">{formatDate(q.createdAt)}</span>
               </MonoLabel>
               <span className="text-[clamp(18px,2.1vw,22px)] leading-[1.3] tracking-[-0.01em] text-ink text-pretty">{q.title}</span>

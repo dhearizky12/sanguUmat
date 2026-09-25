@@ -8,7 +8,7 @@ import RichContent from "../RichContent";
 import { FieldLabel, Input, TextArea } from "../Field";
 import { API_URL, pictureUrl } from "../../lib/api";
 import Avatar from "../Avatar";
-import { categoryLabel } from "../../lib/category";
+import { categoryLabel, useCategories } from "../../lib/category";
 import { formatDate } from "../../lib/date";
 import { formatCount } from "../../lib/format";
 import { PageHeader } from "../Page";
@@ -16,6 +16,7 @@ import { PageHeader } from "../Page";
 // The question itself, set as the page's warm header band so it reads as the subject the
 // answers below respond to. Owns the owner's inline edit and the owner/admin delete.
 function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
+  const categories = useCategories();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
@@ -89,7 +90,7 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
     }
   };
 
-  const category = categoryLabel(question.category ?? null);
+  const category = categoryLabel(categories, question.category);
 
   return (
     <PageHeader>

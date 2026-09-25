@@ -16,6 +16,7 @@ namespace backend.Data
 
         public DbSet<Answer> Answers {get;set;}
         public DbSet<Comment> Comments {get;set;}
+        public DbSet<Category> Categories {get;set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +25,17 @@ namespace backend.Data
             modelBuilder.Entity<User>()
                 .HasIndex(x => x.GoogleId)
                 .IsUnique();
+
+            modelBuilder.Entity<Category>()
+                .HasIndex(x => x.Key)
+                .IsUnique();
+
+            // Deleting a category leaves its questions uncategorised ("Lainnya").
+            modelBuilder.Entity<Question>()
+                .HasOne(x => x.Category)
+                .WithMany(x => x.Questions)
+                .HasForeignKey(x => x.CategoryId)
+                .OnDelete(DeleteBehavior.SetNull);
         }
     }
 }

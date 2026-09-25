@@ -28,18 +28,20 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            // Null/unrecognized category is allowed through as "uncategorized" (renders as
-            // "Lainnya" on the FE) rather than rejected -- Category is a nice-to-have tag, not
-            // a required field.
-            var category = request.Category != null && Categories.All.Contains(request.Category)
-                ? request.Category
-                : null;
+            // A missing or unknown key is allowed through as uncategorised (the FE shows
+            // "Lainnya") rather than rejected — the category is optional.
+            var categoryId = string.IsNullOrWhiteSpace(request.Category)
+                ? null
+                : await _db.Categories
+                    .Where(c => c.Key == request.Category)
+                    .Select(c => (int?)c.Id)
+                    .FirstOrDefaultAsync();
 
             var question = new Question
             {
                 Title = request.Title,
                 Content = request.Content,
-                Category = category,
+                CategoryId = categoryId,
                 CreatedAt = DateTime.UtcNow,
                 UserId = user.Id
             };
@@ -77,7 +79,7 @@ namespace backend.Controllers
 
             if (!string.IsNullOrWhiteSpace(category))
             {
-                query = query.Where(x => x.Category == category);
+                query = query.Where(x => x.Category != null && x.Category.Key == category);
             }
 
             var questions = await query.OrderByDescending( x => x.CreatedAt )
@@ -88,7 +90,7 @@ namespace backend.Controllers
                                 x.Content,
                                 x.CreatedAt,
                                 x.Views,
-                                x.Category,
+                                Category = x.Category == null ? null : x.Category.Key,
                                 UserId = x.User.Id,
                                 UserName = x.User.Name,
                                 UserPicture = x.User.Picture,
@@ -123,7 +125,7 @@ namespace backend.Controllers
                     x.Content,
                     x.CreatedAt,
                     x.Views,
-                    x.Category,
+                    Category = x.Category == null ? null : x.Category.Key,
                     UserId = x.User.Id,
                     UserName = x.User.Name,
                     UserPicture = x.User.Picture,
@@ -141,6 +143,7 @@ namespace backend.Controllers
             var question =
                 await _db.Questions
                     .Include(x => x.User)
+                    .Include(x => x.Category)
 
                     .Include(x => x.Answers)
                     .ThenInclude(x => x.User)
@@ -163,7 +166,8 @@ namespace backend.Controllers
                 question.Content,
                 question.CreatedAt,
                 question.Views,
-                question.Category,
+                // Responses keep `category` as the key; the FE maps it to a name.
+                Category = question.Category == null ? null : question.Category.Key,
 
                 // Was missing entirely before — canEditQuestion/canDeleteQuestion on the FE
                 // compare against this and silently never matched for the real owner.

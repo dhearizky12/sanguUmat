@@ -6,7 +6,7 @@ import TopicIndex from "../components/dashboard/TopicIndex";
 import QuestionListSection from "../components/dashboard/QuestionListSection";
 import CtaSection from "../components/dashboard/CtaSection";
 import { API_URL } from "../lib/api";
-import { CATEGORIES } from "../lib/category";
+import { useCategories } from "../lib/category";
 
 const MAX_LIST_ITEMS = 8;
 
@@ -47,9 +47,10 @@ function Dashboard() {
     fetchAnswered();
   }, []);
 
-  const topics = CATEGORIES.filter((c) => c.key !== "semua").map((c) => ({
+  const categories = useCategories();
+  const topics = categories.map((c) => ({
     key: c.key,
-    label: c.label,
+    label: c.name,
     count: answeredQuestions.filter((q) => q.category === c.key).length,
   }));
 

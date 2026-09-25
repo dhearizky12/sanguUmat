@@ -8,7 +8,8 @@ namespace backend.Models
 
         public DateTime CreatedAt {get; set;}
         public int Views {get; set;} = 0;
-        public string? Category {get; set;}
+        public int? CategoryId {get; set;}
+        public Category? Category {get; set;}
 
         public int UserId {get;set;}
         public User User {get; set;}

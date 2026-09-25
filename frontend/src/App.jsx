@@ -17,6 +17,7 @@ import AnswerQueue from "./pages/AnswerQueue";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import AdminUsers from "./pages/AdminUsers";
+import AdminCategories from "./pages/AdminCategories";
 
 function App() {
   return (
@@ -55,6 +56,7 @@ function App() {
           {/* Admin only */}
           <Route element={<RoleGuard allow={["Admin"]} />}>
             <Route path="/admin/users" element={<AdminUsers />} />
+            <Route path="/admin/categories" element={<AdminCategories />} />
           </Route>
         </Routes>
       </BrowserRouter>

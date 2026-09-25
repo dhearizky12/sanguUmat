@@ -10,7 +10,7 @@ import QuestionCard from "../components/QuestionCard";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
 import { API_URL } from "../lib/api";
-import { CATEGORIES } from "../lib/category";
+import { ALL_CATEGORIES, useCategories } from "../lib/category";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
 const STATUSES = [
@@ -20,6 +20,7 @@ const STATUSES = [
 ];
 
 function Questions() {
+  const categories = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
   const search = searchParams.get("search") || "";
   const [inputValue, setInputValue] = useState(search);
@@ -156,9 +157,9 @@ function Questions() {
         <PageBody>
           <div className="flex flex-col gap-3 pb-6">
             <FilterRow label="Kategori">
-              {CATEGORIES.map((cat) => (
+              {[ALL_CATEGORIES, ...categories].map((cat) => (
                 <FilterChip key={cat.key} active={category === cat.key} onClick={() => setCategory(cat.key)}>
-                  {cat.label}
+                  {cat.name}
                 </FilterChip>
               ))}
             </FilterRow>
