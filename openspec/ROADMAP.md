@@ -98,6 +98,3 @@ streaming provider. Depends on 3 and 5.
 - Payment and billing behind `membership`.
 - The home page details not yet built: the one/two-column list toggle, the
   "Sering dicari" suggestions, and the verified-ustadz badge.
-- A spec deviation found while writing the baseline: the empty-file message on
-  `POST /api/auth/upload-picture` reads "File kosong". (The complete-profile
-  one is resolved by `relax-profile-completion`.)
