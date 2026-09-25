@@ -50,7 +50,7 @@
       mirroring `components/dashboard/`.
 - [x] 4.2 Convert `DetailQuestion`, preserving the owner edit and delete rules,
       the admin moderation rules, and the single view-count call per visit.
-- [ ] 4.3 Convert `Questions` to the Tanya Jawab canvas: layout, type,
+- [x] 4.3 Convert `Questions` to the Tanya Jawab canvas: layout, type,
       breadcrumb and empty state, keeping today's search and category filter.
       Leave out the facet panel, sort control and pagination.
 - [ ] 4.4 Convert `CreateQuestion` to the Ajukan Pertanyaan canvas, including

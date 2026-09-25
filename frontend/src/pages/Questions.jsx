@@ -1,12 +1,53 @@
 import { useEffect, useState } from "react";
-import { NavLink, useSearchParams } from "react-router-dom";
+import { useSearchParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
+import Breadcrumb from "../components/Breadcrumb";
+import Button from "../components/Button";
+import MonoLabel from "../components/MonoLabel";
 import QuestionCard from "../components/QuestionCard";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
 import { API_URL } from "../lib/api";
 import { CATEGORIES } from "../lib/category";
+
+const STATUSES = [
+  { key: "semua", label: "Semua status" },
+  { key: "terjawab", label: "Terjawab" },
+  { key: "menunggu", label: "Menunggu jawaban" },
+];
+
+// One toggle in a filter row: outlined, filled forest when selected.
+function FilterChip({ active, onClick, children }) {
+  return (
+    <MonoLabel
+      as="button"
+      type="button"
+      role="radio"
+      aria-checked={active}
+      size="sm"
+      onClick={onClick}
+      className={`px-3 py-2 border cursor-pointer transition-colors ${
+        active ? "bg-forest border-forest text-cream-text" : "border-stone-border text-ink-muted hover:bg-cream-hover hover:text-ink"
+      }`}
+    >
+      {children}
+    </MonoLabel>
+  );
+}
+
+function FilterRow({ label, children }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-2.5">
+      <MonoLabel size="sm" className="w-[72px] shrink-0 tracking-[0.13em] text-ink-faint">
+        {label}
+      </MonoLabel>
+      <div role="radiogroup" aria-label={label} className="flex flex-wrap gap-2">
+        {children}
+      </div>
+    </div>
+  );
+}
 
 function Questions() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -79,107 +120,114 @@ function Questions() {
     setInputValue(e.target.value);
   };
 
+  // "Cari", Enter and the ✕ apply immediately instead of waiting out the debounce.
+  const applySearch = (value) => {
+    setInputValue(value);
+    setSearchParams(value ? { search: value } : {}, { replace: true });
+  };
+
+  const handleSearchSubmit = (e) => {
+    e.preventDefault();
+    applySearch(inputValue.trim());
+  };
+
+  const hasFilters = category !== "semua" || status !== "semua";
+  const resetFilters = () => {
+    setCategory("semua");
+    setStatus("semua");
+  };
+
   const byCategory = category === "semua" ? questions : questions.filter((q) => q.category === category);
   const filtered =
     status === "semua" ? byCategory : byCategory.filter((q) => (status === "terjawab" ? q.isAnswered : !q.isAnswered));
 
   return (
-    <div className="font-body-md min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
       <main className="grow">
-        <section className="max-w-container-max mx-auto px-gutter py-section-gap">
-          <div className="text-center mb-10">
-            <h1 className="font-headline-lg text-headline-lg text-primary-container mb-2">Tanya Jawab</h1>
-            <p className="font-body-md text-body-md text-on-surface-variant max-w-2xl mx-auto">
-              Telusuri seluruh pertanyaan seputar Islam yang telah diajukan oleh komunitas, atau ajukan pertanyaan anda sendiri.
-            </p>
-          </div>
-
-          <div className="max-w-2xl mx-auto relative mb-6">
-            <div className="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-              <span className="material-symbols-outlined text-outline" data-icon="search">
-                search
-              </span>
+        <section className="bg-cream-warm border-b border-stone-line">
+          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-5">
+            <Breadcrumb items={[{ label: "Tanya Jawab" }]} />
+            <div className="flex flex-col gap-2.5">
+              <h1 className="text-[clamp(34px,5vw,52px)] leading-[1.06] font-normal tracking-[-0.02em]">Tanya Jawab</h1>
+              <p className="max-w-[52ch] text-base leading-relaxed text-ink-soft">
+                Telusuri pertanyaan seputar Islam yang diajukan komunitas dan dijawab para ustadz. Saring berdasarkan kategori
+                atau status jawabannya.
+              </p>
             </div>
-            <input
-              className="w-full pl-14 pr-4 py-4 bg-surface-container-lowest border border-outline-variant rounded-2xl font-body-md text-body-md text-on-surface focus:border-primary-container focus:ring-1 focus:ring-primary-container outline-none transition-all"
-              placeholder="Cari pertanyaan..."
-              type="text"
-              value={inputValue}
-              onChange={handleSearchChange}
-            />
-          </div>
-
-          <div className="flex flex-wrap gap-2 justify-center mb-4" role="radiogroup" aria-label="Filter kategori">
-            {CATEGORIES.map((cat) => (
-              <button
-                key={cat.key}
-                type="button"
-                role="radio"
-                aria-checked={category === cat.key}
-                onClick={() => setCategory(cat.key)}
-                className={`px-4 py-2 rounded-full font-label-sm text-label-sm border transition-colors ${
-                  category === cat.key
-                    ? "bg-primary-container text-on-primary border-primary-container"
-                    : "bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container-low"
-                }`}
-              >
-                {cat.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex flex-wrap gap-2 justify-center mb-6" role="radiogroup" aria-label="Filter status">
-            {[
-              { key: "semua", label: "Semua Status" },
-              { key: "terjawab", label: "Terjawab", icon: "check_circle" },
-              { key: "menunggu", label: "Menunggu", icon: "schedule" },
-            ].map((opt) => (
-              <button
-                key={opt.key}
-                type="button"
-                role="radio"
-                aria-checked={status === opt.key}
-                onClick={() => setStatus(opt.key)}
-                className={`flex items-center gap-1 px-4 py-2 rounded-full font-label-sm text-label-sm border transition-colors ${
-                  status === opt.key
-                    ? "bg-secondary-container text-on-secondary-container border-secondary-container"
-                    : "bg-surface-container-lowest text-on-surface-variant border-outline-variant hover:bg-surface-container-low"
-                }`}
-              >
-                {opt.icon && <span className="material-symbols-outlined text-[16px]">{opt.icon}</span>}
-                {opt.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="flex justify-between items-center mb-8">
-            <p className="font-body-md text-body-md text-on-surface-variant">
-              {loading ? "Memuat..." : `${filtered.length} pertanyaan ditemukan${search ? ` untuk "${search}"` : ""}.`}
-            </p>
-            <NavLink
-              to="/question/create"
-              className="hidden sm:inline-flex items-center gap-2 bg-primary-container text-on-primary font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-tertiary transition-colors shadow-sm"
+            <form
+              role="search"
+              onSubmit={handleSearchSubmit}
+              className="w-full flex flex-wrap items-stretch bg-cream border border-stone-border focus-within:border-forest transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]" data-icon="edit_note">
-                edit_note
-              </span>
-              Ajukan Pertanyaan
-            </NavLink>
+              <input
+                type="text"
+                aria-label="Cari pertanyaan"
+                value={inputValue}
+                onChange={handleSearchChange}
+                placeholder="Cari pertanyaan, misalnya: menjamak sholat"
+                className="flex-[1_1_220px] min-w-0 bg-transparent outline-none px-[clamp(14px,4vw,20px)] h-14 text-[17px] text-ink placeholder:text-ink-faint"
+              />
+              {inputValue && (
+                <button
+                  type="button"
+                  onClick={() => applySearch("")}
+                  aria-label="Hapus pencarian"
+                  className="shrink-0 px-3.5 text-[17px] text-ink-faint hover:text-ink cursor-pointer transition-colors"
+                >
+                  &#x2715;
+                </button>
+              )}
+              <Button type="submit" className="shrink-0 tracking-[0.16em] px-[clamp(18px,5vw,26px)]">
+                Cari
+              </Button>
+            </form>
+          </div>
+        </section>
+
+        <section className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)]">
+          <div className="flex flex-col gap-3 pb-6">
+            <FilterRow label="Kategori">
+              {CATEGORIES.map((cat) => (
+                <FilterChip key={cat.key} active={category === cat.key} onClick={() => setCategory(cat.key)}>
+                  {cat.label}
+                </FilterChip>
+              ))}
+            </FilterRow>
+            <FilterRow label="Status">
+              {STATUSES.map((opt) => (
+                <FilterChip key={opt.key} active={status === opt.key} onClick={() => setStatus(opt.key)}>
+                  {opt.label}
+                </FilterChip>
+              ))}
+            </FilterRow>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-3 pb-3 border-b border-ink">
+            <MonoLabel className="text-ink-muted">
+              {loading
+                ? "Memuat…"
+                : `${filtered.length} dari ${questions.length} pertanyaan${search ? ` untuk “${search}”` : ""}`}
+            </MonoLabel>
           </div>
 
           {loading ? (
-            <LoadingState message="Memuat pertanyaan..." />
+            <LoadingState message="Memuat pertanyaan…" />
           ) : filtered.length === 0 ? (
             <EmptyState
-              icon="search_off"
-              title="Tidak Ada Pertanyaan Ditemukan"
-              message="Coba kata kunci atau kategori lain, atau jadilah yang pertama mengajukan pertanyaan ini."
+              className="mt-6"
+              title="Belum ada pertanyaan yang cocok."
+              message="Coba kata kunci atau saringan lain, atau ajukan pertanyaanmu langsung kepada para ustadz."
+              action={
+                hasFilters
+                  ? { label: "Atur ulang saringan", onClick: resetFilters, variant: "outline" }
+                  : { label: "Ajukan Pertanyaan", to: "/question/create" }
+              }
             />
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-10">
               {filtered.map((q) => (
-                <QuestionCard key={q.id} slug={q.id} question={q} adminId={false} />
+                <QuestionCard key={q.id} slug={q.id} question={q} />
               ))}
             </div>
           )}
