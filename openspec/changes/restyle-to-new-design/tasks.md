@@ -63,8 +63,8 @@
       WhatsApp OTP path and every element belonging to it. Both panels' content sits
       inside the shared 1160px container so the page lines up with every other
       page; the green panel's background still runs to the window's right edge.
-- [ ] 5.2 Convert `Profile`.
-- [ ] 5.3 Convert `EditProfile`, keeping the avatar upload and the
+- [x] 5.2 Convert `Profile`.
+- [x] 5.3 Convert `EditProfile`, keeping the avatar upload and the
       profile-completion gate.
 
 ## 6. Convert the Guru and Admin pages

@@ -4,7 +4,7 @@ import MonoLabel from "./MonoLabel";
 // forest on focus, under an uppercase mono label. `invalid` swaps the border to the
 // error red.
 const CONTROL =
-  "w-full bg-paper border px-4 text-base text-ink placeholder:text-ink-faint outline-none transition-colors";
+  "w-full bg-paper border px-4 text-base text-ink placeholder:text-ink-faint outline-none transition-colors disabled:bg-cream-warm disabled:text-ink-faint disabled:cursor-not-allowed";
 
 const border = (invalid) => (invalid ? "border-live" : "border-stone-border focus:border-forest");
 
@@ -28,4 +28,13 @@ export function TextArea({ invalid = false, className = "", ...props }) {
 
 export function Select({ invalid = false, className = "", ...props }) {
   return <select aria-invalid={invalid || undefined} className={`${CONTROL} ${border(invalid)} h-14 cursor-pointer ${className}`} {...props} />;
+}
+
+// The error line under a form: red rule, rust tint, mono text.
+export function FormError({ children }) {
+  return (
+    <div role="alert" className="border-l-2 border-live bg-rust-tint px-3.5 py-2.5 font-mono text-mono-label leading-[1.7] tracking-[0.05em] text-rust">
+      {children}
+    </div>
+  );
 }

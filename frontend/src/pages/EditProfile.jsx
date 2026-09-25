@@ -1,20 +1,28 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import { Link, useNavigate } from "react-router-dom";
+import Breadcrumb from "../components/Breadcrumb";
+import Button from "../components/Button";
+import MonoLabel from "../components/MonoLabel";
+import { FieldLabel, Input, TextArea, FormError } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
-import { handleAvatarError } from "../lib/image";
+import { BASE_PATH } from "../lib/basePath";
+import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
 
 function EditProfile() {
-  const navigate = useNavigate();
-  const { profile } = useAuth();
+  const { me, profile } = useAuth();
+  // A first sign-in lands here from the Dashboard until phone and address are filled in.
+  const isCompleting = !me?.hasCompletedProfile;
 
   const [fullName, setFullName] = useState(profile?.name || "");
   const [phone, setPhone] = useState(profile?.phone || "");
   const [address, setAddress] = useState(profile?.address || "");
   const [selectedFile, setSelectedFile] = useState(null);
   const [preview, setPreview] = useState(null);
+  const [error, setError] = useState("");
+  const [saving, setSaving] = useState(false);
 
   const uploadPicture = async () => {
     if (!selectedFile) return true;
@@ -31,7 +39,16 @@ function EditProfile() {
     return response.ok;
   };
 
-  const saveProfile = async () => {
+  const saveProfile = async (e) => {
+    e.preventDefault();
+
+    // The backend refuses to complete a profile without both.
+    if (!phone.trim() || !address.trim()) {
+      setError("Nomor telepon dan alamat wajib diisi.");
+      return;
+    }
+
+    setSaving(true);
     try {
       const response = await fetch(`${API_URL}/api/auth/complete-profile`, {
         method: "POST",
@@ -47,21 +64,25 @@ function EditProfile() {
       });
 
       if (!response.ok) {
-        alert("Gagal menyimpan profil");
+        setError("Gagal menyimpan profil. Silakan coba lagi.");
         return;
       }
 
       const uploadSuccess = await uploadPicture();
 
       if (!uploadSuccess) {
-        alert("Profil tersimpan, tapi upload foto gagal");
+        setError("Profil tersimpan, tetapi unggah foto gagal.");
         return;
       }
 
-      window.location.href = "/";
-    } catch (error) {
-      console.error(error);
-      alert("Terjadi kesalahan");
+      // A full reload so AuthProvider picks up the completed profile; through BASE_PATH so it
+      // lands on the app's home under a path prefix too.
+      window.location.href = `${BASE_PATH}/`;
+    } catch (err) {
+      console.error(err);
+      setError("Terjadi kesalahan. Silakan coba lagi.");
+    } finally {
+      setSaving(false);
     }
   };
 
@@ -74,114 +95,105 @@ function EditProfile() {
     }
   };
 
-  const handleFullNameChange = (e) => {
-    setFullName(e.target.value);
-  };
-
-  const handlePhoneChange = (e) => {
-    setPhone(e.target.value);
-  };
-
-  const handleAddressChange = (e) => {
-    setAddress(e.target.value);
+  const edit = (setter) => (e) => {
+    setter(e.target.value);
+    setError("");
   };
 
   return (
-    <div className="font-body-md min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
-      <main className="grow z-10 relative py-section-gap px-margin-mobile md:px-gutter">
-        <div className="max-w-container-max mx-auto">
-          <div className="text-center mb-12">
-            <h1 className="text-headline-lg text-primary mb-2">Edit Profil</h1>
-            <p className="text-on-surface-variant">Lengkapi data pribadi anda</p>
+      <main className="grow">
+        <section className="bg-cream-warm border-b border-stone-line">
+          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-3.5">
+            <Breadcrumb
+              items={isCompleting ? [{ label: "Lengkapi profil" }] : [{ label: "Profil saya", to: "/profile" }, { label: "Ubah profil" }]}
+            />
+            <h1 className="text-[clamp(34px,5vw,52px)] leading-[1.06] font-normal tracking-[-0.02em]">
+              {isCompleting ? "Lengkapi profil" : "Ubah profil"}
+            </h1>
+            <p className="max-w-[52ch] text-base leading-relaxed text-ink-soft">
+              {isCompleting
+                ? "Satu langkah lagi. Isi nomor telepon dan alamat Anda untuk mulai memakai Sangu Umat."
+                : "Perbarui nama, foto, nomor telepon dan alamat Anda."}
+            </p>
           </div>
-          <div className="bg-surface-container-lowest rounded-xl shadow-xl p-8">
-            <div className="flex flex-col items-center mb-12">
-              <div className="relative group">
-                <div className="w-32 h-32 rounded-full overflow-hidden border border-primary shadow-md">
-                  <img
-                    className="w-full h-full object-cover"
-                    onError={handleAvatarError}
-                    src={
-                      preview ||
-                      profile.picture ||
-                      "/default-avatar.png"
-                    }
-                  />
-                </div>
-                <label
-                  className="absolute bottom-0 right-0 bg-primary text-on-primary p-2 rounded-full cursor-pointer shadow-lg active:scale-90 transition-transform flex items-center justify-center"
-                  htmlFor="photo-upload"
-                >
-                  <span className="material-symbols-outlined text-base">photo_camera</span>
-                </label>
-                <input className="hidden" id="photo-upload" accept="image/*" type="file" onChange={handleUploadChange} />
+        </section>
+
+        <section className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)]">
+          <form onSubmit={saveProfile} className="max-w-[760px] flex flex-col gap-6">
+            <MonoLabel as="h2" className="block tracking-[0.14em] text-ink pb-2.5 border-b border-ink">
+              Data diri
+            </MonoLabel>
+
+            <div className="flex items-center gap-5">
+              {/* profile.picture is already resolved by AuthProvider — no pictureUrl() here. */}
+              <img
+                alt="Foto profil"
+                className="size-[88px] shrink-0 rounded-full object-cover border border-stone-line bg-cream"
+                onError={handleAvatarError}
+                src={preview || profile?.picture || DEFAULT_AVATAR}
+              />
+              <div className="flex flex-col items-start gap-1.5">
+                <Button as="label" htmlFor="photo-upload" variant="outline" className="px-4 py-2.5">
+                  Ganti foto
+                </Button>
+                <span className="text-sm text-ink-faint">{selectedFile ? selectedFile.name : "JPG atau PNG"}</span>
+              </div>
+              <input className="hidden" id="photo-upload" accept="image/*" type="file" onChange={handleUploadChange} />
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
+              <div className="flex flex-col gap-2.5">
+                <FieldLabel htmlFor="profile-name">Nama lengkap</FieldLabel>
+                <Input id="profile-name" type="text" placeholder="Nama lengkap" value={fullName} onChange={edit(setFullName)} />
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <FieldLabel htmlFor="profile-email">Email</FieldLabel>
+                <Input id="profile-email" type="email" value={profile?.email ?? ""} disabled />
+              </div>
+              <div className="flex flex-col gap-2.5">
+                <FieldLabel htmlFor="profile-phone">Nomor telepon</FieldLabel>
+                <Input
+                  id="profile-phone"
+                  type="tel"
+                  name="phone"
+                  placeholder="081234567890"
+                  value={phone}
+                  onChange={edit(setPhone)}
+                  invalid={!!error && !phone.trim()}
+                />
               </div>
             </div>
-            <form className="space-y-8">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Nama Lengkap</label>
-                  <input
-                    className="bg-surface-container-low focus:border-primary-container rounded-xl px-4 py-3 outline-none transition-all font-body-md text-on-surface"
-                    type="text"
-                    placeholder="Nama Lengkap"
-                    value={fullName}
-                    onChange={handleFullNameChange}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Alamat Email</label>
-                  <input
-                    className="rounded-xl px-4 py-3 outline-none transition-all font-body-md text-on-surface disabled:bg-gray-200 disabled:cursor-not-allowed disabled:text-gray-500"
-                    type="email"
-                    placeholder="contoh@email.com"
-                    value={profile.email}
-                    disabled
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Nomer Telephone</label>
-                  <input
-                    className="bg-surface-container-low focus:border-primary-container rounded-xl px-4 py-3 outline-none transition-all font-body-md text-on-surface"
-                    value={phone}
-                    type="tel"
-                    name="phone"
-                    placeholder="081234567890"
-                    onChange={handlePhoneChange}
-                  />
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <div className="flex justify-between items-center px-1">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant">Alamat</label>
-                </div>
-                <textarea
-                  className="bg-surface-container-low focus:border-primary-container rounded-xl px-4 py-3 outline-none transition-all font-body-md text-on-surface resize-none"
-                  rows="4"
-                  placeholder="Tulis alamat lengkap anda."
-                  value={address}
-                  onChange={handleAddressChange}
-                ></textarea>
-              </div>
-              <div className="flex flex-col sm:flex-row gap-4">
-                <Link
-                  to="/profile"
-                  className="border border-primary-container text-primary px-6 py-3 rounded-full font-label-sm text-label-sm shadow-sm active:scale-95"
-                >
+
+            <div className="flex flex-col gap-2.5">
+              <FieldLabel htmlFor="profile-address">Alamat</FieldLabel>
+              <TextArea
+                id="profile-address"
+                rows="4"
+                placeholder="Tulis alamat lengkap Anda."
+                value={address}
+                onChange={edit(setAddress)}
+                invalid={!!error && !address.trim()}
+              />
+            </div>
+
+            {error && (
+              <FormError>{error}</FormError>
+            )}
+
+            <div className="flex flex-wrap gap-3 pt-1">
+              <Button type="submit" disabled={saving} className="min-h-14 px-[26px] tracking-[0.16em]">
+                {saving ? "Menyimpan…" : "Simpan"}
+              </Button>
+              {!isCompleting && (
+                <Button as={Link} to="/profile" variant="outline" className="min-h-14 inline-flex items-center px-6">
                   Batal
-                </Link>
-                <button
-                  onClick={saveProfile}
-                  className="bg-primary-container text-white px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-tertiary-container transition-colors shadow-sm active:scale-95 flex items-center gap-2"
-                  type="button"
-                >
-                  Simpan
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
+                </Button>
+              )}
+            </div>
+          </form>
+        </section>
       </main>
       <Footer />
     </div>

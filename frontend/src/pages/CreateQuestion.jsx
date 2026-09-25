@@ -8,7 +8,7 @@ import Loading from "../components/Loading";
 import LogoMark from "../components/LogoMark";
 import MonoLabel from "../components/MonoLabel";
 import MyQuestions from "../components/ask/MyQuestions";
-import { FieldLabel, Input, Select, TextArea } from "../components/Field";
+import { FieldLabel, Input, Select, TextArea, FormError } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { CATEGORIES } from "../lib/category";
@@ -230,12 +230,7 @@ function CreateQuestion() {
                 </div>
 
                 {error && (
-                  <div
-                    role="alert"
-                    className="border-l-2 border-live bg-rust-tint px-3.5 py-2.5 font-mono text-mono-label leading-[1.7] tracking-[0.05em] text-rust"
-                  >
-                    {error}
-                  </div>
+                  <FormError>{error}</FormError>
                 )}
 
                 <div className="pt-1">
