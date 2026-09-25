@@ -79,9 +79,9 @@
 
 ## 7. Restyle the three shells
 
-- [ ] 7.1 `Articles` and `DetailArticle` — header, footer and an empty state
+- [x] 7.1 `Articles` and `DetailArticle` — header, footer and an empty state
       saying the section is not open yet. No placeholder articles.
-- [ ] 7.2 `Live` — the same treatment.
+- [x] 7.2 `Live` — the same treatment.
 - [ ] 7.3 Replace the hardcoded placeholder content in
       `components/dashboard/ArticlesSection.jsx` and
       `NgajiBarengSection.jsx` with an honest empty state, or hide the sections

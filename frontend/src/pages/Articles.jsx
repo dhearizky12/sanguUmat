@@ -1,12 +1,15 @@
-import Footer from "../components/Footer";
-import Header from "../components/Header";
+import ComingSoonPage from "../components/ComingSoonPage";
 
+// Artikel arrives with the `articles` roadmap change.
 function Articles() {
   return (
-    <div className="font-body-md min-h-screen flex flex-col">
-      <Header />
-      <Footer />
-    </div>
+    <ComingSoonPage
+      breadcrumb={[{ label: "Artikel" }]}
+      title="Artikel"
+      lead="Tulisan pembahasan mendalam dari para ustadz."
+      emptyTitle="Artikel belum dibuka."
+      emptyMessage="Rubrik artikel sedang disiapkan. Sementara itu, telusuri jawaban para ustadz di Tanya Jawab."
+    />
   );
 }
 
