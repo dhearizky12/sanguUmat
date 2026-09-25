@@ -11,6 +11,7 @@ import AnswerForm from "../components/question/AnswerForm";
 import RelatedSidebar from "../components/question/RelatedSidebar";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
+import { PageBody } from "../components/Page";
 
 function DetailQuestion() {
   const [question, setQuestion] = useState(null);
@@ -57,7 +58,7 @@ function DetailQuestion() {
               onUpdated={updateQuestion}
             />
 
-            <div className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-x-14 gap-y-12 items-start">
+            <PageBody as="div" className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-x-14 gap-y-12 items-start">
               <div className="flex flex-col gap-10 min-w-0">
                 <section>
                   <SectionHeading title="Jawaban" meta={`${question.answers.length} jawaban`} />
@@ -83,7 +84,7 @@ function DetailQuestion() {
               </div>
 
               <RelatedSidebar question={question} isGuru={me?.role === "Guru"} />
-            </div>
+            </PageBody>
           </>
         )}
       </main>

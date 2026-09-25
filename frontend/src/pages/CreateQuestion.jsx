@@ -12,6 +12,7 @@ import { FieldLabel, Input, Select, TextArea, FormError } from "../components/Fi
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { CATEGORIES } from "../lib/category";
+import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
 // The Ajukan Pertanyaan canvas, built to what the backend supports today. Left out until
 // their roadmap changes land: the monthly quota, ticket numbers and review statuses, the
@@ -148,17 +149,15 @@ function CreateQuestion() {
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
       <main className="grow">
-        <section className="bg-cream-warm border-b border-stone-line">
-          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-3.5">
-            <Breadcrumb items={[{ label: "Tanya Jawab", to: "/questions" }, { label: "Ajukan Pertanyaan" }]} />
-            <h1 className="text-[clamp(34px,5vw,52px)] leading-[1.06] font-normal tracking-[-0.02em]">Ajukan Pertanyaan</h1>
-            <p className="max-w-[52ch] text-base leading-relaxed text-ink-soft">
-              Tulis pertanyaanmu selengkap mungkin agar para ustadz dapat menjawabnya dengan tepat.
-            </p>
-          </div>
-        </section>
+        <PageHeader>
+          <Breadcrumb items={[{ label: "Tanya Jawab", to: "/questions" }, { label: "Ajukan Pertanyaan" }]} />
+          <PageTitle>Ajukan Pertanyaan</PageTitle>
+          <PageLead>
+            Tulis pertanyaanmu selengkap mungkin agar para ustadz dapat menjawabnya dengan tepat.
+          </PageLead>
+        </PageHeader>
 
-        <div className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-x-[clamp(32px,5vw,60px)] gap-y-10 items-start">
+        <PageBody as="div" bottom={false} className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-x-[clamp(32px,5vw,60px)] gap-y-10 items-start">
           <div className="flex flex-col min-w-0">
             <div className="flex items-baseline justify-between gap-3 pb-3 border-b border-ink">
               <MonoLabel className="tracking-[0.14em] text-ink">Pertanyaan baru</MonoLabel>
@@ -251,7 +250,7 @@ function CreateQuestion() {
               </div>
             ))}
           </aside>
-        </div>
+        </PageBody>
 
         <div className="max-w-container-max mx-auto px-page pt-[clamp(40px,6vw,68px)] pb-[clamp(48px,7vw,84px)]">
           <MyQuestions questions={myQuestions} loading={loadingMine} />

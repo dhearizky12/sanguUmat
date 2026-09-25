@@ -10,6 +10,7 @@ import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { BASE_PATH } from "../lib/basePath";
 import Avatar from "../components/Avatar";
+import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
 function EditProfile() {
   const { me, profile } = useAuth();
@@ -104,23 +105,21 @@ function EditProfile() {
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
       <main className="grow">
-        <section className="bg-cream-warm border-b border-stone-line">
-          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-3.5">
-            <Breadcrumb
-              items={isCompleting ? [{ label: "Lengkapi profil" }] : [{ label: "Profil saya", to: "/profile" }, { label: "Ubah profil" }]}
-            />
-            <h1 className="text-[clamp(34px,5vw,52px)] leading-[1.06] font-normal tracking-[-0.02em]">
-              {isCompleting ? "Lengkapi profil" : "Ubah profil"}
-            </h1>
-            <p className="max-w-[52ch] text-base leading-relaxed text-ink-soft">
-              {isCompleting
-                ? "Satu langkah lagi. Isi nomor telepon dan alamat Anda untuk mulai memakai Sangu Umat."
-                : "Perbarui nama, foto, nomor telepon dan alamat Anda."}
-            </p>
-          </div>
-        </section>
+        <PageHeader>
+          <Breadcrumb
+            items={isCompleting ? [{ label: "Lengkapi profil" }] : [{ label: "Profil saya", to: "/profile" }, { label: "Ubah profil" }]}
+          />
+          <PageTitle>
+            {isCompleting ? "Lengkapi profil" : "Ubah profil"}
+          </PageTitle>
+          <PageLead>
+            {isCompleting
+              ? "Satu langkah lagi. Isi nomor telepon dan alamat Anda untuk mulai memakai Sangu Umat."
+              : "Perbarui nama, foto, nomor telepon dan alamat Anda."}
+          </PageLead>
+        </PageHeader>
 
-        <section className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)]">
+        <PageBody>
           <form onSubmit={saveProfile} className="max-w-[760px] flex flex-col gap-6">
             <MonoLabel as="h2" className="block tracking-[0.14em] text-ink pb-2.5 border-b border-ink">
               Data diri
@@ -188,7 +187,7 @@ function EditProfile() {
               )}
             </div>
           </form>
-        </section>
+        </PageBody>
       </main>
       <Footer />
     </div>

@@ -7,6 +7,7 @@ import MonoLabel from "../components/MonoLabel";
 import { useAuth } from "../hooks/useAuth";
 import Avatar from "../components/Avatar";
 import { formatDate } from "../lib/date";
+import { PageBody, PageHeader } from "../components/Page";
 
 const ROLE_LABELS = { User: "Anggota", Guru: "Guru", Admin: "Admin" };
 
@@ -28,35 +29,33 @@ function Profile() {
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
       <main className="grow">
-        <section className="bg-cream-warm border-b border-stone-line">
-          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-6">
-            <Breadcrumb items={[{ label: "Profil saya" }]} />
-            <div className="flex flex-wrap items-end justify-between gap-6">
-              <div className="flex items-center gap-5 min-w-0">
-                {/* profile.picture is already resolved by AuthProvider — no pictureUrl() here. */}
-                <Avatar src={profile?.picture} name={profile?.name} size={88} />
-                <div className="flex flex-col gap-1.5 min-w-0">
-                  <MonoLabel size="sm" className="tracking-[0.16em] text-gold-dark">
-                    {ROLE_LABELS[profile?.role] ?? profile?.role}
-                  </MonoLabel>
-                  <h1 className="text-[clamp(30px,4.4vw,44px)] leading-[1.1] font-normal tracking-[-0.02em] text-balance">
-                    {profile?.name}
-                  </h1>
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-3">
-                <Button as={Link} to="/edit-profile" className="px-5 py-3">
-                  Ubah profil
-                </Button>
-                <Button variant="outline" onClick={logout} className="px-5 py-3">
-                  Keluar
-                </Button>
+        <PageHeader>
+          <Breadcrumb items={[{ label: "Profil saya" }]} />
+          <div className="flex flex-wrap items-end justify-between gap-6">
+            <div className="flex items-center gap-5 min-w-0">
+              {/* profile.picture is already resolved by AuthProvider — no pictureUrl() here. */}
+              <Avatar src={profile?.picture} name={profile?.name} size={88} />
+              <div className="flex flex-col gap-1.5 min-w-0">
+                <MonoLabel size="sm" className="tracking-[0.16em] text-gold-dark">
+                  {ROLE_LABELS[profile?.role] ?? profile?.role}
+                </MonoLabel>
+                <h1 className="text-[clamp(30px,4.4vw,44px)] leading-[1.1] font-normal tracking-[-0.02em] text-balance">
+                  {profile?.name}
+                </h1>
               </div>
             </div>
+            <div className="flex flex-wrap gap-3">
+              <Button as={Link} to="/edit-profile" className="px-5 py-3">
+                Ubah profil
+              </Button>
+              <Button variant="outline" onClick={logout} className="px-5 py-3">
+                Keluar
+              </Button>
+            </div>
           </div>
-        </section>
+        </PageHeader>
 
-        <section className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)]">
+        <PageBody>
           <div className="max-w-[760px]">
             <MonoLabel as="h2" className="block tracking-[0.14em] text-ink pb-2.5 border-b border-ink">
               Data diri
@@ -68,7 +67,7 @@ function Profile() {
               <DetailRow label="Bergabung sejak">{profile?.createdAt && formatDate(profile.createdAt)}</DetailRow>
             </dl>
           </div>
-        </section>
+        </PageBody>
       </main>
       <Footer />
     </div>

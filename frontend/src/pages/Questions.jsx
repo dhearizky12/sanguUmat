@@ -10,6 +10,7 @@ import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
 import { API_URL } from "../lib/api";
 import { CATEGORIES } from "../lib/category";
+import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
 const STATUSES = [
   { key: "semua", label: "Semua status" },
@@ -145,47 +146,45 @@ function Questions() {
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
       <main className="grow">
-        <section className="bg-cream-warm border-b border-stone-line">
-          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-5">
-            <Breadcrumb items={[{ label: "Tanya Jawab" }]} />
-            <div className="flex flex-col gap-2.5">
-              <h1 className="text-[clamp(34px,5vw,52px)] leading-[1.06] font-normal tracking-[-0.02em]">Tanya Jawab</h1>
-              <p className="max-w-[52ch] text-base leading-relaxed text-ink-soft">
-                Telusuri pertanyaan seputar Islam yang diajukan komunitas dan dijawab para ustadz. Saring berdasarkan kategori
-                atau status jawabannya.
-              </p>
-            </div>
-            <form
-              role="search"
-              onSubmit={handleSearchSubmit}
-              className="w-full flex flex-wrap items-stretch bg-cream border border-stone-border focus-within:border-forest transition-colors"
-            >
-              <input
-                type="text"
-                aria-label="Cari pertanyaan"
-                value={inputValue}
-                onChange={handleSearchChange}
-                placeholder="Cari pertanyaan, misalnya: menjamak sholat"
-                className="flex-[1_1_220px] min-w-0 bg-transparent outline-none px-[clamp(14px,4vw,20px)] h-14 text-[17px] text-ink placeholder:text-ink-faint"
-              />
-              {inputValue && (
-                <button
-                  type="button"
-                  onClick={() => applySearch("")}
-                  aria-label="Hapus pencarian"
-                  className="shrink-0 px-3.5 text-[17px] text-ink-faint hover:text-ink cursor-pointer transition-colors"
-                >
-                  &#x2715;
-                </button>
-              )}
-              <Button type="submit" className="shrink-0 tracking-[0.16em] px-[clamp(18px,5vw,26px)]">
-                Cari
-              </Button>
-            </form>
+        <PageHeader>
+          <Breadcrumb items={[{ label: "Tanya Jawab" }]} />
+          <div className="flex flex-col gap-2.5">
+            <PageTitle>Tanya Jawab</PageTitle>
+            <PageLead>
+              Telusuri pertanyaan seputar Islam yang diajukan komunitas dan dijawab para ustadz. Saring berdasarkan kategori
+              atau status jawabannya.
+            </PageLead>
           </div>
-        </section>
+          <form
+            role="search"
+            onSubmit={handleSearchSubmit}
+            className="w-full flex flex-wrap items-stretch bg-cream border border-stone-border focus-within:border-forest transition-colors"
+          >
+            <input
+              type="text"
+              aria-label="Cari pertanyaan"
+              value={inputValue}
+              onChange={handleSearchChange}
+              placeholder="Cari pertanyaan, misalnya: menjamak sholat"
+              className="flex-[1_1_220px] min-w-0 bg-transparent outline-none px-[clamp(14px,4vw,20px)] h-14 text-[17px] text-ink placeholder:text-ink-faint"
+            />
+            {inputValue && (
+              <button
+                type="button"
+                onClick={() => applySearch("")}
+                aria-label="Hapus pencarian"
+                className="shrink-0 px-3.5 text-[17px] text-ink-faint hover:text-ink cursor-pointer transition-colors"
+              >
+                &#x2715;
+              </button>
+            )}
+            <Button type="submit" className="shrink-0 tracking-[0.16em] px-[clamp(18px,5vw,26px)]">
+              Cari
+            </Button>
+          </form>
+        </PageHeader>
 
-        <section className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)]">
+        <PageBody>
           <div className="flex flex-col gap-3 pb-6">
             <FilterRow label="Kategori">
               {CATEGORIES.map((cat) => (
@@ -231,7 +230,7 @@ function Questions() {
               ))}
             </div>
           )}
-        </section>
+        </PageBody>
       </main>
       <Footer />
     </div>
