@@ -62,7 +62,7 @@ function HeroSearch({ answeredCount }) {
         </h1>
 
         <p className="max-w-2xl text-[17px] leading-relaxed text-sage">
-          Mulai dengan mencari. Ribuan pertanyaan seputar Al-Qur'an, hadis, fiqih, dan muamalah sudah dijawab dan ditelaah oleh para ustadz.
+          Mulai dengan mencari. Temukan jawaban seputar Al-Qur'an, hadis, fiqih, dan muamalah yang ditelaah oleh para ustadz.
         </p>
 
         <form
@@ -100,7 +100,7 @@ function HeroSearch({ answeredCount }) {
         </div>
 
         {answeredCount > 0 && (
-          <MonoLabel as="div" className="mt-2 text-sage-dark">{answeredCount} jawaban terverifikasi &nbsp;/&nbsp; diperbarui hari ini</MonoLabel>
+          <MonoLabel as="div" className="mt-2 text-sage-dark">{answeredCount} jawaban terverifikasi</MonoLabel>
         )}
       </div>
     </section>
