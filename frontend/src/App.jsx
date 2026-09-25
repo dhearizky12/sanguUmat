@@ -35,11 +35,13 @@ function App() {
 
           <Route path="/live" element={<Live />} />
 
+          {/* Public, but asks signed-out visitors to sign in (the "Perlu masuk" screen). */}
+          <Route path="/question/create" element={<CreateQuestion />} />
+
           {/* Protected */}
           <Route element={<AuthGuard />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/question/create" element={<CreateQuestion />} />
             <Route path="/detail-admin/:adminId" element={<DetailAdmin />} />
           </Route>
 

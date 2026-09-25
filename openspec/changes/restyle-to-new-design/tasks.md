@@ -53,7 +53,7 @@
 - [x] 4.3 Convert `Questions` to the Tanya Jawab canvas: layout, type,
       breadcrumb and empty state, keeping today's search and category filter.
       Leave out the facet panel, sort control and pagination.
-- [ ] 4.4 Convert `CreateQuestion` to the Ajukan Pertanyaan canvas, including
+- [x] 4.4 Convert `CreateQuestion` to the Ajukan Pertanyaan canvas, including
       the "Perlu masuk" interstitial and the "Pertanyaan saya" panel. Leave out
       quota, ticket, review status tabs, anonymity and the ustadz picker.
 

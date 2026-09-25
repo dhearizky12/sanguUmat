@@ -1,25 +1,65 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
-import LoadingState from "../components/LoadingState";
-import EmptyState from "../components/EmptyState";
+import Breadcrumb from "../components/Breadcrumb";
+import Button from "../components/Button";
+import Loading from "../components/Loading";
+import LogoMark from "../components/LogoMark";
+import MonoLabel from "../components/MonoLabel";
+import MyQuestions from "../components/ask/MyQuestions";
+import { FieldLabel, Input, Select, TextArea } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
-import { formatDate } from "../lib/date";
-import { CATEGORIES, categoryLabel } from "../lib/category";
+import { CATEGORIES } from "../lib/category";
+
+// The Ajukan Pertanyaan canvas, built to what the backend supports today. Left out until
+// their roadmap changes land: the monthly quota, ticket numbers and review statuses, the
+// ustadz picker, anonymous posting and the review-flow panel.
+const TIPS = [
+  "Satu pertanyaan untuk satu masalah, agar jawabannya bisa fokus.",
+  "Sebutkan konteksnya: pekerjaan, kondisi kesehatan, atau kebiasaan setempat yang relevan.",
+  "Cek dulu di Tanya Jawab, barangkali pertanyaan serupa sudah pernah dijawab.",
+];
+
+// Shown instead of the form to a visitor who is not signed in.
+function SignInGate() {
+  return (
+    <div className="min-h-screen bg-cream font-serif text-ink flex items-center justify-center px-6 py-10">
+      <div className="max-w-[380px] flex flex-col items-center gap-3.5 text-center">
+        <LogoMark />
+        <MonoLabel size="sm" className="tracking-[0.16em] text-gold-dark">
+          Perlu masuk
+        </MonoLabel>
+        <h1 className="text-[26px] font-normal tracking-[-0.015em]">Masuk untuk mengajukan pertanyaan</h1>
+        <p className="text-base leading-relaxed text-ink-muted">Hanya pengguna yang sudah masuk dapat mengajukan pertanyaan.</p>
+        <div className="mt-1.5 flex flex-wrap justify-center gap-3">
+          <Button as={Link} to="/login" className="tracking-[0.16em] px-[22px] py-3.5">
+            Masuk sekarang
+          </Button>
+          <Button as={Link} to="/" variant="outline" className="px-5 py-3.5">
+            Kembali ke beranda
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function CreateQuestion() {
-  const { me } = useAuth();
+  const { isAuthenticated, loading } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [error, setError] = useState("");
+  const [sending, setSending] = useState(false);
+  const [sent, setSent] = useState(false);
   const [myQuestions, setMyQuestions] = useState([]);
   const [loadingMine, setLoadingMine] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
-    if (!me) {
+    if (!isAuthenticated) {
       return;
     }
 
@@ -49,141 +89,177 @@ function CreateQuestion() {
     return () => {
       cancelled = true;
     };
-  }, [me, refreshKey]);
+  }, [isAuthenticated, refreshKey]);
 
   const submitQuestion = async (e) => {
     e.preventDefault();
 
     if (!title.trim() || !content.trim()) {
-      alert("Judul dan detail pertanyaan tidak boleh kosong.");
+      setError("Judul dan uraian pertanyaan tidak boleh kosong.");
       return;
     }
 
-    const response = await fetch(`${API_URL}/api/question`, {
-      method: "POST",
-      credentials: "include",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        title,
-        content,
-        category: category || null,
-      }),
-    });
+    setSending(true);
+    try {
+      const response = await fetch(`${API_URL}/api/question`, {
+        method: "POST",
+        credentials: "include",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title,
+          content,
+          category: category || null,
+        }),
+      });
 
-    if (response.ok) {
-      alert("Pertanyaan berhasil dibuat");
-      setTitle("");
-      setContent("");
-      setCategory("");
-      setRefreshKey((k) => k + 1);
-    } else {
-      alert("Gagal membuat pertanyaan");
+      if (response.ok) {
+        setTitle("");
+        setContent("");
+        setCategory("");
+        setSent(true);
+        setRefreshKey((k) => k + 1);
+      } else {
+        setError("Gagal mengirim pertanyaan. Silakan coba lagi.");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Gagal mengirim pertanyaan. Silakan coba lagi.");
+    } finally {
+      setSending(false);
     }
   };
 
+  const clearError = (setter) => (e) => {
+    setter(e.target.value);
+    setError("");
+  };
+
+  if (loading) {
+    return <Loading />;
+  }
+
+  if (!isAuthenticated) {
+    return <SignInGate />;
+  }
+
   return (
-    <div className="font-body-md min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
-      <main className="grow max-w-container-max w-full mx-auto px-gutter py-section-gap">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-2">
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 md:p-8">
-              <h1 className="font-headline-lg text-headline-lg text-primary-container mb-2">Ajukan Pertanyaan</h1>
-              <p className="font-body-md text-body-md text-on-surface-variant mb-6">
-                Tuliskan pertanyaan anda seputar Islam, dan dapatkan jawaban dari para ustadz terverifikasi.
-              </p>
-              <form className="space-y-6" onSubmit={submitQuestion}>
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Judul</label>
-                  <input
-                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors"
-                    type="text"
-                    placeholder="Tulis judul pertanyaan anda"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                  />
+      <main className="grow">
+        <section className="bg-cream-warm border-b border-stone-line">
+          <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-3.5">
+            <Breadcrumb items={[{ label: "Tanya Jawab", to: "/questions" }, { label: "Ajukan Pertanyaan" }]} />
+            <h1 className="text-[clamp(34px,5vw,52px)] leading-[1.06] font-normal tracking-[-0.02em]">Ajukan Pertanyaan</h1>
+            <p className="max-w-[52ch] text-base leading-relaxed text-ink-soft">
+              Tulis pertanyaanmu selengkap mungkin agar para ustadz dapat menjawabnya dengan tepat.
+            </p>
+          </div>
+        </section>
+
+        <div className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-x-[clamp(32px,5vw,60px)] gap-y-10 items-start">
+          <div className="flex flex-col min-w-0">
+            <div className="flex items-baseline justify-between gap-3 pb-3 border-b border-ink">
+              <MonoLabel className="tracking-[0.14em] text-ink">Pertanyaan baru</MonoLabel>
+              {sent && (
+                <MonoLabel size="sm" className="text-ink-hint">
+                  Terkirim
+                </MonoLabel>
+              )}
+            </div>
+
+            {sent ? (
+              <div className="mt-[22px] border border-gold-line bg-gold-tint p-[clamp(22px,3vw,30px)] flex flex-col gap-3">
+                <MonoLabel size="sm" className="tracking-[0.16em] text-gold-ink">
+                  Terkirim
+                </MonoLabel>
+                <span className="text-[22px] leading-[1.3]">Pertanyaanmu sudah terkirim.</span>
+                <span className="text-[15px] leading-[1.65] text-gold-ink-soft max-w-[52ch]">
+                  Para ustadz akan menjawabnya. Pantau perkembangannya di daftar pertanyaan di bawah.
+                </span>
+                <div className="flex flex-wrap gap-3 pt-1.5">
+                  <Button onClick={() => setSent(false)} className="tracking-[0.16em] px-5 py-3.5">
+                    Ajukan lagi
+                  </Button>
+                  <Button as="a" href="#riwayat" variant="outline" className="tracking-[0.16em] px-5 py-3.5">
+                    Lihat pertanyaan saya
+                  </Button>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Detail Pertanyaan</label>
-                  <textarea
-                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors resize-none"
-                    placeholder="Jelaskan pertanyaan anda dengan detail..."
-                    rows="6"
-                    value={content}
-                    onChange={(e) => setContent(e.target.value)}
-                  />
-                </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Kategori</label>
-                  <select
-                    className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors"
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                  >
-                    <option value="">Pilih kategori (opsional)</option>
+              </div>
+            ) : (
+              <form onSubmit={submitQuestion} className="flex flex-col gap-6 pt-6">
+                <div className="flex flex-col gap-2.5 max-w-[360px]">
+                  <FieldLabel htmlFor="ask-category">
+                    Kategori <span className="text-ink-hint">opsional</span>
+                  </FieldLabel>
+                  <Select id="ask-category" value={category} onChange={(e) => setCategory(e.target.value)}>
+                    <option value="">Pilih kategori</option>
                     {CATEGORIES.slice(1).map((cat) => (
                       <option key={cat.key} value={cat.key}>
                         {cat.label}
                       </option>
                     ))}
-                  </select>
+                  </Select>
                 </div>
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-bold hover:bg-tertiary transition-colors shadow-sm active:scale-95 flex items-center gap-2"
+
+                <div className="flex flex-col gap-2.5">
+                  <FieldLabel htmlFor="ask-title">Inti pertanyaan</FieldLabel>
+                  <Input
+                    id="ask-title"
+                    type="text"
+                    value={title}
+                    onChange={clearError(setTitle)}
+                    placeholder="Misalnya: Bagaimana cara menjamak sholat saat perjalanan dinas?"
+                    invalid={!!error && !title.trim()}
+                    className="h-14 text-[17px]"
+                  />
+                </div>
+
+                <div className="flex flex-col gap-2.5">
+                  <FieldLabel htmlFor="ask-content">Uraian &amp; latar belakang</FieldLabel>
+                  <TextArea
+                    id="ask-content"
+                    rows="8"
+                    value={content}
+                    onChange={clearError(setContent)}
+                    placeholder="Ceritakan situasinya: apa yang sudah dilakukan, apa yang membuat ragu, dan jawaban seperti apa yang dibutuhkan."
+                    invalid={!!error && !content.trim()}
+                    className="text-[17px]"
+                  />
+                </div>
+
+                {error && (
+                  <div
+                    role="alert"
+                    className="border-l-2 border-live bg-rust-tint px-3.5 py-2.5 font-mono text-mono-label leading-[1.7] tracking-[0.05em] text-rust"
                   >
-                    Kirim Pertanyaan
-                    <span className="material-symbols-outlined text-[18px]" data-icon="send">
-                      send
-                    </span>
-                  </button>
+                    {error}
+                  </div>
+                )}
+
+                <div className="pt-1">
+                  <Button type="submit" disabled={sending} className="min-h-14 px-[26px] tracking-[0.16em]">
+                    {sending ? "Mengirim…" : "Kirim pertanyaan"}
+                  </Button>
                 </div>
               </form>
-            </div>
+            )}
           </div>
 
-          <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
-            <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
-              <h2 className="font-title-md text-title-md text-on-surface mb-4">Pertanyaan Saya</h2>
-
-              {loadingMine ? (
-                <LoadingState message="Memuat pertanyaan anda..." />
-              ) : myQuestions.length === 0 ? (
-                <EmptyState icon="quiz" title="Belum Ada Pertanyaan" message="Pertanyaan yang anda ajukan akan tampil di sini." />
-              ) : (
-                <div className="divide-y divide-outline-variant/50">
-                  {myQuestions.map((q) => {
-                    const isAnswered = q.isAnswered;
-
-                    return (
-                      <NavLink key={q.id} to={`/question/detail/${q.id}`} className="block py-4 first:pt-0 last:pb-0 group">
-                        <div className="flex items-center justify-between gap-2 mb-2">
-                          <span className="px-2 py-0.5 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[11px] font-semibold border border-primary-container/20">
-                            {categoryLabel(q.category)}
-                          </span>
-                          <span
-                            className={`flex items-center gap-1 font-label-sm text-[11px] pl-2 p-0.5 rounded-full ml-auto ${
-                              isAnswered ? "text-primary" : "text-on-surface/50"
-                            }`}
-                          >
-                            {isAnswered ? "Terjawab" : "Menunggu"}
-                            <span className="material-symbols-outlined text-[13px]">{isAnswered ? "check_circle" : "schedule"}</span>
-                          </span>
-                        </div>
-                        <h3 className="font-body-md text-body-md text-on-surface font-medium line-clamp-2 group-hover:text-primary-container transition-colors">
-                          {q.title}
-                        </h3>
-                        <p className="text-[12px] text-outline mt-1">{formatDate(q.createdAt)}</p>
-                      </NavLink>
-                    );
-                  })}
-                </div>
-              )}
-            </div>
+          <aside className="flex flex-col lg:sticky lg:top-24">
+            <MonoLabel className="tracking-[0.14em] text-ink pb-2.5 border-b border-ink">Sebelum mengirim</MonoLabel>
+            {TIPS.map((tip) => (
+              <div key={tip} className="flex gap-3 py-4 border-b border-stone-line-soft">
+                <span aria-hidden="true" className="shrink-0 size-2 mt-[7px] bg-gold-deep" />
+                <span className="text-[15px] leading-relaxed text-ink-soft text-pretty">{tip}</span>
+              </div>
+            ))}
           </aside>
+        </div>
+
+        <div className="max-w-container-max mx-auto px-page pt-[clamp(40px,6vw,68px)] pb-[clamp(48px,7vw,84px)]">
+          <MyQuestions questions={myQuestions} loading={loadingMine} />
         </div>
       </main>
       <Footer />
