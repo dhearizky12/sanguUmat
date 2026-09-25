@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { API_URL } from "../../lib/api";
 import { formatDate } from "../../lib/date";
+import Button from "../Button";
+import MonoLabel from "../MonoLabel";
 
 const RELATED_LIMIT = 5;
 
@@ -46,40 +48,40 @@ function RelatedSidebar({ question, isGuru }) {
   }, [question, id, isGuru]);
 
   return (
-    <aside className="lg:col-span-1 space-y-6 lg:sticky lg:top-24">
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
-        <h3 className="font-title-md text-title-md text-on-surface mb-4 flex items-center gap-2">
-          <span className="material-symbols-outlined text-primary-container text-[20px]">{isGuru ? "task_alt" : "forum"}</span>
-          {isGuru ? "Jawab Pertanyaan Lain" : "Pertanyaan Terkait"}
-        </h3>
+    <aside className="flex flex-col gap-8 lg:sticky lg:top-24">
+      <div className="flex flex-col">
+        <MonoLabel as="h2" className="tracking-[0.14em] text-ink pb-2.5 border-b border-ink">
+          {isGuru ? "Jawab pertanyaan lain" : "Pertanyaan terkait"}
+        </MonoLabel>
         {relatedQuestions.length === 0 ? (
-          <p className="font-body-md text-body-md text-on-surface-variant">
+          <p className="py-3.5 text-[15px] text-ink-faint">
             {isGuru ? "Tidak ada pertanyaan lain yang menunggu jawaban." : "Belum ada pertanyaan terkait."}
           </p>
         ) : (
-          <div className="divide-y divide-outline-variant/50">
-            {relatedQuestions.map((q) => (
-              <NavLink key={q.id} to={`/question/detail/${q.id}`} className="block py-3 first:pt-0 last:pb-0 group">
-                <h4 className="font-label-sm text-label-sm text-on-surface font-semibold line-clamp-2 group-hover:text-primary-container transition-colors">
-                  {q.title}
-                </h4>
-                <p className="text-[12px] text-outline mt-1">{formatDate(q.createdAt)}</p>
-              </NavLink>
-            ))}
-          </div>
+          relatedQuestions.map((q) => (
+            <NavLink
+              key={q.id}
+              to={`/question/detail/${q.id}`}
+              className="flex flex-col gap-1 py-3.5 px-2.5 -mx-2.5 border-b border-stone-line-soft hover:bg-cream-hover transition-colors"
+            >
+              <span className="text-base leading-snug text-ink line-clamp-2 text-pretty">{q.title}</span>
+              <MonoLabel size="xs" className="text-ink-faint">
+                {formatDate(q.createdAt)}
+              </MonoLabel>
+            </NavLink>
+          ))
         )}
       </div>
 
       {!isGuru && (
-        <div className="bg-primary-container rounded-xl p-6 text-center">
-          <p className="font-title-md text-title-md text-on-primary mb-2">Punya Pertanyaan Lain?</p>
-          <p className="font-body-md text-body-md text-on-primary/80 mb-4">Ajukan pertanyaan anda dan dapatkan jawaban dari para ustadz.</p>
-          <NavLink
-            to="/question/create"
-            className="inline-flex items-center gap-2 bg-surface text-primary-container font-label-sm text-label-sm px-5 py-2.5 rounded-full hover:bg-surface-container-low transition-colors font-bold"
-          >
+        <div className="bg-forest p-6 flex flex-col items-start gap-3">
+          <MonoLabel className="text-gold">Punya pertanyaan lain?</MonoLabel>
+          <p className="font-serif text-xl leading-snug text-cream-text text-pretty">
+            Ajukan pertanyaan Anda dan dapatkan jawaban dari para ustadz.
+          </p>
+          <Button as={NavLink} to="/question/create" variant="gold" className="mt-1 px-5 py-3">
             Ajukan Pertanyaan
-          </NavLink>
+          </Button>
         </div>
       )}
     </aside>

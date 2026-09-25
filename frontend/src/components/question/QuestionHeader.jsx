@@ -1,13 +1,19 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import Breadcrumb from "../Breadcrumb";
+import Button from "../Button";
+import Byline from "../Byline";
+import MonoLabel from "../MonoLabel";
 import RichContent from "../RichContent";
+import { FieldLabel, Input, TextArea } from "../Field";
 import { API_URL, pictureUrl } from "../../lib/api";
-import { handleAvatarError } from "../../lib/image";
+import { DEFAULT_AVATAR, handleAvatarError } from "../../lib/image";
 import { categoryLabel } from "../../lib/category";
+import { formatDate } from "../../lib/date";
+import { formatCount } from "../../lib/format";
 
-// The question itself — a page header, not a card, so it reads as the top-level subject
-// rather than looking identical to the answer list below it. Owns the owner's inline edit
-// and the owner/admin delete.
+// The question itself, set as the page's warm header band so it reads as the subject the
+// answers below respond to. Owns the owner's inline edit and the owner/admin delete.
 function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
@@ -82,92 +88,78 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
     }
   };
 
-  return (
-    <div className="border-b border-outline-variant pb-8">
-      <div className="flex items-center justify-between gap-3 mb-4">
-        <span className="inline-block px-2.5 py-1 rounded-full bg-surface-container-low text-primary-container font-label-sm text-[12px] font-semibold border border-primary-container/20">
-          {categoryLabel(question.category ?? null)}
-        </span>
+  const category = categoryLabel(question.category ?? null);
 
-        {(canEdit || canDelete) && !isEditing && (
-          <div className="ml-auto flex items-center gap-4">
-            {canEdit && (
-              <button
-                onClick={startEditQuestion}
-                title="Edit Pertanyaan"
-                className="flex items-center gap-1 text-primary-container font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">edit</span>
-                Edit
-              </button>
-            )}
-            {canDelete && (
-              <button
-                onClick={deleteQuestion}
-                title="Hapus Pertanyaan"
-                className="flex items-center gap-1 text-error font-label-sm text-label-sm hover:opacity-60 cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">delete</span>
-                Hapus
-              </button>
-            )}
-          </div>
+  return (
+    <section className="bg-cream-warm border-b border-stone-line">
+      <div className="max-w-container-max mx-auto px-page pt-[clamp(26px,4vw,44px)] pb-[clamp(24px,4vw,38px)] flex flex-col gap-5">
+        <Breadcrumb items={[{ label: "Tanya Jawab", to: "/questions" }, { label: category }]} />
+
+        {isEditing ? (
+          <form onSubmit={saveQuestionEdit} className="flex flex-col gap-5 max-w-[760px]">
+            <div className="flex flex-col gap-2.5">
+              <FieldLabel htmlFor="edit-title">Judul</FieldLabel>
+              <Input id="edit-title" type="text" value={editTitle} onChange={(e) => setEditTitle(e.target.value)} />
+            </div>
+            <div className="flex flex-col gap-2.5">
+              <FieldLabel htmlFor="edit-content">Detail pertanyaan</FieldLabel>
+              <TextArea id="edit-content" rows="8" value={editContent} onChange={(e) => setEditContent(e.target.value)} />
+            </div>
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button variant="outline" onClick={cancelEditQuestion} className="px-5 py-3">
+                Batal
+              </Button>
+              <Button type="submit" disabled={savingEdit} className="px-6 py-3">
+                {savingEdit ? "Menyimpan…" : "Simpan"}
+              </Button>
+            </div>
+          </form>
+        ) : (
+          <>
+            <div className="flex flex-col gap-3">
+              <MonoLabel as="div" className="flex flex-wrap items-baseline gap-x-3.5 gap-y-1.5">
+                <span className="text-forest">{category}</span>
+                <span className="text-ink-faint">{formatDate(question.createdAt)}</span>
+                <span className="text-ink-faint">{formatCount(question.views)} dibaca</span>
+              </MonoLabel>
+              <h1 className="font-serif text-[clamp(30px,4.4vw,46px)] leading-[1.1] font-normal tracking-[-0.02em] text-ink max-w-[30ch] text-balance">
+                {question.title}
+              </h1>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
+              <Byline>
+                <img
+                  src={pictureUrl(question.userPicture) ?? DEFAULT_AVATAR}
+                  alt=""
+                  onError={handleAvatarError}
+                  className="size-7 rounded-full object-cover border border-stone-line"
+                />
+                <span>Ditanyakan oleh</span>
+                <span className="text-forest">{question.userName}</span>
+              </Byline>
+
+              {(canEdit || canDelete) && (
+                <div className="flex items-center gap-5">
+                  {canEdit && (
+                    <Button variant="link" onClick={startEditQuestion}>
+                      Ubah
+                    </Button>
+                  )}
+                  {canDelete && (
+                    <Button variant="danger" onClick={deleteQuestion}>
+                      Hapus
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+
+            <RichContent text={question.content} className="text-[17px] leading-[1.7] text-ink-soft max-w-[70ch] text-pretty" />
+          </>
         )}
       </div>
-
-      {isEditing ? (
-        <form onSubmit={saveQuestionEdit} className="space-y-4">
-          <div className="flex flex-col gap-2">
-            <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Judul</label>
-            <input
-              className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors"
-              type="text"
-              value={editTitle}
-              onChange={(e) => setEditTitle(e.target.value)}
-            />
-          </div>
-          <div className="flex flex-col gap-2">
-            <label className="font-label-sm text-label-sm text-on-surface-variant ml-1">Detail Pertanyaan</label>
-            <textarea
-              className="w-full bg-surface-container-low border border-outline-variant rounded-xl px-4 py-3 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container focus:ring-1 focus:ring-primary-container transition-colors resize-none"
-              rows="6"
-              value={editContent}
-              onChange={(e) => setEditContent(e.target.value)}
-            />
-          </div>
-          <div className="flex justify-end gap-3">
-            <button
-              type="button"
-              onClick={cancelEditQuestion}
-              className="text-on-surface-variant px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-surface-container-low transition-colors"
-            >
-              Batal
-            </button>
-            <button
-              type="submit"
-              disabled={savingEdit}
-              className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-bold hover:bg-tertiary transition-colors disabled:opacity-60"
-            >
-              {savingEdit ? "Menyimpan..." : "Simpan"}
-            </button>
-          </div>
-        </form>
-      ) : (
-        <>
-          <h1 className="font-headline-lg text-headline-lg text-on-surface mb-4">{question.title}</h1>
-          <div className="flex items-center gap-3 mb-6">
-            <img
-              src={pictureUrl(question.userPicture) ?? "/default-avatar.png"}
-              alt="Foto profil"
-              onError={handleAvatarError}
-              className="w-10 h-10 rounded-full object-cover"
-            />
-            <span className="font-label-sm text-label-sm text-on-surface-variant">{question.userName}</span>
-          </div>
-          <RichContent text={question.content} className="font-body-lg text-body-lg text-on-surface-variant leading-relaxed" />
-        </>
-      )}
-    </div>
+    </section>
   );
 }
 

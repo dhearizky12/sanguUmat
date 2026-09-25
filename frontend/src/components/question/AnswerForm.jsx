@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { API_URL } from "../../lib/api";
+import Button from "../Button";
+import { FieldLabel, TextArea } from "../Field";
 
 // The Guru's "Tulis Jawaban" box under the answers.
 function AnswerForm({ questionId }) {
@@ -24,23 +26,21 @@ function AnswerForm({ questionId }) {
   };
 
   return (
-    <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6">
-      <h3 className="font-title-md text-title-md text-on-surface mb-4">Tulis Jawaban</h3>
-      <textarea
+    <section className="border border-stone-line bg-paper p-[clamp(20px,3vw,28px)] flex flex-col gap-4">
+      <FieldLabel htmlFor="answer-body">Tulis jawaban</FieldLabel>
+      <TextArea
+        id="answer-body"
+        rows="10"
         value={answer}
         onChange={(e) => setAnswer(e.target.value)}
-        placeholder="Tulis jawaban terbaik..."
-        className="w-full border border-outline-variant rounded-2xl p-4 min-h-[160px] outline-none focus:border-primary-container resize-none font-body-md text-body-md"
+        placeholder="Tulis jawaban terbaik…"
       />
-      <div className="flex justify-end mt-4">
-        <button
-          onClick={submitAnswer}
-          className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-semibold hover:bg-tertiary transition-colors"
-        >
-          Kirim Jawaban
-        </button>
+      <div className="flex justify-end">
+        <Button onClick={submitAnswer} className="px-6 py-3.5">
+          Kirim jawaban
+        </Button>
       </div>
-    </div>
+    </section>
   );
 }
 

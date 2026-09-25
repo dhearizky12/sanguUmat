@@ -48,7 +48,7 @@
 
 - [x] 4.1 Split `DetailQuestion` (493 lines) into sections before converting,
       mirroring `components/dashboard/`.
-- [ ] 4.2 Convert `DetailQuestion`, preserving the owner edit and delete rules,
+- [x] 4.2 Convert `DetailQuestion`, preserving the owner edit and delete rules,
       the admin moderation rules, and the single view-count call per visit.
 - [ ] 4.3 Convert `Questions` to the Tanya Jawab canvas: layout, type,
       breadcrumb and empty state, keeping today's search and category filter.

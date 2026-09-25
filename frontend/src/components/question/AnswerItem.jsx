@@ -2,7 +2,11 @@ import { useState } from "react";
 import RichContent from "../RichContent";
 import CommentSection from "../CommentSection";
 import { API_URL, pictureUrl } from "../../lib/api";
-import { handleAvatarError } from "../../lib/image";
+import { DEFAULT_AVATAR, handleAvatarError } from "../../lib/image";
+import Button from "../Button";
+import MonoLabel from "../MonoLabel";
+import VerifiedBadge from "../VerifiedBadge";
+import { TextArea } from "../Field";
 
 // One answer with its comments. `canManage` (the answer's author or an Admin) unlocks the
 // inline edit and the delete.
@@ -69,80 +73,64 @@ function AnswerItem({ answer, canManage, onUpdated }) {
   };
 
   return (
-    <div>
-      <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm p-6 space-y-4">
-        <div className="flex justify-between items-start">
-          <div className="flex items-center gap-3">
-            <img
-              src={pictureUrl(answer.userPicture) ?? "/default-avatar.png"}
-              alt="Foto profil"
-              onError={handleAvatarError}
-              className="w-11 h-11 rounded-full object-cover"
-            />
-            <div>
-              <div className="flex items-center gap-1.5">
-                <strong className="font-label-sm text-label-sm text-on-surface">{answer.userName}</strong>
-                {answer.role === "Guru" && (
-                  <span className="material-symbols-outlined icon-fill text-secondary-container text-[16px]">verified</span>
-                )}
-              </div>
-              <p className="text-[12px] text-outline">{answer.role === "Guru" ? "Guru" : "Murid"}</p>
-            </div>
+    <article className="py-8 border-b border-stone-line">
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <img
+            src={pictureUrl(answer.userPicture) ?? DEFAULT_AVATAR}
+            alt=""
+            onError={handleAvatarError}
+            className="size-10 shrink-0 rounded-full object-cover border border-stone-line"
+          />
+          <div className="flex flex-col gap-0.5 min-w-0">
+            <span className="inline-flex items-center gap-1.5 font-serif text-lg text-ink">
+              {answer.userName}
+              {answer.role === "Guru" && <VerifiedBadge />}
+            </span>
+            <MonoLabel size="xs" className="text-ink-faint">
+              {answer.role === "Guru" ? "Guru" : "Murid"}
+            </MonoLabel>
           </div>
-          {canManage && !isEditing && (
-            <div className="flex items-center gap-1">
-              <button
-                onClick={startEditAnswer}
-                title="Edit Jawaban"
-                className="w-9 h-9 rounded-full flex items-center justify-center text-primary-container hover:bg-surface-container-low transition cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[18px]">edit</span>
-              </button>
-              <button
-                onClick={deleteAnswer}
-                title="Hapus Jawaban"
-                className="w-9 h-9 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[18px]">delete</span>
-              </button>
-            </div>
-          )}
         </div>
-
-        {isEditing ? (
-          <div className="space-y-3">
-            <textarea
-              value={editAnswerContent}
-              onChange={(e) => setEditAnswerContent(e.target.value)}
-              className="w-full border border-outline-variant rounded-2xl p-4 min-h-[160px] outline-none focus:border-primary-container resize-none font-body-md text-body-md"
-            />
-            <div className="flex justify-end gap-3">
-              <button
-                type="button"
-                onClick={cancelEditAnswer}
-                className="text-on-surface-variant px-6 py-3 rounded-full font-label-sm text-label-sm hover:bg-surface-container-low transition-colors"
-              >
-                Batal
-              </button>
-              <button
-                type="button"
-                onClick={saveAnswerEdit}
-                disabled={savingAnswerEdit}
-                className="bg-primary-container text-on-primary px-6 py-3 rounded-full font-label-sm text-label-sm font-bold hover:bg-tertiary transition-colors disabled:opacity-60"
-              >
-                {savingAnswerEdit ? "Menyimpan..." : "Simpan"}
-              </button>
-            </div>
+        {canManage && !isEditing && (
+          <div className="flex items-center gap-5 shrink-0 pt-1">
+            <Button variant="link" onClick={startEditAnswer}>
+              Ubah
+            </Button>
+            <Button variant="danger" onClick={deleteAnswer}>
+              Hapus
+            </Button>
           </div>
-        ) : (
-          <RichContent text={answer.content} className="font-body-md text-body-md text-on-surface-variant leading-relaxed" />
         )}
       </div>
 
-      <div className="pt-12">
-        <CommentSection answerId={answer.id} />
+      <div className="mt-5 md:pl-[52px]">
+        {isEditing ? (
+          <div className="flex flex-col gap-3">
+            <TextArea
+              aria-label="Ubah jawaban"
+              rows="10"
+              value={editAnswerContent}
+              onChange={(e) => setEditAnswerContent(e.target.value)}
+            />
+            <div className="flex flex-wrap justify-end gap-3">
+              <Button variant="outline" onClick={cancelEditAnswer} className="px-5 py-3">
+                Batal
+              </Button>
+              <Button onClick={saveAnswerEdit} disabled={savingAnswerEdit} className="px-6 py-3">
+                {savingAnswerEdit ? "Menyimpan…" : "Simpan"}
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <RichContent text={answer.content} className="text-[17px] leading-[1.7] text-ink-soft max-w-[70ch] text-pretty" />
+        )}
+
+        <div className="mt-8">
+          <CommentSection answerId={answer.id} />
+        </div>
       </div>
-    </div>
+    </article>
   );
 }
 

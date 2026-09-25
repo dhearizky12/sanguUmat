@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingState from "../components/LoadingState";
 import EmptyState from "../components/EmptyState";
+import SectionHeading from "../components/SectionHeading";
 import QuestionHeader from "../components/question/QuestionHeader";
 import AnswerItem from "../components/question/AnswerItem";
 import AnswerForm from "../components/question/AnswerForm";
@@ -42,45 +43,48 @@ function DetailQuestion() {
     }));
 
   return (
-    <div className="font-body-md min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
-      <main className="grow max-w-container-max w-full mx-auto px-gutter py-section-gap">
+      <main className="grow">
         {!question ? (
-          <LoadingState message="Memuat pertanyaan..." />
+          <LoadingState message="Memuat pertanyaan…" />
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2 space-y-8">
-              <QuestionHeader
-                question={question}
-                canEdit={canEditQuestion}
-                canDelete={canDeleteQuestion}
-                onUpdated={updateQuestion}
-              />
+          <>
+            <QuestionHeader
+              question={question}
+              canEdit={canEditQuestion}
+              canDelete={canDeleteQuestion}
+              onUpdated={updateQuestion}
+            />
 
-              <div>
-                <h2 className="font-title-md text-title-md text-on-surface mb-4">{question.answers.length} Jawaban</h2>
-
-                {question.answers.length === 0 ? (
-                  <EmptyState title="Belum Ada Jawaban" message="Jawaban dari ustadz akan tampil di sini begitu tersedia." />
-                ) : (
-                  <div className="space-y-4">
-                    {question.answers.map((item) => (
+            <div className="max-w-container-max mx-auto px-page pt-[clamp(28px,4vw,48px)] pb-[clamp(48px,7vw,84px)] grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-x-14 gap-y-12 items-start">
+              <div className="flex flex-col gap-10 min-w-0">
+                <section>
+                  <SectionHeading title="Jawaban" meta={`${question.answers.length} jawaban`} />
+                  {question.answers.length === 0 ? (
+                    <EmptyState
+                      className="mt-6"
+                      title="Belum ada jawaban."
+                      message="Jawaban dari ustadz akan tampil di sini begitu tersedia."
+                    />
+                  ) : (
+                    question.answers.map((item) => (
                       <AnswerItem
                         key={item.id}
                         answer={item}
                         canManage={me?.id === item.userId || me?.role === "Admin"}
                         onUpdated={(content) => updateAnswer(item.id, content)}
                       />
-                    ))}
-                  </div>
-                )}
+                    ))
+                  )}
+                </section>
+
+                {me?.role === "Guru" && <AnswerForm questionId={id} />}
               </div>
 
-              {me?.role === "Guru" && <AnswerForm questionId={id} />}
+              <RelatedSidebar question={question} isGuru={me?.role === "Guru"} />
             </div>
-
-            <RelatedSidebar question={question} isGuru={me?.role === "Guru"} />
-          </div>
+          </>
         )}
       </main>
       <Footer />

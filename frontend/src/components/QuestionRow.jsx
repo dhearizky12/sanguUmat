@@ -1,4 +1,5 @@
 import { NavLink } from "react-router-dom";
+import Byline from "./Byline";
 import MonoLabel from "./MonoLabel";
 
 // The canvases' question row: mono meta line, serif title, two-line excerpt
@@ -20,9 +21,7 @@ export default function QuestionRow({ to, meta, title, excerpt, byline }) {
       {excerpt && <p className="text-base leading-relaxed text-ink-soft max-w-[74ch] text-pretty line-clamp-2">{excerpt}</p>}
 
       {byline && (
-        <div className="flex items-center flex-wrap gap-x-2 gap-y-1 font-mono text-mono-label tracking-[0.08em] text-ink-muted">
-          {byline}
-        </div>
+        <Byline>{byline}</Byline>
       )}
     </NavLink>
   );

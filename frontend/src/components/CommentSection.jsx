@@ -101,15 +101,9 @@ function CommentSection({ answerId }) {
                 <p className="text-base leading-relaxed text-ink-soft text-pretty">{c.content}</p>
               </div>
               {(me?.id === c.userId || me?.role === "Admin") && (
-                <MonoLabel
-                  as="button"
-                  type="button"
-                  size="xs"
-                  onClick={() => handleDelete(c.id)}
-                  className="shrink-0 mt-1 text-rust hover:text-rust-deep cursor-pointer transition-colors"
-                >
+                <Button variant="danger" size="xs" onClick={() => handleDelete(c.id)} className="shrink-0 mt-1">
                   Hapus
-                </MonoLabel>
+                </Button>
               )}
             </div>
           ))}
