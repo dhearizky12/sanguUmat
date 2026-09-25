@@ -11,7 +11,7 @@ function CtaSection() {
           <h2 className="font-serif text-2xl md:text-[34px] font-normal tracking-tight text-ink">
             Ajukan pertanyaanmu, ustadz kami akan menjawab.
           </h2>
-          <p className="text-base leading-relaxed text-ink-soft">Rata-rata dijawab dalam 2 hari kerja, lengkap dengan rujukan dalil.</p>
+          <p className="text-base leading-relaxed text-ink-soft">Para ustadz menjawab dengan rujukan dalil, dan jawabannya tampil di Tanya Jawab.</p>
         </div>
         <Button
           as={NavLink}

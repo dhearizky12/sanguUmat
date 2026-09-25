@@ -3,11 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import HeroSearch from "../components/dashboard/HeroSearch";
-import LiveBanner from "../components/dashboard/LiveBanner";
 import TopicIndex from "../components/dashboard/TopicIndex";
 import QuestionListSection from "../components/dashboard/QuestionListSection";
-import NgajiBarengSection from "../components/dashboard/NgajiBarengSection";
-import ArticlesSection from "../components/dashboard/ArticlesSection";
 import CtaSection from "../components/dashboard/CtaSection";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
@@ -79,7 +76,6 @@ function Dashboard() {
 
       <main className="grow">
         <HeroSearch answeredCount={answeredQuestions.length} />
-        <LiveBanner />
         <TopicIndex topics={topics} activeKey={category} onSelect={setCategory} />
         <QuestionListSection
           questions={filteredQuestions}
@@ -87,8 +83,6 @@ function Dashboard() {
           totalCount={answeredQuestions.length}
           activeCategoryLabel={activeCategoryLabel}
         />
-        <NgajiBarengSection />
-        <ArticlesSection />
         <CtaSection />
       </main>
 
