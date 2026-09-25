@@ -13,12 +13,6 @@ import { API_URL } from "../lib/api";
 import { ALL_CATEGORIES, useCategories } from "../lib/category";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
-const STATUSES = [
-  { key: "semua", label: "Semua status" },
-  { key: "terjawab", label: "Terjawab" },
-  { key: "menunggu", label: "Menunggu jawaban" },
-];
-
 function Questions() {
   const categories = useCategories();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -26,7 +20,6 @@ function Questions() {
   const [inputValue, setInputValue] = useState(search);
   const [syncedSearch, setSyncedSearch] = useState(search);
   const [category, setCategory] = useState("semua");
-  const [status, setStatus] = useState("semua");
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -102,15 +95,13 @@ function Questions() {
     applySearch(inputValue.trim());
   };
 
-  const hasFilters = category !== "semua" || status !== "semua";
+  const hasFilters = category !== "semua";
   const resetFilters = () => {
     setCategory("semua");
-    setStatus("semua");
   };
 
-  const byCategory = category === "semua" ? questions : questions.filter((q) => q.category === category);
-  const filtered =
-    status === "semua" ? byCategory : byCategory.filter((q) => (status === "terjawab" ? q.isAnswered : !q.isAnswered));
+  // The list endpoint returns published (answered) questions only.
+  const filtered = category === "semua" ? questions : questions.filter((q) => q.category === category);
 
   return (
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
@@ -121,8 +112,7 @@ function Questions() {
           <div className="flex flex-col gap-2.5">
             <PageTitle>Tanya Jawab</PageTitle>
             <PageLead>
-              Telusuri pertanyaan seputar Islam yang diajukan komunitas dan dijawab para ustadz. Saring berdasarkan kategori
-              atau status jawabannya.
+              Telusuri pertanyaan seputar Islam yang sudah dijawab para ustadz, dan saring berdasarkan kategori.
             </PageLead>
           </div>
           <form
@@ -160,13 +150,6 @@ function Questions() {
               {[ALL_CATEGORIES, ...categories].map((cat) => (
                 <FilterChip key={cat.key} active={category === cat.key} onClick={() => setCategory(cat.key)}>
                   {cat.name}
-                </FilterChip>
-              ))}
-            </FilterRow>
-            <FilterRow label="Status">
-              {STATUSES.map((opt) => (
-                <FilterChip key={opt.key} active={status === opt.key} onClick={() => setStatus(opt.key)}>
-                  {opt.label}
                 </FilterChip>
               ))}
             </FilterRow>

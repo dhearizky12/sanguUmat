@@ -2,18 +2,15 @@ import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import HeroSearch from "../components/dashboard/HeroSearch";
-import TopicIndex from "../components/dashboard/TopicIndex";
 import QuestionListSection from "../components/dashboard/QuestionListSection";
 import CtaSection from "../components/dashboard/CtaSection";
 import { API_URL } from "../lib/api";
-import { useCategories } from "../lib/category";
 
 const MAX_LIST_ITEMS = 8;
 
 function Dashboard() {
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [loadingAnswered, setLoadingAnswered] = useState(true);
-  const [category, setCategory] = useState("semua");
 
   useEffect(() => {
     // GET /api/question?status=answered gives the real answered set, but still no answer
@@ -47,18 +44,7 @@ function Dashboard() {
     fetchAnswered();
   }, []);
 
-  const categories = useCategories();
-  const topics = categories.map((c) => ({
-    key: c.key,
-    label: c.name,
-    count: answeredQuestions.filter((q) => q.category === c.key).length,
-  }));
-
-  const filteredQuestions = (
-    category === "semua" ? answeredQuestions : answeredQuestions.filter((q) => q.category === category)
-  ).slice(0, MAX_LIST_ITEMS);
-
-  const activeCategoryLabel = category === "semua" ? null : topics.find((t) => t.key === category)?.label;
+  const latestQuestions = answeredQuestions.slice(0, MAX_LIST_ITEMS);
 
   return (
     <div className="font-serif min-h-screen flex flex-col bg-cream text-ink">
@@ -66,12 +52,10 @@ function Dashboard() {
 
       <main className="grow">
         <HeroSearch answeredCount={answeredQuestions.length} />
-        <TopicIndex topics={topics} activeKey={category} onSelect={setCategory} />
         <QuestionListSection
-          questions={filteredQuestions}
+          questions={latestQuestions}
           loading={loadingAnswered}
           totalCount={answeredQuestions.length}
-          activeCategoryLabel={activeCategoryLabel}
         />
         <CtaSection />
       </main>

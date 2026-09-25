@@ -1,4 +1,5 @@
 import { useState } from "react";
+import VerifiedBadge from "./VerifiedBadge";
 
 // Sizes in px → box and letter size, so the initials stay in proportion.
 const SIZES = {
@@ -19,7 +20,20 @@ function initialsOf(name) {
 // A person's picture, or — when there is none or it fails to load — their initials on
 // the same forest circle for everyone, the way Google does it.
 // `src` must already be resolved (pictureUrl(), or AuthProvider's own profile.picture).
-export default function Avatar({ src, name, size = 32, className = "" }) {
+// `verified` adds a small gold tick on the lower-right edge, for an ustadz.
+export default function Avatar({ verified = false, ...props }) {
+  if (!verified) return <AvatarImage {...props} />;
+  return (
+    <span className="relative inline-flex shrink-0">
+      <AvatarImage {...props} />
+      <span className="absolute -right-1 -bottom-1 rounded-full bg-cream p-px">
+        <VerifiedBadge size={Math.round((props.size ?? 32) * 0.42)} />
+      </span>
+    </span>
+  );
+}
+
+function AvatarImage({ src, name, size = 32, className = "" }) {
   const [failedSrc, setFailedSrc] = useState(null);
   const base = `${SIZES[size]} shrink-0 rounded-full ${className}`;
 

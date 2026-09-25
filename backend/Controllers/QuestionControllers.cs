@@ -68,13 +68,20 @@ namespace backend.Controllers
                 );
             }
 
-            if (status == "answered")
+            // Only answered questions are published. Unanswered ones are listed only for the
+            // people who answer them (Guru, Admin), and only when asked for explicitly.
+            if (status == "pending")
+            {
+                var caller = await this.GetCurrentUserAsync(_db);
+                if (!IsStaff(caller))
+                {
+                    return StatusCode(StatusCodes.Status403Forbidden);
+                }
+                query = query.Where(x => !x.Answers.Any());
+            }
+            else
             {
                 query = query.Where(x => x.Answers.Any());
-            }
-            else if (status == "pending")
-            {
-                query = query.Where(x => !x.Answers.Any());
             }
 
             if (!string.IsNullOrWhiteSpace(category))
@@ -94,6 +101,10 @@ namespace backend.Controllers
                                 UserId = x.User.Id,
                                 UserName = x.User.Name,
                                 UserPicture = x.User.Picture,
+                                // The answer the list credits: a Guru's when there is one, otherwise the first.
+                                AnsweredBy = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Name).FirstOrDefault(),
+                                AnsweredByRole = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role).FirstOrDefault(),
+                                AnsweredByPicture = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Picture).FirstOrDefault(),
                                 IsAnswered = x.Answers.Any(),
                                 CommentCount = x.Answers.SelectMany(a => a.Comments).Count()
                             })
@@ -129,6 +140,10 @@ namespace backend.Controllers
                     UserId = x.User.Id,
                     UserName = x.User.Name,
                     UserPicture = x.User.Picture,
+                    // The answer the list credits: a Guru's when there is one, otherwise the first.
+                    AnsweredBy = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Name).FirstOrDefault(),
+                    AnsweredByRole = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role).FirstOrDefault(),
+                    AnsweredByPicture = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Picture).FirstOrDefault(),
                     IsAnswered = x.Answers.Any(),
                     CommentCount = x.Answers.SelectMany(a => a.Comments).Count()
                 })
@@ -154,7 +169,9 @@ namespace backend.Controllers
                     .FirstOrDefaultAsync(x =>
                         x.Id == id);
 
-            if (question == null)
+            // A hidden question answers 404 like a missing one, so a link does not reveal
+            // that an unanswered question exists.
+            if (question == null || !CanSee(question, await this.GetCurrentUserAsync(_db)))
             {
                 return NotFound();
             }
@@ -210,9 +227,11 @@ namespace backend.Controllers
         [HttpPost("{id}/view")]
         public async Task<IActionResult> RecordView(int id)
         {
-            var question = await _db.Questions.FirstOrDefaultAsync(x => x.Id == id);
+            var question = await _db.Questions
+                .Include(x => x.Answers)
+                .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (question == null)
+            if (question == null || !CanSee(question, await this.GetCurrentUserAsync(_db)))
             {
                 return NotFound();
             }
@@ -300,5 +319,13 @@ namespace backend.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
+
+        private static bool IsStaff(User? user) =>
+            user != null && (user.Role == Roles.Guru || user.Role == Roles.Admin);
+
+        // Published (answered) questions are public; an unanswered one only to its asker and
+        // to the Gurus and Admins who answer or moderate it.
+        private static bool CanSee(Question question, User? user) =>
+            question.Answers.Any() || (user != null && (user.Id == question.UserId || IsStaff(user)));
     }
 }

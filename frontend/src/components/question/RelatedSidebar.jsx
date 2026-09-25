@@ -18,14 +18,14 @@ function RelatedSidebar({ question, isGuru }) {
 
     const loadRelated = async () => {
       try {
-        const res = await fetch(`${API_URL}/api/question`, { credentials: "include" });
+        // For an ustadz, "related" isn't useful — what matters is what to answer next, and the
+        // public list holds answered questions only, so a Guru asks for the pending ones.
+        const res = await fetch(`${API_URL}/api/question${isGuru ? "?status=pending" : ""}`, { credentials: "include" });
         const list = res.ok ? await res.json() : [];
         const others = list.filter((q) => String(q.id) !== String(id));
 
         if (isGuru) {
-          // For an ustadz, "related" isn't useful — what matters is what to answer next.
-          const unanswered = others.filter((q) => !q.isAnswered);
-          if (!cancelled) setRelatedQuestions(unanswered.slice(0, RELATED_LIMIT));
+          if (!cancelled) setRelatedQuestions(others.slice(0, RELATED_LIMIT));
           return;
         }
 

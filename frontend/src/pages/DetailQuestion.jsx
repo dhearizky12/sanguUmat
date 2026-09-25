@@ -14,21 +14,29 @@ import { API_URL } from "../lib/api";
 import { PageBody } from "../components/Page";
 
 function DetailQuestion() {
-  const [question, setQuestion] = useState(null);
+  // What was loaded, tagged with its id, so moving to another question never shows the
+  // previous one. Unknown ids and unanswered questions the caller may not see both answer 404.
+  const [loaded, setLoaded] = useState({ id: null, question: null, notFound: false });
   const { id } = useParams();
+  const question = loaded.id === id ? loaded.question : null;
+  const notFound = loaded.id === id && loaded.notFound;
+  const setQuestion = (update) => setLoaded((prev) => ({ ...prev, question: update(prev.question) }));
   const { me } = useAuth();
 
   useEffect(() => {
-    fetch(`${API_URL}/api/Question/${id}`)
-      .then((res) => res.json())
+    fetch(`${API_URL}/api/Question/${id}`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data) => {
-        setQuestion(data);
-      });
-
-    // Fire-and-forget: records a real view for this specific visit. Deliberately not the same
-    // request as the fetch above — that endpoint is also reused as a batch data-fetch
-    // workaround elsewhere (Dashboard.jsx etc.), which must never count as a view.
-    fetch(`${API_URL}/api/question/${id}/view`, { method: "POST" }).catch((err) => console.error(err));
+        setLoaded({ id, question: data, notFound: false });
+        // Fire-and-forget: records a real view for this specific visit, and only for a question
+        // the caller may see. Deliberately not the same request as the fetch above — that
+        // endpoint is also reused as a batch data-fetch elsewhere (Dashboard.jsx), which must
+        // never count as a view.
+        fetch(`${API_URL}/api/question/${id}/view`, { method: "POST", credentials: "include" }).catch((err) =>
+          console.error(err),
+        );
+      })
+      .catch(() => setLoaded({ id, question: null, notFound: true }));
   }, [id]);
 
   const canEditQuestion = me?.id === question?.userId && question?.answers.length === 0;
@@ -47,7 +55,15 @@ function DetailQuestion() {
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
       <main className="grow">
-        {!question ? (
+        {notFound ? (
+          <PageBody>
+            <EmptyState
+              title="Pertanyaan tidak ditemukan."
+              message="Pertanyaan ini tidak ada, atau belum dijawab sehingga belum ditampilkan untuk umum."
+              action={{ label: "Buka Tanya Jawab", to: "/questions" }}
+            />
+          </PageBody>
+        ) : !question ? (
           <LoadingState message="Memuat pertanyaan…" />
         ) : (
           <>

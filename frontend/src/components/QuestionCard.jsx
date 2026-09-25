@@ -1,39 +1,29 @@
 import { pictureUrl } from "../lib/api";
-import Avatar from "./Avatar";
 import { formatDate } from "../lib/date";
-import { formatCount } from "../lib/format";
 import { categoryLabel, useCategories } from "../lib/category";
 import QuestionRow from "./QuestionRow";
 
-// A question from GET /api/question as a canvas question row. The list
-// response carries no answer text or answerer, so the byline credits the
-// asker instead of "Dijawab oleh".
+// A question from GET /api/question as a canvas question row, crediting who asked it and
+// who answered it (the list carries the answerer's name and role, not the answer text).
 function QuestionCard({ slug, question }) {
   const categories = useCategories();
-  const isAnswered = Boolean(question.isAnswered);
 
   return (
     <QuestionRow
       to={`/question/detail/${slug}`}
-      meta={
-        <>
-          <span className="text-forest">{categoryLabel(categories, question.category)}</span>
-          <span className="text-ink-faint">{formatDate(question.createdAt)}</span>
-          <span className="text-ink-faint">{formatCount(question.views)} dibaca</span>
-          <span className={isAnswered ? "text-gold-dark" : "text-ink-faint"}>
-            {isAnswered ? "Terjawab" : "Menunggu jawaban"}
-          </span>
-        </>
-      }
+      category={categoryLabel(categories, question.category)}
+      date={formatDate(question.createdAt)}
+      views={question.views}
+      comments={question.commentCount}
       title={question.title}
       excerpt={question.content}
-      byline={
-        <>
-          <Avatar src={pictureUrl(question.userPicture)} name={question.userName} size={20} />
-          <span>Ditanyakan oleh</span>
-          <span className="text-forest">{question.userName}</span>
-          <span className="text-ink-faint">&middot; {formatCount(question.commentCount)} komentar</span>
-        </>
+      asker={{ name: question.userName, picture: pictureUrl(question.userPicture) }}
+      answerer={
+        question.answeredBy && {
+          name: question.answeredBy,
+          picture: pictureUrl(question.answeredByPicture),
+          isGuru: question.answeredByRole === "Guru",
+        }
       }
     />
   );
