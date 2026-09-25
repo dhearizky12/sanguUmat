@@ -1,0 +1,101 @@
+## 1. Extract the design system
+
+- [ ] 1.1 Reconcile the theme with the canvases: set the container token to the
+      design's 1160px, and add tokens for the "Khusus Anggota" badge
+      (`#F0E4BE` background, `#7A5E12` text) and any other canvas colour with no
+      token yet.
+- [ ] 1.2 Move the pulsing live indicator into the theme as an animation token;
+      delete the hand-written `.animate-sg-pulse` rule and its `@keyframes`.
+- [ ] 1.3 Add a token for the responsive page gutter the canvases use
+      (`clamp(18px, 5vw, 28px)`), so no page hardcodes it.
+- [ ] 1.4 Confirm Newsreader and IBM Plex Mono load with the weights and optical
+      sizes the canvases ask for, and that each has a real fallback stack.
+
+## 2. Build the shared primitives
+
+- [ ] 2.1 `SectionHeading` — the title, right-hand mono meta, and rule beneath,
+      repeated in every canvas section.
+- [ ] 2.2 `MonoLabel` — the uppercase IBM Plex Mono label, replacing the
+      `label-mono` utility at its call sites.
+- [ ] 2.3 `LogoMark` — the inset-shadow square, in its forest and gold
+      variants, replacing the two long arbitrary-value strings in `Header` and
+      `Footer`.
+- [ ] 2.4 `PlaceholderTexture` — the diagonal repeating gradient used for
+      missing images and video, replacing the four copies.
+- [ ] 2.5 `AutoGrid` — the `repeat(auto-fit, minmax(min(Npx, 100%), 1fr))` grid,
+      replacing all four inline `style={{ gridTemplateColumns }}` uses.
+- [ ] 2.6 `Breadcrumb` — the "Beranda / …" trail on every inner canvas.
+- [ ] 2.7 `VerifiedBadge` — the ustadz check mark from the home and Tanya Jawab
+      canvases.
+- [ ] 2.8 Verify no inline `style={{` remains in the frontend source.
+
+## 3. Convert the shared components
+
+- [ ] 3.1 `EmptyState` — adopt the canvases' dashed-border empty state, with
+      their Bahasa Indonesia wording and call to action.
+- [ ] 3.2 `Loading` and `LoadingState`.
+- [ ] 3.3 `RichContent` — the answer and question body typography.
+- [ ] 3.4 `QuestionCard` — to the canvases' question row. Keep the base-path
+      `pictureUrl()` handling and the view and comment counts.
+- [ ] 3.5 `CommentSection` — keep the owner and admin delete rules intact.
+- [ ] 3.6 Exercise every page that renders these, confirming behaviour is
+      unchanged against `openspec/specs/`.
+
+## 4. Convert the question pages
+
+- [ ] 4.1 Split `DetailQuestion` (493 lines) into sections before converting,
+      mirroring `components/dashboard/`.
+- [ ] 4.2 Convert `DetailQuestion`, preserving the owner edit and delete rules,
+      the admin moderation rules, and the single view-count call per visit.
+- [ ] 4.3 Convert `Questions` to the Tanya Jawab canvas: layout, type,
+      breadcrumb and empty state, keeping today's search and category filter.
+      Leave out the facet panel, sort control and pagination.
+- [ ] 4.4 Convert `CreateQuestion` to the Ajukan Pertanyaan canvas, including
+      the "Perlu masuk" interstitial and the "Pertanyaan saya" panel. Leave out
+      quota, ticket, review status tabs, anonymity and the ustadz picker.
+
+## 5. Convert the account pages
+
+- [ ] 5.1 Convert `Login` to the Masuk canvas, Google path only. Leave out the
+      WhatsApp OTP path and every element belonging to it.
+- [ ] 5.2 Convert `Profile`.
+- [ ] 5.3 Convert `EditProfile`, keeping the avatar upload and the
+      profile-completion gate.
+
+## 6. Convert the Guru and Admin pages
+
+- [ ] 6.1 Convert `AnswerQueue`, keeping it reachable only by a Guru.
+- [ ] 6.2 Convert `AdminUsers`, keeping the role control and the
+      self-demotion guard.
+- [ ] 6.3 Convert `DetailAdmin`.
+
+## 7. Restyle the three shells
+
+- [ ] 7.1 `Articles` and `DetailArticle` — header, footer and an empty state
+      saying the section is not open yet. No placeholder articles.
+- [ ] 7.2 `Live` — the same treatment.
+- [ ] 7.3 Replace the hardcoded placeholder content in
+      `components/dashboard/ArticlesSection.jsx` and
+      `NgajiBarengSection.jsx` with an honest empty state, or hide the sections
+      until their features exist.
+
+## 8. Retire the old design system
+
+- [ ] 8.1 Confirm nothing references the old tokens: `bg-surface`,
+      `text-on-surface`, `primary-container`, `outline-variant`, `font-body-md`,
+      `text-body-md` and their siblings.
+- [ ] 8.2 Delete those tokens and their `@utility` blocks from `index.css`.
+- [ ] 8.3 Remove the Material Symbols icon font if the conversion replaced every
+      use of it.
+- [ ] 8.4 Confirm no raw hex colour remains in any component or page.
+
+## 9. Verify
+
+- [ ] 9.1 `npm run build` succeeds and `npx eslint src/` reports no more than
+      the 5 known pre-existing errors in `EditProfile` and `AuthProvider`.
+- [ ] 9.2 Every page renders at 400px wide with no horizontal scrollbar on the
+      body.
+- [ ] 9.3 No English user-facing text remains on any converted page.
+- [ ] 9.4 Walk each capability in `openspec/specs/` against the running app,
+      confirming the restyle changed appearance only.
+- [ ] 9.5 Compare each converted page against its canvas.

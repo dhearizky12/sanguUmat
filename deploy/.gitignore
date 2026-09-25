@@ -1,0 +1,5 @@
+# Holds the database password, the Google client secret and the tunnel token.
+.env
+
+# Live database, uploads and auth keys. Back it up — never commit it.
+data/

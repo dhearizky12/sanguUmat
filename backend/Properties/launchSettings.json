@@ -1,4 +1,4 @@
-﻿{
+{
   "$schema": "https://json.schemastore.org/launchsettings.json",
   "profiles": {
     "http": {
@@ -17,6 +17,33 @@
       "applicationUrl": "https://localhost:7064;http://localhost:5236",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    // Live-reloading API behind Caddy + Tailscale Funnel, mounted at
+    // /sanguumat on the public origin. Run it with:
+    //
+    //   dotnet watch run --launch-profile public
+    //
+    // Same prefix and same public URL as the Docker deployment, so the Google
+    // authorized redirect URI (<PUBLIC_BASE_URL>/signin-google) needs no change
+    // when switching between the two. Postgres still comes from Docker — only
+    // the `db` service — on 127.0.0.1:5433, which appsettings.json already
+    // points at.
+    "public": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": false,
+      "applicationUrl": "http://localhost:5236",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        // Stripped off the incoming path by UsePathBase and remembered as
+        // Request.PathBase, which is what puts the prefix back on the Google
+        // redirect_uri. Must agree with Caddy's handle block and with the tail
+        // of Frontend__BaseUrl below.
+        "App__BasePath": "/sanguumat",
+        // Where login and logout hand the browser back to — the funnel URL,
+        // prefix included. Not localhost: the browser is on the public origin.
+        "Frontend__BaseUrl": "https://se-224.tail3f5844.ts.net/sanguumat"
       }
     }
   }

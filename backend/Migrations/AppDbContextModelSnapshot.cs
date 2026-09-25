@@ -52,6 +52,36 @@ namespace backend.Migrations
                     b.ToTable("Answers");
                 });
 
+            modelBuilder.Entity("backend.Models.Comment", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("AnswerId")
+                        .HasColumnType("integer");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("AnswerId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Comments");
+                });
+
             modelBuilder.Entity("backend.Models.Question", b =>
                 {
                     b.Property<int>("Id")
@@ -59,6 +89,9 @@ namespace backend.Migrations
                         .HasColumnType("integer");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Category")
+                        .HasColumnType("text");
 
                     b.Property<string>("Content")
                         .IsRequired()
@@ -72,6 +105,9 @@ namespace backend.Migrations
                         .HasColumnType("text");
 
                     b.Property<int>("UserId")
+                        .HasColumnType("integer");
+
+                    b.Property<int>("Views")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
@@ -150,6 +186,25 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("backend.Models.Comment", b =>
+                {
+                    b.HasOne("backend.Models.Answer", "Answer")
+                        .WithMany("Comments")
+                        .HasForeignKey("AnswerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.Question", b =>
                 {
                     b.HasOne("backend.Models.User", "User")
@@ -159,6 +214,11 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.Answer", b =>
+                {
+                    b.Navigation("Comments");
                 });
 
             modelBuilder.Entity("backend.Models.Question", b =>

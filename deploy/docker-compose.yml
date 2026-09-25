@@ -1,0 +1,71 @@
+# Self-hosted stack: Postgres and the ASP.NET Core API, which also serves the built
+# SPA out of its wwwroot. Public access is Tailscale Funnel, running on the host
+# rather than in a container — see README.md section 3.
+#
+#   cd deploy
+#   cp .env.example .env      # then fill it in
+#   docker compose up -d --build
+#   sudo tailscale funnel --bg 8080
+#
+# There is no separate frontend deployment: the React bundle is baked into the api
+# image, so the SPA and the API share one origin (the Funnel hostname) and the auth
+# cookie stays first-party. See README.md.
+#
+# All persistent state is bind-mounted under ./data, so everything the stack owns
+# is visible in one folder. Note the consequence: `docker compose down -v` does
+# NOT erase it — to wipe, delete ./data yourself.
+
+name: sangu-umat-dev
+
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - ./data/postgres:/var/lib/postgresql/data
+    ports:
+      - "127.0.0.1:${POSTGRES_HOST_PORT:-5433}:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+
+  api:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
+      Authentication__Google__ClientId: ${GOOGLE_CLIENT_ID}
+      Authentication__Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
+      # Lax is right because the SPA and the API are one origin now.
+      Authentication__CookieSameSite: ${COOKIE_SAMESITE:-Lax}
+      Authentication__CookieDomain: ${COOKIE_DOMAIN:-}
+      # Where login and logout hand the browser back to — the Funnel URL,
+      # including the path prefix if the app is mounted under one.
+      Frontend__BaseUrl: ${PUBLIC_BASE_URL}
+      # URL path prefix this app is mounted under: empty for the domain root,
+      # "/sanguumat" behind Caddy's matching handle block. Changing this needs a
+      # restart, not a rebuild — see README.md section 9.
+      App__BasePath: ${APP_BASE_PATH:-}
+      # Nothing is cross-origin here, so this is normally empty. Set
+      # EXTRA_CORS_ORIGIN in .env only to let a local `npm run dev` talk to this
+      # API (e.g. http://localhost:3000).
+      Cors__AllowedOrigins__0: ${EXTRA_CORS_ORIGIN:-}
+    volumes:
+      - ./data/uploads:/app/wwwroot/uploads
+      - ./data/dp-keys:/root/.aspnet/DataProtection-Keys
+    ports:
+      # Loopback only — nothing is exposed on the LAN or the router. This is also
+      # what Tailscale Funnel proxies to, so the port here and the port given to
+      # `tailscale funnel` must match.
+      - "127.0.0.1:${API_HOST_PORT:-8080}:8080"

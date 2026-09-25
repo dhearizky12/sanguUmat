@@ -1,0 +1,81 @@
+schema: spec-driven
+
+context: |
+  Sangu Umat — an Indonesian Islamic Q&A platform. Users (role "User") ask
+  religious questions; verified teachers (role "Guru") answer them; anyone
+  signed in can comment on an answer; Admins moderate and assign roles.
+
+  ## HARD RULE — BAHASA INDONESIA ONLY
+  Every piece of user-facing text — labels, buttons, headings, placeholders,
+  error and success messages, empty states, tooltips, alerts — MUST be in
+  Bahasa Indonesia. No exceptions. Specs, code, comments and commit messages
+  stay in English; only the UI strings are Indonesian.
+
+  ## Tech stack
+  - Backend: ASP.NET Core (net10.0), EF Core + PostgreSQL, cookie auth over
+    Google OAuth. Controllers in backend/Controllers, EF models in
+    backend/Models, request DTOs in backend/DTOs, migrations in
+    backend/Migrations.
+  - Frontend: React 19 + Vite + React Router + Tailwind v4. Pages in
+    frontend/src/pages, shared components in frontend/src/components,
+    helpers in frontend/src/lib.
+  - Deploy: single origin. The API serves the built SPA and injects
+    <base href> from App__BasePath, so the app can be remounted under a path
+    prefix ("/sanguumat") without rebuilding. See deploy/README.md.
+
+  ## Conventions that bite
+  - The SPA may be mounted under a path prefix. Never hardcode an absolute
+    "/..." URL for an asset or an API call — go through frontend/src/lib/api.js
+    (API_URL, pictureUrl) and frontend/src/lib/basePath.js.
+  - Profile pictures come from two sources: Google (absolute https:// URL) and
+    our own uploads (server-relative "/uploads/x"). Always resolve them with
+    pictureUrl(); never concatenate API_URL by hand. Note AuthProvider already
+    resolves the signed-in user's own picture, so useAuth()'s `profile.picture`
+    must NOT be passed through pictureUrl() a second time.
+  - Roles are the strings "User", "Guru", "Admin" (backend/Models/Roles.cs).
+  - Question categories are a fixed set shared by both ends —
+    frontend/src/lib/category.js and the Questions.Category column.
+  - Google credentials and the DB connection string come from config/env, never
+    source. Dev: dotnet user-secrets. Prod: Authentication__Google__* env vars.
+
+  ## Design system (in transition)
+  The new design uses tokens: cream / forest / ink / gold / stone / sage, a
+  serif display face, and the `label-mono` utility (see frontend/src/index.css).
+  The OLD design used Material-style tokens: surface / on-surface /
+  primary-container / font-body-md / text-body-md.
+  As of this writing only Dashboard, Header, Footer and components/dashboard/*
+  use the new tokens; every other page is still on the old ones. New and
+  redesigned UI must use the new tokens only.
+
+  ## HARD RULE — TAILWIND ONLY
+  All styling goes through Tailwind utility classes. Keep hand-written CSS to an
+  absolute minimum and use no inline `style` attributes at all.
+  - No `style={{ ... }}` in JSX. A one-off grid or shadow becomes a Tailwind
+    arbitrary value, or a theme token if it recurs.
+  - Recurring values belong in the Tailwind theme (@theme in
+    frontend/src/index.css) as named tokens, so they are used as normal
+    utilities rather than repeated arbitrary values.
+  - index.css should hold the theme and font faces, not component rules. A
+    hand-written class earns its place only when Tailwind genuinely cannot
+    express it; say why in a comment.
+  - Repeated utility strings should be extracted into a React component, never
+    into a CSS class.
+  Note the current new-design code violates this in places — inline
+  `style={{ gridTemplateColumns }}`, long `[box-shadow:inset_...]` arbitrary
+  values, and the `label-mono` / `girih-pattern-*` / `animate-sg-pulse` rules in
+  index.css. Clean these up as each file is touched.
+
+rules:
+  proposal:
+    - State explicitly whether the change touches backend, frontend, or both.
+    - Call out any new or changed API endpoint in the proposal, with its method,
+      path, auth requirement and response shape.
+  specs:
+    - Write requirements against observable behaviour (what a User, Guru or
+      Admin can see and do), not against implementation detail.
+    - Where a requirement produces user-facing text, give the Bahasa Indonesia
+      string in the scenario.
+  tasks:
+    - Order tasks so a backend endpoint lands before the frontend that consumes
+      it.
+    - Include an EF migration task whenever a task adds or changes a model.

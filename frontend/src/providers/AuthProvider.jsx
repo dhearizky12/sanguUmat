@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import AuthContext from "../contexts/AuthContext";
-import { API_URL } from "../lib/api";
+import { API_URL, pictureUrl } from "../lib/api";
 
 export default function AuthProvider({ children }) {
   const [me, setMe] = useState(null);
@@ -25,6 +25,14 @@ export default function AuthProvider({ children }) {
         const meJson = await meRes.json();
         setMe(meJson);
 
+        // /api/auth/me answers 200 with { isAuthenticated: false } for signed-out
+        // visitors, so meRes.ok says nothing about whether there is a user. Asking
+        // for the profile anyway just produces a 404.
+        if (!meJson.isAuthenticated) {
+          setProfile(null);
+          return;
+        }
+
         const profileRes = await fetch(`${API_URL}/api/auth/profile`, {
           credentials: "include",
         });
@@ -35,7 +43,7 @@ export default function AuthProvider({ children }) {
         }
 
         const profileData = await profileRes.json();
-        profileData.picture = profileData.picture ? API_URL + profileData.picture : null;
+        profileData.picture = pictureUrl(profileData.picture);
         setProfile(profileData);
       } catch {
         setProfile(null);

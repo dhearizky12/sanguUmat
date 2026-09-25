@@ -1,0 +1,42 @@
+# Docker only reads .dockerignore from the build context root, which is the repo
+# root — so this one file has to live outside deploy/. Everything else that is
+# deployment related is in deploy/.
+#
+# The image contains both halves of the app: the API and the built SPA. So
+# frontend/ IS part of the context — only its build artifacts are excluded.
+
+.git/
+.gitignore
+.DS_Store
+.vscode/
+.idea/
+
+# Not part of the image.
+deploy/
+*.md
+sanguUmat.slnx
+
+# Frontend build inputs are needed; its outputs are rebuilt inside the image.
+frontend/node_modules/
+frontend/dist/
+# Personal overrides must not leak into the image build — .env.production is what
+# the image is supposed to use, and .env.local would silently win over it.
+frontend/.env.local
+frontend/.env.*.local
+
+# Backend build output — rebuilt inside the image.
+backend/bin/
+backend/obj/
+backend/.vs/
+backend/.vscode/
+backend/.idea/
+backend/*.user
+backend/*.suo
+backend/appsettings.Development.json
+backend/backend.http
+backend/seed-dummy-data.sql
+
+# Locally uploaded profile pictures. In the deployment these come from a mount.
+backend/wwwroot/uploads/
+
+.dockerignore

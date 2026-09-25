@@ -6,6 +6,7 @@
   "scripts": {
     "start": "vite",
     "dev": "vite",
+    "dev:public": "VITE_API_URL= PUBLIC_HMR=1 vite --base=/sanguumat/",
     "build": "vite build",
     "lint": "eslint .",
     "preview": "vite preview"

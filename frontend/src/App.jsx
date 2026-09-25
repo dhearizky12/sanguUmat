@@ -1,5 +1,7 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BASE_PATH } from "./lib/basePath";
 import AuthGuard from "./components/AuthGuard";
+import RoleGuard from "./components/RoleGuard";
 import Articles from "./pages/Articles";
 import Dashboard from "./pages/Dashboard";
 import DetailAdmin from "./pages/DetailAdmin";
@@ -10,13 +12,15 @@ import Login from "./pages/Login";
 import Questions from "./pages/Questions";
 import AuthProvider from "./providers/AuthProvider";
 import CreateQuestion from "./pages/CreateQuestion";
+import AnswerQueue from "./pages/AnswerQueue";
 import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
+import AdminUsers from "./pages/AdminUsers";
 
 function App() {
   return (
     <AuthProvider>
-      <BrowserRouter>
+      <BrowserRouter basename={BASE_PATH || "/"}>
         <Routes>
           {/* Public */}
           <Route path="/login" element={<Login />} />
@@ -37,6 +41,16 @@ function App() {
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/question/create" element={<CreateQuestion />} />
             <Route path="/detail-admin/:adminId" element={<DetailAdmin />} />
+          </Route>
+
+          {/* Guru only */}
+          <Route element={<RoleGuard allow={["Guru"]} />}>
+            <Route path="/jawab-pertanyaan" element={<AnswerQueue />} />
+          </Route>
+
+          {/* Admin only */}
+          <Route element={<RoleGuard allow={["Admin"]} />}>
+            <Route path="/admin/users" element={<AdminUsers />} />
           </Route>
         </Routes>
       </BrowserRouter>

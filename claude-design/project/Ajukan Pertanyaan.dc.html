@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,300;0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,300;1,6..72,400&amp;family=IBM+Plex+Mono:wght@400;500&amp;display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; padding: 0; background: #FBFAF5; }
+  * { box-sizing: border-box; }
+  a { color: #0C4A38; text-decoration: none; }
+  a:hover { color: #8A6A18; }
+  input, select, button, textarea { font-family: inherit; }
+  ::placeholder { color: #7C776A; opacity: 1; }
+</style>
+</helmet>
+
+<div style="font-family: Newsreader, Georgia, serif; color: #17201C; background: #FBFAF5; min-height: 100vh;">
+
+  <sc-if value="{{ gated }}" hint-placeholder-val="{{ false }}">
+    <div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 40px 24px;">
+      <div style="max-width: 380px; display: flex; flex-direction: column; gap: 14px; text-align: center; align-items: center;">
+        <span aria-hidden="true" style="width: 26px; height: 26px; background: #0C4A38; box-shadow: inset 0 0 0 1px #0C4A38, inset 0 0 0 3px #FBFAF5, inset 0 0 0 4px #B08A2E;"></span>
+        <div style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #8A6A18;">Perlu masuk</div>
+        <h1 style="margin: 0; font-size: 26px; font-weight: 400; letter-spacing: -.015em;">Mengalihkan ke halaman masuk…</h1>
+        <p style="margin: 0; font-size: 16px; line-height: 1.6; color: #6B7269;">Hanya pengguna yang sudah masuk dapat mengajukan pertanyaan. Setelah masuk, Anda kembali ke halaman ini.</p>
+        <a href="Masuk.dc.html?next=Ajukan%20Pertanyaan.dc.html" style="margin-top: 6px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 14px 22px;" style-hover="background: #17201C; color: #F7F3E8;">Masuk sekarang</a>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ allowed }}" hint-placeholder-val="{{ true }}">
+  <div>
+  <header style="position: sticky; top: 0; z-index: 40; background: rgba(251,250,245,.94); backdrop-filter: blur(8px); border-bottom: 1px solid #E3DECF;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 10px clamp(16px, 4vw, 24px); min-height: 68px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px;">
+      <a href="Sangu%20Umat.dc.html" style="display: flex; align-items: center; gap: 11px; flex: 0 0 auto; min-width: 0;">
+        <span style="width: 24px; height: 24px; flex: 0 0 auto; background: #0C4A38; display: block; box-shadow: inset 0 0 0 1px #0C4A38, inset 0 0 0 3px #FBFAF5, inset 0 0 0 4px #B08A2E;"></span>
+        <span style="font-size: 20px; font-weight: 500; letter-spacing: -.01em; color: #0C4A38;">Sangu Umat</span>
+      </a>
+      <sc-if value="{{ wide }}" hint-placeholder-val="{{ true }}">
+        <nav style="display: flex; align-items: center; justify-content: center; gap: 8px 24px; flex: 1 1 240px; flex-wrap: wrap; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .13em; text-transform: uppercase;">
+          <a href="Sangu%20Umat.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Beranda</a>
+          <a href="Tanya%20Jawab.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Tanya Jawab</a>
+          <a href="Artikel.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Artikel</a>
+          <a href="Ngaji%20Bareng.dc.html" style="color: #6B7269;" style-hover="color: #17201C;">Ngaji Bareng</a>
+        </nav>
+        <div style="display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; flex: 0 0 auto;">
+          <span style="display: flex; align-items: center; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #17201C;">
+            <span aria-hidden="true" style="width: 26px; height: 26px; flex: 0 0 auto; display: flex; align-items: center; justify-content: center; background: #0C4A38; color: #F7F3E8; font-size: 11px;">{{ initial }}</span>
+            {{ userName }}
+          </span>
+          <a href="#" onClick="{{ signOut }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .13em; text-transform: uppercase; color: #6B7269; border-bottom: 1px solid #C6BFAC;" style-hover="color: #17201C;">Keluar</a>
+        </div>
+      </sc-if>
+      <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ toggleMenu }}" aria-label="Menu" style="flex: 0 0 auto; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; background: transparent; border: 1px solid #C6BFAC; cursor: pointer; font-size: 20px; line-height: 1; color: #0C4A38;" style-hover="background: #F2EEE2;">{{ burgerLabel }}</button>
+      </sc-if>
+    </div>
+    <sc-if value="{{ menuOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="border-top: 1px solid #E3DECF; background: #FBFAF5;">
+        <div style="max-width: 1160px; margin: 0 auto; padding: 6px clamp(16px, 4vw, 24px) 22px; display: flex; flex-direction: column;">
+          <sc-for list="{{ navItems }}" as="n" hint-placeholder-count="4">
+            <a href="{{ n.href }}" onClick="{{ n.pick }}" style="{{ n.style }}" style-hover="color: #17201C;">{{ n.label }}</a>
+          </sc-for>
+          <div style="display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; padding-top: 20px;">
+            <span style="display: flex; align-items: center; gap: 9px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #17201C;">
+              <span aria-hidden="true" style="width: 26px; height: 26px; display: flex; align-items: center; justify-content: center; background: #0C4A38; color: #F7F3E8; font-size: 11px;">{{ initial }}</span>
+              {{ userName }}
+            </span>
+            <a href="#" onClick="{{ signOut }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .13em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 12px 16px;" style-hover="background: #F2EEE2;">Keluar</a>
+          </div>
+        </div>
+      </div>
+    </sc-if>
+  </header>
+
+  <section style="background: #F4F1E7; border-bottom: 1px solid #E3DECF;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: clamp(26px, 4vw, 44px) clamp(18px, 5vw, 28px) clamp(24px, 4vw, 38px); display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 22px 32px;">
+      <div style="display: flex; flex-direction: column; gap: 14px; min-width: 0;">
+        <div style="display: flex; align-items: center; gap: 10px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #7C776A;">
+          <a href="Sangu%20Umat.dc.html" style="color: #7C776A;" style-hover="color: #17201C;">Beranda</a>
+          <span>/</span>
+          <a href="Tanya%20Jawab.dc.html" style="color: #7C776A;" style-hover="color: #17201C;">Tanya Jawab</a>
+          <span>/</span>
+          <span style="color: #17201C;">Ajukan Pertanyaan</span>
+        </div>
+        <h1 style="margin: 0; font-size: clamp(34px, 5vw, 52px); line-height: 1.06; font-weight: 400; letter-spacing: -.02em;">Ajukan Pertanyaan</h1>
+        <p style="margin: 0; max-width: 52ch; font-size: 16px; line-height: 1.6; color: #565D54;">Tulis pertanyaanmu selengkap mungkin. Dewan ustadz meninjau setiap pertanyaan sebelum menjawab, rata-rata dalam 2 hari kerja.</p>
+      </div>
+      <div style="flex: 0 0 auto; display: flex; flex-direction: column; gap: 8px; border-left: 2px solid #C6BFAC; padding-left: 18px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #7C776A;">Kuota bulan ini</span>
+        <span style="font-size: 30px; line-height: 1;">{{ quotaText }}</span>
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #7C776A;">pertanyaan terpakai</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="max-width: 1160px; margin: 0 auto; padding: clamp(28px, 4vw, 48px) clamp(18px, 5vw, 28px) 0;">
+    <div style="{{ layoutStyle }}">
+
+      <div style="display: flex; flex-direction: column; min-width: 0;">
+        <div style="display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding-bottom: 12px; border-bottom: 1px solid #17201C;">
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Pertanyaan baru</span>
+          <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #9B958A;">{{ draftMeta }}</span>
+        </div>
+
+        <sc-if value="{{ sent }}" hint-placeholder-val="{{ false }}">
+          <div style="margin-top: 22px; border: 1px solid #DCC98C; background: #F0E4BE; padding: clamp(22px, 3vw, 30px); display: flex; flex-direction: column; gap: 12px;">
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .16em; text-transform: uppercase; color: #7A5E12;">Terkirim · {{ ticket }}</span>
+            <span style="font-size: 22px; line-height: 1.3;">Pertanyaanmu masuk antrean tinjauan.</span>
+            <span style="font-size: 15px; line-height: 1.65; color: #6B5A2A; max-width: 52ch;">Kami mengirim notifikasi WhatsApp begitu ustadz mulai menjawab. Pantau perkembangannya di daftar pertanyaan di bawah.</span>
+            <div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 6px;">
+              <a href="#" onClick="{{ askAgain }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; background: #0C4A38; color: #F7F3E8; padding: 14px 20px;" style-hover="background: #17201C; color: #F7F3E8;">Ajukan lagi</a>
+              <a href="#riwayat" style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 14px 20px;" style-hover="background: #F2EEE2;">Lihat pertanyaan saya</a>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ composing }}" hint-placeholder-val="{{ true }}">
+          <div style="display: flex; flex-direction: column; gap: 24px; padding-top: 24px;">
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); gap: 20px;">
+              <label style="display: flex; flex-direction: column; gap: 9px;">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Kategori</span>
+                <select value="{{ cat }}" onChange="{{ onCat }}" style="{{ catStyle }}">
+                  <option value="">Pilih kategori</option>
+                  <sc-for list="{{ cats }}" as="c" hint-placeholder-count="6">
+                    <option value="{{ c }}">{{ c }}</option>
+                  </sc-for>
+                </select>
+              </label>
+              <label style="display: flex; flex-direction: column; gap: 9px;">
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Ditujukan kepada <span style="color: #9B958A;">opsional</span></span>
+                <select value="{{ ustadz }}" onChange="{{ onUstadz }}" style="{{ selectStyle }}">
+                  <option value="">Ustadz mana saja</option>
+                  <sc-for list="{{ ustadzList }}" as="u" hint-placeholder-count="4">
+                    <option value="{{ u }}">{{ u }}</option>
+                  </sc-for>
+                </select>
+              </label>
+            </div>
+
+            <label style="display: flex; flex-direction: column; gap: 9px;">
+              <span style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">
+                Inti pertanyaan
+                <span style="letter-spacing: .1em; text-transform: none; color: #9B958A;">{{ titleCount }}</span>
+              </span>
+              <input type="text" value="{{ title }}" onChange="{{ onTitle }}" placeholder="Misalnya: Bagaimana cara menjamak sholat saat perjalanan dinas?" style="{{ titleStyle }}">
+            </label>
+
+            <label style="display: flex; flex-direction: column; gap: 9px;">
+              <span style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">
+                Uraian &amp; latar belakang
+                <span style="letter-spacing: .1em; text-transform: none; color: #9B958A;">{{ bodyCount }}</span>
+              </span>
+              <textarea value="{{ body }}" onChange="{{ onBody }}" rows="8" placeholder="Ceritakan situasinya: apa yang sudah dilakukan, apa yang membuat ragu, dan jawaban seperti apa yang dibutuhkan." style="{{ bodyStyle }}"></textarea>
+            </label>
+
+            <div style="display: flex; flex-direction: column; gap: 12px;">
+              <button onClick="{{ toggleAnon }}" style="{{ anonRowStyle }}" style-hover="background: #F2EEE2;">
+                <span aria-hidden="true" style="{{ anonBoxStyle }}">{{ anonMark }}</span>
+                <span style="flex: 1 1 auto; text-align: left; font-size: 16px; line-height: 1.5;">Tampilkan sebagai anonim. Nama saya disembunyikan dari halaman publik.</span>
+              </button>
+              <button onClick="{{ togglePublish }}" style="{{ pubRowStyle }}" style-hover="background: #F2EEE2;">
+                <span aria-hidden="true" style="{{ pubBoxStyle }}">{{ pubMark }}</span>
+                <span style="flex: 1 1 auto; text-align: left; font-size: 16px; line-height: 1.5;">Jawaban boleh ditayangkan di Tanya Jawab agar bermanfaat bagi jamaah lain.</span>
+              </button>
+            </div>
+
+            <sc-if value="{{ hasError }}" hint-placeholder-val="{{ false }}">
+              <div style="border-left: 2px solid #C0392B; padding: 10px 14px; background: #F8ECE9; font-family: 'IBM Plex Mono', monospace; font-size: 11px; line-height: 1.7; letter-spacing: .05em; color: #A2452E;">{{ errorText }}</div>
+            </sc-if>
+
+            <div style="display: flex; flex-wrap: wrap; align-items: center; gap: 14px 20px; padding-top: 4px;">
+              <button onClick="{{ submit }}" style="{{ submitStyle }}">{{ submitLabel }}</button>
+              <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .1em; color: #7C776A;">Sisa kuota {{ quotaLeft }} pertanyaan bulan ini</span>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+
+      <aside style="{{ asideStyle }}">
+        <div style="display: flex; flex-direction: column;">
+          <div style="padding-bottom: 10px; border-bottom: 1px solid #17201C; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Sebelum mengirim</div>
+          <sc-for list="{{ tips }}" as="t" hint-placeholder-count="3">
+            <div style="display: flex; gap: 12px; padding: 16px 0; border-bottom: 1px solid #E9E4D6;">
+              <span aria-hidden="true" style="flex: 0 0 auto; width: 8px; height: 8px; margin-top: 7px; background: #B08A2E;"></span>
+              <span style="flex: 1 1 auto; font-size: 15px; line-height: 1.6; color: #565D54; text-wrap: pretty;">{{ t }}</span>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display: flex; flex-direction: column; padding-top: 30px;">
+          <div style="padding-bottom: 10px; border-bottom: 1px solid #17201C; font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: #17201C;">Alur peninjauan</div>
+          <sc-for list="{{ flow }}" as="f" hint-placeholder-count="4">
+            <div style="display: flex; gap: 12px; padding: 14px 0; border-bottom: 1px solid #E9E4D6;">
+              <span style="flex: 0 0 auto; width: 22px; font-family: 'IBM Plex Mono', monospace; font-size: 11px; color: #9B958A;">{{ f.n }}</span>
+              <span style="flex: 1 1 auto; display: flex; flex-direction: column; gap: 3px; min-width: 0;">
+                <span style="font-size: 16px; color: #17201C;">{{ f.label }}</span>
+                <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .08em; color: #7C776A;">{{ f.meta }}</span>
+              </span>
+            </div>
+          </sc-for>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  <section id="riwayat" style="max-width: 1160px; margin: 0 auto; padding: clamp(40px, 6vw, 68px) clamp(18px, 5vw, 28px) clamp(48px, 7vw, 84px);">
+    <div style="display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 10px 20px;">
+      <h2 style="margin: 0; font-size: clamp(24px, 3vw, 32px); font-weight: 400; letter-spacing: -.015em;">Pertanyaan saya</h2>
+      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: #6B7269;">{{ myMeta }}</span>
+    </div>
+
+    <div style="display: flex; flex-wrap: wrap; gap: 8px; padding: 20px 0 0;">
+      <sc-for list="{{ tabs }}" as="t" hint-placeholder-count="5">
+        <button onClick="{{ t.pick }}" style="{{ t.style }}" style-hover="background: #F2EEE2;">{{ t.label }} <span style="opacity: .65;">{{ t.count }}</span></button>
+      </sc-for>
+    </div>
+
+    <div style="display: flex; flex-direction: column; border-top: 1px solid #17201C; margin-top: 16px;">
+      <sc-for list="{{ myList }}" as="it" hint-placeholder-count="5">
+        <div style="display: flex; flex-direction: column; border-bottom: 1px solid #E3DECF;">
+          <button onClick="{{ it.toggle }}" style="{{ it.rowStyle }}" style-hover="background: #F4F1E7;">
+            <span style="display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;">
+              <span style="{{ it.badgeStyle }}">{{ it.statusLabel }}</span>
+              <span style="color: #0C4A38;">{{ it.cat }}</span>
+              <span style="color: #7C776A;">{{ it.id }}</span>
+              <span style="color: #7C776A;">{{ it.date }}</span>
+            </span>
+            <span style="display: flex; align-items: flex-start; gap: 16px; width: 100%;">
+              <span style="flex: 1 1 auto; font-size: clamp(18px, 2.1vw, 22px); line-height: 1.3; letter-spacing: -.01em; color: #17201C; text-align: left; max-width: 56ch; text-wrap: pretty;">{{ it.title }}</span>
+              <span aria-hidden="true" style="flex: 0 0 auto; font-family: 'IBM Plex Mono', monospace; font-size: 13px; color: #7C776A; padding-top: 6px;">{{ it.chev }}</span>
+            </span>
+            <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .08em; color: #6B7269;">{{ it.hint }}</span>
+          </button>
+
+          <sc-if value="{{ it.open }}" hint-placeholder-val="{{ false }}">
+            <div style="display: flex; flex-direction: column; gap: 22px; padding: 4px clamp(12px, 3vw, 18px) clamp(24px, 3vw, 30px);">
+              <p style="margin: 0; font-size: 16px; line-height: 1.68; color: #565D54; max-width: 72ch; text-wrap: pretty;">{{ it.body }}</p>
+
+              <div style="display: flex; flex-wrap: wrap; gap: 10px 0;">
+                <sc-for list="{{ it.steps }}" as="s" hint-placeholder-count="4">
+                  <span style="{{ s.style }}">
+                    <span aria-hidden="true" style="{{ s.dotStyle }}"></span>
+                    <span style="display: flex; flex-direction: column; gap: 2px;">
+                      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase;">{{ s.label }}</span>
+                      <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .06em; color: #9B958A;">{{ s.meta }}</span>
+                    </span>
+                  </span>
+                </sc-for>
+              </div>
+
+              <sc-if value="{{ it.hasAnswer }}" hint-placeholder-val="{{ false }}">
+                <div style="border-left: 2px solid #0C4A38; background: #F4F1E7; padding: clamp(16px, 2.5vw, 22px); display: flex; flex-direction: column; gap: 10px;">
+                  <span style="display: flex; align-items: center; gap: 7px; font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #0C4A38;">
+                    <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true"><path d="M12 1.6l2.47 1.79 3.03-.28 1.15 2.82 2.6 1.6-.6 2.99.98 2.9-2.35 1.94-.78 2.95-3.05.28L12 22.4l-2.45-1.81-3.05-.28-.78-2.95L3.37 15.4l.98-2.9-.6-2.99 2.6-1.6L7.5 5.09l3.03.28L12 1.6z" fill="#0C4A38"></path><path d="M8.2 12.3l2.6 2.6 5-5.2" fill="none" stroke="#F4F1E7" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                    {{ it.answerBy }}
+                  </span>
+                  <p style="margin: 0; font-size: 16px; line-height: 1.68; color: #33453C; max-width: 70ch; text-wrap: pretty;">{{ it.answer }}</p>
+                  <a href="Tanya%20Jawab.dc.html" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #0C4A38; border-bottom: 1px solid #C6BFAC; align-self: flex-start;" style-hover="color: #8A6A18;">Baca jawaban lengkap</a>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ it.hasNote }}" hint-placeholder-val="{{ false }}">
+                <div style="border-left: 2px solid #C0392B; background: #F8ECE9; padding: clamp(16px, 2.5vw, 22px); display: flex; flex-direction: column; gap: 10px;">
+                  <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: #A2452E;">Catatan moderator</span>
+                  <p style="margin: 0; font-size: 16px; line-height: 1.68; color: #6B4034; max-width: 70ch; text-wrap: pretty;">{{ it.note }}</p>
+                  <a href="#" onClick="{{ it.revise }}" style="font-family: 'IBM Plex Mono', monospace; font-size: 10.5px; letter-spacing: .14em; text-transform: uppercase; color: #0C4A38; border: 1px solid #C6BFAC; padding: 11px 16px; align-self: flex-start;" style-hover="background: #F2EEE2;">Perbaiki pertanyaan</a>
+                </div>
+              </sc-if>
+            </div>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+
+    <sc-if value="{{ myEmpty }}" hint-placeholder-val="{{ false }}">
+      <div style="margin-top: 24px; border: 1px dashed #CFC9B8; padding: 52px 28px; text-align: center; display: flex; flex-direction: column; gap: 10px; align-items: center;">
+        <div style="font-size: 22px;">Belum ada pertanyaan pada status ini.</div>
+        <p style="margin: 0; max-width: 44ch; font-size: 16px; line-height: 1.6; color: #6B7269;">Pilih status lain, atau tulis pertanyaan baru di formulir di atas.</p>
+      </div>
+    </sc-if>
+  </section>
+
+  <footer style="background: #05271D; color: #A9C2B6;">
+    <div style="max-width: 1160px; margin: 0 auto; padding: 48px clamp(18px, 5vw, 28px) 36px; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); gap: 36px;">
+      <div style="display: flex; flex-direction: column; gap: 12px;">
+        <span style="display: flex; align-items: center; gap: 11px;">
+          <span style="width: 24px; height: 24px; background: #05271D; display: block; box-shadow: inset 0 0 0 1px #E8C96F, inset 0 0 0 3px #05271D, inset 0 0 0 4px #E8C96F;"></span>
+          <span style="font-size: 20px; color: #F7F3E8;">Sangu Umat</span>
+        </span>
+        <span style="font-size: 15px; line-height: 1.6; max-width: 32ch;">Menjembatani kearifan tradisional dengan kejelasan modern.</span>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Jelajahi</span>
+        <a href="Tanya%20Jawab.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Tanya Jawab</a>
+        <a href="Artikel.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Artikel</a>
+        <a href="Ngaji%20Bareng.dc.html" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Ngaji Bareng</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Tentang</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Dewan Ustadz</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Metode Verifikasi</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Keanggotaan</a>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 11px; font-size: 15px;">
+        <span style="font-family: 'IBM Plex Mono', monospace; font-size: 10px; letter-spacing: .16em; text-transform: uppercase; color: #8FAA9C;">Bantuan</span>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Hubungi Kami</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Kebijakan Privasi</a>
+        <a href="#" style="color: #E8DFC8;" style-hover="color: #E8C96F;">Syarat Layanan</a>
+      </div>
+    </div>
+    <div style="border-top: 1px solid #0C4A38;">
+      <div style="max-width: 1160px; margin: 0 auto; padding: 20px clamp(18px, 5vw, 28px); font-family: 'IBM Plex Mono', monospace; font-size: 11px; letter-spacing: .1em; color: #8FAA9C;">Sangu Umat © 2026</div>
+    </div>
+  </footer>
+  </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;loginState&quot;: { &quot;editor&quot;: &quot;enum&quot;, &quot;options&quot;: [&quot;Sudah masuk&quot;, &quot;Belum masuk&quot;], &quot;default&quot;: &quot;Sudah masuk&quot;, &quot;tsType&quot;: &quot;string&quot;, &quot;section&quot;: &quot;Sesi&quot; }
+}">
+const NAV = [
+  ["Beranda", "Sangu%20Umat.dc.html"], ["Tanya Jawab", "Tanya%20Jawab.dc.html"],
+  ["Artikel", "Artikel.dc.html"], ["Ngaji Bareng", "Ngaji%20Bareng.dc.html"]
+];
+
+const CATS = ["Sholat", "Puasa", "Zakat", "Thaharah", "Keluarga & Pernikahan", "Keuangan & Muamalah", "Makanan & Minuman", "Haji & Umrah", "Akhlak", "Aqidah", "Jenazah", "Isu Kontemporer"];
+const USTADZ = ["Ustadz Abdul Hakim", "Ustadz Faiz Rahman", "Ustadzah Nur Aisyah", "Ustadz Zainal Muttaqin"];
+
+const TIPS = [
+  "Satu pertanyaan untuk satu masalah. Pertanyaan bercabang lebih lama ditinjau.",
+  "Sebutkan konteksnya: pekerjaan, kondisi kesehatan, atau kebiasaan setempat yang relevan.",
+  "Cek dulu di Tanya Jawab. Bila sudah pernah dijawab, pertanyaan akan diarahkan ke jawaban lama."
+];
+
+const FLOW = [
+  { n: "01", label: "Tinjauan redaksi", meta: "1 hari kerja" },
+  { n: "02", label: "Penugasan ustadz", meta: "sesuai bidang keahlian" },
+  { n: "03", label: "Penulisan jawaban", meta: "2–4 hari kerja" },
+  { n: "04", label: "Terbit & notifikasi", meta: "lewat WhatsApp" }
+];
+
+const STATUS = {
+  menunggu: { label: "Menunggu tinjauan", bg: "#F0E4BE", fg: "#7A5E12", bd: "#DCC98C" },
+  proses: { label: "Sedang dijawab", bg: "#E2EDE6", fg: "#0C4A38", bd: "#B9D2C4" },
+  dijawab: { label: "Sudah dijawab", bg: "#0C4A38", fg: "#F7F3E8", bd: "#0C4A38" },
+  revisi: { label: "Perlu diperbaiki", bg: "#F8ECE9", fg: "#A2452E", bd: "#E2BCAE" }
+};
+
+const MINE = [
+  {
+    id: "TJ-2418", status: "proses", cat: "Keuangan & Muamalah", days: 3,
+    title: "Bagaimana hukum bonus akhir tahun yang dihitung dari bunga deposito perusahaan?",
+    body: "Perusahaan tempat saya bekerja menyimpan dana operasional di deposito bank konvensional. Sebagian bunganya dibagikan sebagai bonus akhir tahun kepada karyawan. Saya tidak ikut menentukan kebijakan itu. Apakah bonus tersebut boleh saya terima, dan bila tidak, apa yang sebaiknya saya lakukan?",
+    assignee: "Ustadz Faiz Rahman", hint: "Ditugaskan ke Ustadz Faiz Rahman · perkiraan selesai 2 hari lagi"
+  },
+  {
+    id: "TJ-2402", status: "menunggu", cat: "Sholat", days: 5,
+    title: "Sahkah sholat jamak ketika perjalanan dinas hanya sehari pulang pergi?",
+    body: "Saya sering dinas ke kota lain berjarak sekitar 120 km, berangkat pagi dan pulang malam di hari yang sama. Apakah perjalanan seperti ini termasuk safar yang membolehkan jamak dan qashar?",
+    hint: "Antrean tinjauan · 4 pertanyaan di depan"
+  },
+  {
+    id: "TJ-2377", status: "dijawab", cat: "Zakat", days: 18,
+    title: "Apakah zakat penghasilan dihitung dari gaji bruto atau setelah cicilan rumah?",
+    body: "Gaji bulanan saya di atas nisab, tetapi hampir sepertiganya habis untuk cicilan rumah. Apakah cicilan itu boleh dikurangkan lebih dulu sebelum menghitung zakat penghasilan?",
+    answerBy: "Dijawab Ustadzah Nur Aisyah",
+    answer: "Mayoritas lembaga zakat menghitung dari penghasilan bruto setelah dikurangi kebutuhan pokok, sementara cicilan yang jatuh tempo pada bulan berjalan boleh dikurangkan sebagai utang. Selisih pendapat ini tidak membatalkan zakat; yang penting perhitungannya konsisten setiap bulan.",
+    hint: "Terbit di Tanya Jawab · 1.204 dibaca"
+  },
+  {
+    id: "TJ-2351", status: "revisi", cat: "Keluarga & Pernikahan", days: 24,
+    title: "Beberapa pertanyaan sekaligus soal wali nikah, mahar, dan resepsi",
+    body: "Saya menanyakan tiga hal dalam satu kiriman: siapa yang berhak menjadi wali bila ayah telah wafat, berapa batas minimal mahar, dan bagaimana hukum resepsi dengan hiburan musik.",
+    note: "Mohon dipecah menjadi tiga pertanyaan terpisah agar setiap jawaban dapat dirujuk dengan jelas. Kirim ulang salah satunya lebih dulu, kuota Anda tidak berkurang.",
+    hint: "Perlu tindakan Anda · dikembalikan 2 hari lalu"
+  },
+  {
+    id: "TJ-2290", status: "dijawab", cat: "Puasa", days: 46,
+    title: "Bolehkah mengqadha puasa Ramadan pada hari Jumat saja setiap pekan?",
+    body: "Saya punya utang puasa delapan hari dan hanya sanggup mengqadha di hari Jumat karena pekerjaan. Apakah mengkhususkan puasa di hari Jumat seperti ini dibolehkan?",
+    answerBy: "Dijawab Ustadz Abdul Hakim",
+    answer: "Larangan mengkhususkan puasa Jumat berlaku untuk puasa sunnah tanpa sebab. Qadha Ramadan adalah puasa wajib dengan sebab yang jelas, sehingga mengerjakannya pada hari Jumat tidak termasuk dalam larangan tersebut.",
+    hint: "Terbit di Tanya Jawab · 3.918 dibaca"
+  }
+];
+
+const TABS = [
+  ["semua", "Semua"], ["menunggu", "Menunggu"], ["proses", "Sedang dijawab"],
+  ["dijawab", "Dijawab"], ["revisi", "Perlu diperbaiki"]
+];
+
+const QUOTA = 5;
+const SESSION_KEY = "sanguUmat.session";
+
+function ago(days) {
+  if (days === 0) return "hari ini";
+  if (days < 7) return days + " hari lalu";
+  if (days < 30) return Math.round(days / 7) + " minggu lalu";
+  return Math.round(days / 30) + " bulan lalu";
+}
+
+class Component extends DCLogic {
+  state = {
+    auth: null, narrow: false, menuOpen: false,
+    cat: "", ustadz: "", title: "", body: "", anon: false, publish: true,
+    error: "", sending: false, sent: false, ticket: "",
+    tab: "semua", open: null, extra: []
+  };
+
+  componentDidMount() {
+    this._onResize = () => {
+      const narrow = window.innerWidth < 940;
+      if (narrow !== this.state.narrow) this.setState({ narrow, menuOpen: false });
+    };
+    this._onResize();
+    window.addEventListener("resize", this._onResize);
+
+    const mode = this.props.loginState ?? "Sudah masuk";
+    let auth = null;
+    try { auth = JSON.parse(localStorage.getItem(SESSION_KEY) || "null"); } catch (e) { auth = null; }
+    if (mode === "Sudah masuk") auth = auth || { name: "Rifqi Maulana" };
+    if (mode === "Belum masuk") auth = null;
+
+    this.setState({ auth: auth || false });
+    if (!auth) {
+      this._redir = setTimeout(() => {
+        location.href = "Masuk.dc.html?next=" + encodeURIComponent("Ajukan Pertanyaan.dc.html");
+      }, 1400);
+    }
+  }
+
+  componentWillUnmount() {
+    window.removeEventListener("resize", this._onResize);
+    clearTimeout(this._redir);
+  }
+
+  badge(key) {
+    const s = STATUS[key];
+    return {
+      background: s.bg, color: s.fg, border: "1px solid " + s.bd,
+      padding: "5px 9px", letterSpacing: ".12em"
+    };
+  }
+
+  steps(item) {
+    const order = ["menunggu", "proses", "dijawab"];
+    const labels = [
+      ["Diajukan", ago(item.days)],
+      ["Ditinjau", item.status === "menunggu" ? "dalam antrean" : "selesai"],
+      ["Dijawab", item.status === "dijawab" ? "terbit" : (item.status === "proses" ? "sedang ditulis" : "menunggu")]
+    ];
+    const reached = item.status === "revisi" ? 1 : order.indexOf(item.status) + 1;
+    const out = labels.map((l, i) => {
+      const on = i < reached;
+      return {
+        label: l[0], meta: l[1],
+        style: {
+          display: "flex", alignItems: "flex-start", gap: "9px", paddingRight: "26px",
+          color: on ? "#17201C" : "#9B958A"
+        },
+        dotStyle: {
+          flex: "0 0 auto", width: "9px", height: "9px", marginTop: "3px",
+          background: on ? "#0C4A38" : "transparent",
+          border: "1px solid " + (on ? "#0C4A38" : "#C6BFAC")
+        }
+      };
+    });
+    if (item.status === "revisi") {
+      out.push({
+        label: "Dikembalikan", meta: "perlu perbaikan",
+        style: { display: "flex", alignItems: "flex-start", gap: "9px", paddingRight: "26px", color: "#A2452E" },
+        dotStyle: { flex: "0 0 auto", width: "9px", height: "9px", marginTop: "3px", background: "#C0392B", border: "1px solid #C0392B" }
+      });
+    }
+    return out;
+  }
+
+  field(invalid) {
+    return {
+      width: "100%", border: "1px solid " + (invalid ? "#C0392B" : "#C6BFAC"),
+      background: "#FFFDF7", outline: "none", padding: "0 16px", height: "56px",
+      fontSize: "17px", color: "#17201C"
+    };
+  }
+
+  checkRow() {
+    return {
+      display: "flex", alignItems: "flex-start", gap: "12px", cursor: "pointer",
+      background: "transparent", border: "1px solid #E3DECF", padding: "14px 16px",
+      color: "#17201C", textAlign: "left"
+    };
+  }
+
+  checkBox(on) {
+    return {
+      flex: "0 0 auto", width: "18px", height: "18px", marginTop: "2px",
+      display: "flex", alignItems: "center", justifyContent: "center",
+      border: "1px solid " + (on ? "#0C4A38" : "#C6BFAC"),
+      background: on ? "#0C4A38" : "transparent",
+      color: "#F7F3E8", fontSize: "11px", lineHeight: 1
+    };
+  }
+
+  doSubmit() {
+    const s = this.state;
+    if (!s.cat) return this.setState({ error: "Pilih kategori terlebih dahulu." });
+    if (s.title.trim().length < 12) return this.setState({ error: "Inti pertanyaan minimal 12 karakter agar bisa ditinjau." });
+    if (s.body.trim().length < 40) return this.setState({ error: "Uraian minimal 40 karakter. Jelaskan situasinya sedikit lebih rinci." });
+    this.setState({ sending: true, error: "" });
+    setTimeout(() => {
+      const ticket = "TJ-" + (2419 + this.state.extra.length);
+      this.setState(st => ({
+        sending: false, sent: true, ticket,
+        extra: [{
+          id: ticket, status: "menunggu", cat: st.cat, days: 0,
+          title: st.title.trim(), body: st.body.trim(),
+          hint: "Baru dikirim · antrean tinjauan"
+        }].concat(st.extra),
+        tab: "semua"
+      }));
+    }, 700);
+  }
+
+  renderVals() {
+    const s = this.state;
+    const narrow = s.narrow;
+    const all = s.extra.concat(MINE);
+    const counts = { semua: all.length };
+    all.forEach(it => { counts[it.status] = (counts[it.status] || 0) + 1; });
+    const list = s.tab === "semua" ? all : all.filter(it => it.status === s.tab);
+    const used = Math.min(QUOTA, 2 + s.extra.length);
+
+    return {
+      gated: s.auth === false,
+      allowed: s.auth === null || !!s.auth,
+      userName: (s.auth && s.auth.name) || "Rifqi Maulana",
+      initial: (((s.auth && s.auth.name) || "Rifqi Maulana").trim()[0] || "R").toUpperCase(),
+      signOut: e => {
+        e.preventDefault();
+        try { localStorage.removeItem(SESSION_KEY); } catch (err) {}
+        location.href = "Masuk.dc.html?next=" + encodeURIComponent("Ajukan Pertanyaan.dc.html");
+      },
+
+      narrow, wide: !narrow,
+      menuOpen: narrow && s.menuOpen,
+      burgerLabel: s.menuOpen ? "\u2715" : "\u2261",
+      toggleMenu: e => { e.preventDefault(); this.setState(st => ({ menuOpen: !st.menuOpen })); },
+      navItems: NAV.map(([label, href]) => ({
+        label, href,
+        style: {
+          display: "block", padding: "14px 0", fontSize: "13px", letterSpacing: ".13em",
+          textTransform: "uppercase", fontFamily: "'IBM Plex Mono', monospace",
+          color: "#6B7269", borderBottom: "1px solid #E9E4D6"
+        },
+        pick: () => this.setState({ menuOpen: false })
+      })),
+
+      layoutStyle: narrow
+        ? { display: "flex", flexDirection: "column", gap: "40px" }
+        : { display: "grid", gridTemplateColumns: "minmax(0, 1fr) 280px", gap: "clamp(36px, 5vw, 64px)", alignItems: "start" },
+      asideStyle: narrow
+        ? { display: "flex", flexDirection: "column" }
+        : { display: "flex", flexDirection: "column", position: "sticky", top: "88px" },
+
+      tips: TIPS,
+      flow: FLOW,
+      quotaText: used + " / " + QUOTA,
+      quotaLeft: QUOTA - used,
+
+      cats: CATS,
+      ustadzList: USTADZ,
+      cat: s.cat,
+      ustadz: s.ustadz,
+      onCat: e => this.setState({ cat: e.target.value, error: "" }),
+      onUstadz: e => this.setState({ ustadz: e.target.value }),
+      catStyle: Object.assign(this.field(!!s.error && !s.cat), { cursor: "pointer", padding: "0 12px" }),
+      selectStyle: Object.assign(this.field(false), { cursor: "pointer", padding: "0 12px" }),
+
+      title: s.title,
+      onTitle: e => this.setState({ title: e.target.value.slice(0, 140), error: "" }),
+      titleStyle: this.field(!!s.error && s.title.trim().length < 12),
+      titleCount: s.title.length + "/140",
+
+      body: s.body,
+      onBody: e => this.setState({ body: e.target.value.slice(0, 1500), error: "" }),
+      bodyStyle: {
+        width: "100%", border: "1px solid " + (s.error && s.body.trim().length < 40 ? "#C0392B" : "#C6BFAC"),
+        background: "#FFFDF7", outline: "none", padding: "16px", fontSize: "17px",
+        lineHeight: 1.6, color: "#17201C", resize: "vertical", minHeight: "180px"
+      },
+      bodyCount: s.body.length + "/1500",
+
+      anonMark: s.anon ? "\u2713" : "",
+      anonBoxStyle: this.checkBox(s.anon),
+      anonRowStyle: this.checkRow(),
+      toggleAnon: e => { e.preventDefault(); this.setState(st => ({ anon: !st.anon })); },
+      pubMark: s.publish ? "\u2713" : "",
+      pubBoxStyle: this.checkBox(s.publish),
+      pubRowStyle: this.checkRow(),
+      togglePublish: e => { e.preventDefault(); this.setState(st => ({ publish: !st.publish })); },
+
+      hasError: !!s.error,
+      errorText: s.error,
+      composing: !s.sent,
+      sent: s.sent,
+      ticket: s.ticket,
+      draftMeta: s.sent ? "Terkirim" : "Draf tersimpan otomatis",
+      submitLabel: s.sending ? "Mengirim…" : "Kirim pertanyaan",
+      submitStyle: {
+        cursor: s.sending ? "default" : "pointer", minHeight: "56px", padding: "16px 26px",
+        border: "1px solid #0C4A38", background: s.sending ? "#33604F" : "#0C4A38", color: "#F7F3E8",
+        fontFamily: "'IBM Plex Mono', monospace", fontSize: "11px", letterSpacing: ".16em", textTransform: "uppercase"
+      },
+      submit: e => { e.preventDefault(); if (!s.sending) this.doSubmit(); },
+      askAgain: e => {
+        e.preventDefault();
+        this.setState({ sent: false, cat: "", ustadz: "", title: "", body: "", error: "", ticket: "" });
+      },
+
+      myMeta: all.length + " pertanyaan · " + (counts.dijawab || 0) + " sudah dijawab",
+      tabs: TABS.map(([key, label]) => ({
+        label, count: counts[key] || 0,
+        style: {
+          cursor: "pointer", padding: "10px 14px",
+          border: "1px solid " + (s.tab === key ? "#0C4A38" : "#C6BFAC"),
+          background: s.tab === key ? "#0C4A38" : "transparent",
+          color: s.tab === key ? "#F7F3E8" : "#17201C",
+          fontFamily: "'IBM Plex Mono', monospace", fontSize: "10.5px",
+          letterSpacing: ".13em", textTransform: "uppercase"
+        },
+        pick: e => { e.preventDefault(); this.setState({ tab: key, open: null }); }
+      })),
+      myEmpty: list.length === 0,
+      myList: list.map(it => ({
+        id: it.id, cat: it.cat, title: it.title, body: it.body, hint: it.hint,
+        date: ago(it.days),
+        statusLabel: STATUS[it.status].label,
+        badgeStyle: this.badge(it.status),
+        open: s.open === it.id,
+        chev: s.open === it.id ? "\u2212" : "+",
+        toggle: e => { e.preventDefault(); this.setState(st => ({ open: st.open === it.id ? null : it.id })); },
+        rowStyle: {
+          display: "flex", flexDirection: "column", gap: "11px", cursor: "pointer",
+          background: "transparent", border: 0, borderLeft: "2px solid " + (s.open === it.id ? "#B08A2E" : "transparent"),
+          padding: "clamp(18px, 3vw, 24px) clamp(12px, 3vw, 18px)", textAlign: "left", width: "100%"
+        },
+        steps: this.steps(it),
+        hasAnswer: !!it.answer,
+        answer: it.answer,
+        answerBy: it.answerBy,
+        hasNote: !!it.note,
+        note: it.note,
+        revise: e => {
+          e.preventDefault();
+          this.setState({ sent: false, cat: it.cat, title: it.title, body: it.body, error: "", open: null });
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+      }))
+    };
+  }
+}
+
+</script>
+</body>
+</html>

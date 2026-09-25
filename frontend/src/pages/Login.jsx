@@ -1,11 +1,13 @@
+import { API_URL } from "../lib/api";
+
 function Login() {
   const loginGoogle = () => {
-    window.location.href = "http://localhost:5236/api/auth/login";
+    window.location.href = `${API_URL}/api/auth/login`;
   };
 
   return (
     <main className="min-h-screen flex items-center justify-center relative overflow-hidden">
-      <div className="max-w-md bg-surface-container-lowest rounded-xl shadow border border-outline-variant/30 overflow-hidden flex flex-col">
+      <div className="max-w-xs md:max-w-md bg-surface-container-lowest rounded-xl shadow border border-outline-variant/30 overflow-hidden flex flex-col">
         <div className="relative h-48 bg-surface-container w-full flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0">
             <img
