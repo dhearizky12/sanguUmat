@@ -13,22 +13,22 @@
 
 ## 2. Build the shared primitives
 
-- [ ] 2.1 `SectionHeading` — the title, right-hand mono meta, and rule beneath,
+- [x] 2.1 `SectionHeading` — the title, right-hand mono meta, and rule beneath,
       repeated in every canvas section.
-- [ ] 2.2 `MonoLabel` — the uppercase IBM Plex Mono label, replacing the
+- [x] 2.2 `MonoLabel` — the uppercase IBM Plex Mono label, replacing the
       `label-mono` utility at its call sites.
 - [x] 2.3 `LogoMark` — the real logo (`public/logo.png`) in place of the
       canvases' inset-shadow square, with a forest tone and a light tone for
       dark backgrounds, replacing the two long arbitrary-value strings in
       `Header` and `Footer`.
-- [ ] 2.4 `PlaceholderTexture` — the diagonal repeating gradient used for
+- [x] 2.4 `PlaceholderTexture` — the diagonal repeating gradient used for
       missing images and video, replacing the four copies.
-- [ ] 2.5 `AutoGrid` — the `repeat(auto-fit, minmax(min(Npx, 100%), 1fr))` grid,
+- [x] 2.5 `AutoGrid` — the `repeat(auto-fit, minmax(min(Npx, 100%), 1fr))` grid,
       replacing all four inline `style={{ gridTemplateColumns }}` uses.
-- [ ] 2.6 `Breadcrumb` — the "Beranda / …" trail on every inner canvas.
-- [ ] 2.7 `VerifiedBadge` — the ustadz check mark from the home and Tanya Jawab
+- [x] 2.6 `Breadcrumb` — the "Beranda / …" trail on every inner canvas.
+- [x] 2.7 `VerifiedBadge` — the ustadz check mark from the home and Tanya Jawab
       canvases.
-- [ ] 2.8 Verify no inline `style={{` remains in the frontend source.
+- [x] 2.8 Verify no inline `style={{` remains in the frontend source.
 
 ## 3. Convert the shared components
 

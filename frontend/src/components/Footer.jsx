@@ -1,5 +1,7 @@
 import { NavLink } from "react-router-dom";
 import LogoMark from "./LogoMark";
+import MonoLabel from "./MonoLabel";
+import AutoGrid from "./AutoGrid";
 
 const EXPLORE_LINKS = [
   { label: "Tanya Jawab", to: "/questions" },
@@ -22,7 +24,7 @@ const HELP_LINKS = [
 function FooterColumn({ title, links }) {
   return (
     <div className="flex flex-col gap-2.5 text-[15px]">
-      <span className="label-mono text-[10px] text-sage-dark">{title}</span>
+      <MonoLabel size="sm" className="text-sage-dark">{title}</MonoLabel>
       {links.map((link) => (
         <NavLink key={link.label} to={link.to} className="text-cream-link hover:text-gold transition-colors">
           {link.label}
@@ -35,10 +37,7 @@ function FooterColumn({ title, links }) {
 function Footer() {
   return (
     <footer className="bg-forest-darker text-sage mt-auto">
-      <div
-        className="max-w-container-max mx-auto px-page py-12 grid gap-9"
-        style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(200px, 100%), 1fr))" }}
-      >
+      <AutoGrid min={200} className="max-w-container-max mx-auto px-page py-12 gap-9">
         <div className="flex flex-col gap-3">
           <span className="flex items-center gap-2.5">
             <LogoMark tone="light" />
@@ -50,9 +49,9 @@ function Footer() {
         <FooterColumn title="Jelajahi" links={EXPLORE_LINKS} />
         <FooterColumn title="Tentang" links={ABOUT_LINKS} />
         <FooterColumn title="Bantuan" links={HELP_LINKS} />
-      </div>
+      </AutoGrid>
       <div className="border-t border-forest">
-        <div className="max-w-container-max mx-auto px-page py-5 label-mono text-sage-dark">Sangu Umat &copy; 2026</div>
+        <MonoLabel as="div" className="max-w-container-max mx-auto px-page py-5 text-sage-dark">Sangu Umat &copy; 2026</MonoLabel>
       </div>
     </footer>
   );

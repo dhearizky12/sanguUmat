@@ -4,6 +4,7 @@ import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 import LogoMark from "./LogoMark";
+import MonoLabel from "./MonoLabel";
 
 const NAV_ITEMS = [
   { label: "Beranda", to: "/", matchPaths: ["/"] },
@@ -61,7 +62,7 @@ function Header() {
           <span className="font-serif text-xl font-medium tracking-tight text-forest">Sangu Umat</span>
         </Link>
 
-        <nav className="hidden md:flex items-center justify-center gap-6 flex-1 label-mono">
+        <MonoLabel as="nav" className="hidden md:flex items-center justify-center gap-6 flex-1">
           {NAV_ITEMS.map((item) => {
             const active = isMenuActive(location.pathname, item.matchPaths);
             return (
@@ -76,22 +77,24 @@ function Header() {
               </NavLink>
             );
           })}
-        </nav>
+        </MonoLabel>
 
         <div className="hidden md:flex items-center flex-wrap gap-4">
           {isAuthenticated && me?.role === "User" && (
-            <Link
+            <MonoLabel
+              as={Link}
               to="/question/create"
-              className="label-mono bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
+              className="bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
             >
               Ajukan Pertanyaan
-            </Link>
+            </MonoLabel>
           )}
           {isAuthenticated && me?.role === "Guru" && (
-            <Link
+            <MonoLabel
+              as={Link}
               to="/jawab-pertanyaan"
               title={pendingAnswerCount > 0 ? `${pendingAnswerCount} pertanyaan menunggu jawaban anda` : undefined}
-              className="relative label-mono bg-gold text-forest-darker px-3.5 py-2.5 whitespace-nowrap hover:bg-cream-text transition-colors"
+              className="relative bg-gold text-forest-darker px-3.5 py-2.5 whitespace-nowrap hover:bg-cream-text transition-colors"
             >
               Jawab Pertanyaan
               {pendingAnswerCount > 0 && (
@@ -99,19 +102,20 @@ function Header() {
                   {pendingAnswerCount}
                 </span>
               )}
-            </Link>
+            </MonoLabel>
           )}
           {isAdmin && (
-            <Link
+            <MonoLabel
+              as={Link}
               to="/admin/users"
-              className={`label-mono border px-3.5 py-2.5 whitespace-nowrap transition-colors ${
+              className={`border px-3.5 py-2.5 whitespace-nowrap transition-colors ${
                 isMenuActive(location.pathname, ["/admin"])
                   ? "border-forest text-forest bg-cream-hover"
                   : "border-stone-border text-ink-muted hover:bg-cream-hover"
               }`}
             >
               Panel Admin
-            </Link>
+            </MonoLabel>
           )}
           {isAuthenticated ? (
             <Link to="/profile" className="shrink-0">
@@ -125,15 +129,16 @@ function Header() {
             </Link>
           ) : (
             <>
-              <Link to="/login" className="label-mono text-ink-muted hover:text-ink transition-colors">
+              <MonoLabel as={Link} to="/login" className="text-ink-muted hover:text-ink transition-colors">
                 Masuk
-              </Link>
-              <Link
+              </MonoLabel>
+              <MonoLabel
+                as={Link}
                 to="/question/create"
-                className="label-mono bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
+                className="bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
               >
                 Ajukan Pertanyaan
-              </Link>
+              </MonoLabel>
             </>
           )}
         </div>
@@ -154,62 +159,68 @@ function Header() {
             {NAV_ITEMS.map((item) => {
               const active = isMenuActive(location.pathname, item.matchPaths);
               return (
-                <NavLink
+                <MonoLabel
+                  as={NavLink}
                   key={item.to}
                   to={item.to}
                   onClick={() => setMenuOpen(false)}
-                  className={`label-mono py-3.5 border-b border-stone-line-soft ${active ? "text-forest" : "text-ink-muted"}`}
+                  className={`py-3.5 border-b border-stone-line-soft ${active ? "text-forest" : "text-ink-muted"}`}
                 >
                   {item.label}
-                </NavLink>
+                </MonoLabel>
               );
             })}
 
             {isAuthenticated && me?.role === "Guru" && (
-              <Link
+              <MonoLabel
+                as={Link}
                 to="/jawab-pertanyaan"
                 onClick={() => setMenuOpen(false)}
-                className="label-mono py-3.5 border-b border-stone-line-soft text-forest"
+                className="py-3.5 border-b border-stone-line-soft text-forest"
               >
                 Jawab Pertanyaan
                 {pendingAnswerCount > 0 ? ` (${pendingAnswerCount})` : ""}
-              </Link>
+              </MonoLabel>
             )}
             {isAdmin && (
-              <Link
+              <MonoLabel
+                as={Link}
                 to="/admin/users"
                 onClick={() => setMenuOpen(false)}
-                className="label-mono py-3.5 border-b border-stone-line-soft text-forest"
+                className="py-3.5 border-b border-stone-line-soft text-forest"
               >
                 Panel Admin
-              </Link>
+              </MonoLabel>
             )}
 
             <div className="flex flex-wrap gap-3 pt-5">
               {isAuthenticated ? (
-                <Link
+                <MonoLabel
+                  as={Link}
                   to="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="flex-1 min-w-[120px] text-center label-mono border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
+                  className="flex-1 min-w-[120px] text-center border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
                 >
                   Profil Saya
-                </Link>
+                </MonoLabel>
               ) : (
                 <>
-                  <Link
+                  <MonoLabel
+                    as={Link}
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 min-w-[120px] text-center label-mono border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
+                    className="flex-1 min-w-[120px] text-center border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
                   >
                     Masuk
-                  </Link>
-                  <Link
+                  </MonoLabel>
+                  <MonoLabel
+                    as={Link}
                     to="/question/create"
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 min-w-[160px] text-center label-mono bg-forest text-cream-text py-3.5 hover:bg-ink transition-colors"
+                    className="flex-1 min-w-[160px] text-center bg-forest text-cream-text py-3.5 hover:bg-ink transition-colors"
                   >
                     Ajukan Pertanyaan
-                  </Link>
+                  </MonoLabel>
                 </>
               )}
             </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import MonoLabel from "../MonoLabel";
 
 // Topics cycled through the search placeholder via a typewriter effect, so the copy itself
 // demonstrates the site covers more than just Fiqh.
@@ -53,7 +54,7 @@ function HeroSearch({ answeredCount }) {
   return (
     <section className="relative girih-pattern-gold border-b border-forest-darker">
       <div className="max-w-container-max mx-auto px-page py-16 md:py-24 flex flex-col items-center text-center gap-6">
-        <div className="label-mono tracking-[0.2em] text-gold-muted">Tanya Jawab Islam &middot; Terverifikasi Ustadz</div>
+        <MonoLabel as="div" className="tracking-[0.2em] text-gold-muted">Tanya Jawab Islam &middot; Terverifikasi Ustadz</MonoLabel>
 
         <h1 className="font-serif font-normal text-cream-text max-w-[16ch] text-[clamp(38px,6.4vw,68px)] leading-[1.04] tracking-tight text-balance">
           Temukan kejelasan dalam <em className="italic text-gold">setiap pertanyaan</em> tentang Islam.
@@ -74,16 +75,17 @@ function HeroSearch({ answeredCount }) {
             placeholder={placeholder}
             className="flex-1 min-w-[200px] border-0 outline-none bg-transparent px-4 md:px-5 h-[54px] md:h-[62px] text-base md:text-lg text-ink"
           />
-          <button
+          <MonoLabel
+            as="button"
             type="submit"
-            className="shrink-0 label-mono bg-forest text-cream-text px-5 md:px-6 hover:bg-ink transition-colors"
+            className="shrink-0 bg-forest text-cream-text px-5 md:px-6 hover:bg-ink transition-colors"
           >
             Cari
-          </button>
+          </MonoLabel>
         </form>
 
         <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-2">
-          <span className="label-mono text-sage-dim">Sering dicari</span>
+          <MonoLabel className="text-sage-dim">Sering dicari</MonoLabel>
           {SUGGESTIONS.map((label) => (
             <button
               key={label}
@@ -97,7 +99,7 @@ function HeroSearch({ answeredCount }) {
         </div>
 
         {answeredCount > 0 && (
-          <div className="mt-2 label-mono text-sage-dark">{answeredCount} jawaban terverifikasi &nbsp;/&nbsp; diperbarui hari ini</div>
+          <MonoLabel as="div" className="mt-2 text-sage-dark">{answeredCount} jawaban terverifikasi &nbsp;/&nbsp; diperbarui hari ini</MonoLabel>
         )}
       </div>
     </section>

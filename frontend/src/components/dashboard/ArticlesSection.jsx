@@ -1,5 +1,9 @@
 import { NavLink } from "react-router-dom";
 import ArticleRow from "./ArticleRow";
+import MonoLabel from "../MonoLabel";
+import SectionHeading from "../SectionHeading";
+import AutoGrid from "../AutoGrid";
+import PlaceholderTexture from "../PlaceholderTexture";
 
 // Static preview content — the Articles feature has no backend yet, same as the rest of
 // the current dashboard's article cards. Replace with real fetched data once it exists.
@@ -34,20 +38,17 @@ const ARTICLES = [
 function ArticlesSection() {
   return (
     <section id="artikel" className="max-w-container-max mx-auto px-page py-10 md:py-16">
-      <div className="flex items-baseline justify-between gap-5 flex-wrap border-b border-ink pb-3 mb-10">
-        <h2 className="font-serif text-2xl md:text-[32px] font-normal tracking-tight text-ink">Artikel Pilihan</h2>
-        <span className="label-mono text-ink-muted">Pembahasan mendalam</span>
-      </div>
+      <SectionHeading title="Artikel Pilihan" meta="Pembahasan mendalam" className="mb-10" />
 
-      <div className="grid gap-11 items-start" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(min(300px, 100%), 1fr))" }}>
+      <AutoGrid min={300} className="gap-11 items-start">
         <NavLink to="/detail-article/0" className="flex flex-col gap-4">
-          <span className="aspect-[3/2] w-full bg-parchment border border-stone-line flex items-center justify-center label-mono text-ink-faint [background-image:repeating-linear-gradient(135deg,rgba(23,32,28,.05)_0_9px,transparent_9px_18px)]">
-            foto artikel utama
-          </span>
+          <PlaceholderTexture className="aspect-[3/2] w-full flex items-center justify-center">
+            <MonoLabel className="text-ink-faint">foto artikel utama</MonoLabel>
+          </PlaceholderTexture>
           <span className="flex flex-col gap-2.5">
-            <span className="label-mono text-forest">
+            <MonoLabel className="text-forest">
               {FEATURED_ARTICLE.category} &middot; {FEATURED_ARTICLE.readTime}
-            </span>
+            </MonoLabel>
             <span className="font-serif text-2xl md:text-[31px] leading-tight tracking-tight text-ink max-w-[22ch]">
               {FEATURED_ARTICLE.title}
             </span>
@@ -60,7 +61,7 @@ function ArticlesSection() {
             <ArticleRow key={article.title} slug={i} article={article} />
           ))}
         </div>
-      </div>
+      </AutoGrid>
     </section>
   );
 }
