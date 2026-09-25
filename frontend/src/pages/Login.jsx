@@ -39,76 +39,83 @@ function Login() {
         </div>
       </header>
 
-      <AutoGrid as="main" min={420} className="flex-1">
-        <section className="flex items-center justify-center py-[clamp(32px,6vw,72px)] px-page">
-          <div className="w-full max-w-[420px] flex flex-col gap-[clamp(22px,3vw,30px)]">
-            <div className="flex flex-col gap-2.5">
-              <MonoLabel as="div" size="sm" className="tracking-[0.16em] text-gold-dark">
-                Masuk
-              </MonoLabel>
-              <h1 className="text-[clamp(30px,4vw,40px)] leading-[1.1] font-normal tracking-[-0.02em]">Selamat datang di Sangu Umat</h1>
-              <p className="text-base leading-relaxed text-ink-soft max-w-[42ch] text-pretty">
-                Masuk dengan akun Google Anda untuk melanjutkan.
-              </p>
-            </div>
+      <div className="relative flex-1 flex">
+        {/* Carries the green panel's background to the window's right edge once the two
+            panels sit side by side (two 420px columns plus the page gutter = 896px). The
+            container is centred, so its midline and the window's midline coincide. */}
+        <div aria-hidden="true" className="hidden min-[896px]:block absolute inset-y-0 left-1/2 right-0 girih-pattern-gold-soft" />
 
-            <div className="flex flex-col gap-[22px]">
-              <button
-                type="button"
-                onClick={loginGoogle}
-                className="flex items-center justify-center gap-3 cursor-pointer w-full min-h-14 px-[18px] py-3.5 bg-paper border border-stone-border text-ink text-[17px] hover:bg-cream-hover transition-colors"
-              >
-                <GoogleMark />
-                Lanjut dengan Google
-              </button>
-
-              <div className="flex items-start gap-[9px] font-mono text-mono-label-sm leading-[1.7] tracking-[0.06em] text-ink-faint">
-                <span aria-hidden="true" className="shrink-0 size-[7px] mt-1.5 bg-gold-deep" />
-                <span className="flex-1">Belum punya akun? Akun otomatis dibuat saat Anda masuk pertama kali.</span>
+        <AutoGrid as="main" min={420} className="relative flex-1 w-full max-w-container-max mx-auto px-page">
+          <section className="flex items-center py-[clamp(32px,6vw,72px)] md:pr-page">
+            <div className="w-full max-w-[420px] flex flex-col gap-[clamp(22px,3vw,30px)]">
+              <div className="flex flex-col gap-2.5">
+                <MonoLabel as="div" size="sm" className="tracking-[0.16em] text-gold-dark">
+                  Masuk
+                </MonoLabel>
+                <h1 className="text-[clamp(30px,4vw,40px)] leading-[1.1] font-normal tracking-[-0.02em]">Selamat datang di Sangu Umat</h1>
+                <p className="text-base leading-relaxed text-ink-soft max-w-[42ch] text-pretty">
+                  Masuk dengan akun Google Anda untuk melanjutkan.
+                </p>
               </div>
-
-              <p className="text-sm leading-[1.65] text-ink-faint max-w-[44ch]">
-                Dengan melanjutkan, Anda menyetujui{" "}
-                <a href="#" className="text-forest hover:text-gold-dark transition-colors">
-                  Syarat Layanan
-                </a>{" "}
-                dan{" "}
-                <a href="#" className="text-forest hover:text-gold-dark transition-colors">
-                  Kebijakan Privasi
-                </a>{" "}
-                Sangu Umat.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <aside className="girih-pattern-gold-soft flex items-center">
-          <div className="w-full max-w-[460px] mx-auto py-[clamp(40px,7vw,84px)] px-[clamp(22px,5vw,40px)] flex flex-col gap-[clamp(22px,3vw,32px)]">
-            <h2 className="text-[clamp(24px,3vw,33px)] font-normal leading-[1.24] tracking-[-0.015em] text-cream-text max-w-[26ch] text-pretty">
-              Satu akun untuk tanya jawab, artikel, dan ngaji bareng.
-            </h2>
-            <div className="flex flex-col">
-              {PERKS.map((perk) => (
-                <div key={perk.tag} className="flex gap-3.5 py-[18px] border-t border-forest-line">
-                  <span aria-hidden="true" className="shrink-0 size-[9px] mt-[7px] bg-gold" />
-                  <span className="flex-1 min-w-0 flex flex-col gap-[5px]">
-                    <MonoLabel size="sm" className="tracking-[0.14em] text-gold">
-                      {perk.tag}
-                    </MonoLabel>
-                    <span className="text-base leading-relaxed text-sage">{perk.text}</span>
-                  </span>
+  
+              <div className="flex flex-col gap-[22px]">
+                <button
+                  type="button"
+                  onClick={loginGoogle}
+                  className="flex items-center justify-center gap-3 cursor-pointer w-full min-h-14 px-[18px] py-3.5 bg-paper border border-stone-border text-ink text-[17px] hover:bg-cream-hover transition-colors"
+                >
+                  <GoogleMark />
+                  Lanjut dengan Google
+                </button>
+  
+                <div className="flex items-start gap-[9px] font-mono text-mono-label-sm leading-[1.7] tracking-[0.06em] text-ink-faint">
+                  <span aria-hidden="true" className="shrink-0 size-[7px] mt-1.5 bg-gold-deep" />
+                  <span className="flex-1">Belum punya akun? Akun otomatis dibuat saat Anda masuk pertama kali.</span>
                 </div>
-              ))}
+  
+                <p className="text-sm leading-[1.65] text-ink-faint max-w-[44ch]">
+                  Dengan melanjutkan, Anda menyetujui{" "}
+                  <a href="#" className="text-forest hover:text-gold-dark transition-colors">
+                    Syarat Layanan
+                  </a>{" "}
+                  dan{" "}
+                  <a href="#" className="text-forest hover:text-gold-dark transition-colors">
+                    Kebijakan Privasi
+                  </a>{" "}
+                  Sangu Umat.
+                </p>
+              </div>
             </div>
-            <MonoLabel as="div" size="sm" className="text-sage-dark">
-              Butuh bantuan?{" "}
-              <a href="#" className="text-gold border-b border-forest-line">
-                Hubungi kami
-              </a>
-            </MonoLabel>
-          </div>
-        </aside>
-      </AutoGrid>
+          </section>
+  
+          <aside className="girih-pattern-gold-soft flex items-center">
+            <div className="w-full max-w-[460px] mx-auto py-[clamp(40px,7vw,84px)] px-[clamp(22px,5vw,40px)] flex flex-col gap-[clamp(22px,3vw,32px)]">
+              <h2 className="text-[clamp(24px,3vw,33px)] font-normal leading-[1.24] tracking-[-0.015em] text-cream-text max-w-[26ch] text-pretty">
+                Satu akun untuk tanya jawab, artikel, dan ngaji bareng.
+              </h2>
+              <div className="flex flex-col">
+                {PERKS.map((perk) => (
+                  <div key={perk.tag} className="flex gap-3.5 py-[18px] border-t border-forest-line">
+                    <span aria-hidden="true" className="shrink-0 size-[9px] mt-[7px] bg-gold" />
+                    <span className="flex-1 min-w-0 flex flex-col gap-[5px]">
+                      <MonoLabel size="sm" className="tracking-[0.14em] text-gold">
+                        {perk.tag}
+                      </MonoLabel>
+                      <span className="text-base leading-relaxed text-sage">{perk.text}</span>
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <MonoLabel as="div" size="sm" className="text-sage-dark">
+                Butuh bantuan?{" "}
+                <a href="#" className="text-gold border-b border-forest-line">
+                  Hubungi kami
+                </a>
+              </MonoLabel>
+            </div>
+          </aside>
+        </AutoGrid>
+      </div>
     </div>
   );
 }

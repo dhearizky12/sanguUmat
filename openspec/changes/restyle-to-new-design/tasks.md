@@ -58,7 +58,9 @@
 ## 5. Convert the account pages
 
 - [x] 5.1 Convert `Login` to the Masuk canvas, Google path only. Leave out the
-      WhatsApp OTP path and every element belonging to it.
+      WhatsApp OTP path and every element belonging to it. Both panels' content sits
+      inside the shared 1160px container so the page lines up with every other
+      page; the green panel's background still runs to the window's right edge.
 - [ ] 5.2 Convert `Profile`.
 - [ ] 5.3 Convert `EditProfile`, keeping the avatar upload and the
       profile-completion gate.
