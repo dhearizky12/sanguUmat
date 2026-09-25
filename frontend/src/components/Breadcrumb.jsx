@@ -10,7 +10,7 @@ export default function Breadcrumb({ items, className = "" }) {
     <MonoLabel
       as="nav"
       size="sm"
-      aria-label="Breadcrumb"
+      aria-label="Jejak halaman"
       className={`flex items-center flex-wrap gap-2.5 tracking-[0.16em] text-ink-faint ${className}`}
     >
       {trail.map((item, i) => {

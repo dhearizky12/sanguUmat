@@ -58,11 +58,11 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
         onUpdated({ title: editTitle, content: editContent });
         setIsEditing(false);
       } else {
-        alert("Gagal menyimpan perubahan. Fitur ini belum didukung oleh server.");
+        alert("Gagal menyimpan perubahan. Silakan coba lagi.");
       }
     } catch (err) {
       console.error(err);
-      alert("Gagal menyimpan perubahan. Fitur ini belum didukung oleh server.");
+      alert("Gagal menyimpan perubahan. Silakan coba lagi.");
     } finally {
       setSavingEdit(false);
     }

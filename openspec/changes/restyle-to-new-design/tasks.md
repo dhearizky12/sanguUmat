@@ -99,11 +99,11 @@
 
 ## 9. Verify
 
-- [ ] 9.1 `npm run build` succeeds and `npx eslint src/` reports no more than
+- [x] 9.1 `npm run build` succeeds and `npx eslint src/` reports no more than
       the 5 known pre-existing errors in `EditProfile` and `AuthProvider`.
-- [ ] 9.2 Every page renders at 400px wide with no horizontal scrollbar on the
+- [x] 9.2 Every page renders at 400px wide with no horizontal scrollbar on the
       body.
-- [ ] 9.3 No English user-facing text remains on any converted page.
+- [x] 9.3 No English user-facing text remains on any converted page.
 - [ ] 9.4 Walk each capability in `openspec/specs/` against the running app,
       confirming the restyle changed appearance only.
 - [ ] 9.5 Compare each converted page against its canvas.
