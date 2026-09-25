@@ -4,6 +4,7 @@ import MonoLabel from "../MonoLabel";
 import SectionHeading from "../SectionHeading";
 import AutoGrid from "../AutoGrid";
 import PlaceholderTexture from "../PlaceholderTexture";
+import Button from "../Button";
 
 // Static preview content — mirrors how the Articles section already ships placeholder
 // content ahead of a real backend. Swap for real session data once Ngaji Bareng is wired up.
@@ -38,13 +39,14 @@ function NgajiBarengSection() {
                 Ustadz Abdul Hakim membahas kisah dua pemilik kebun dan pelajaran tentang kesombongan harta. Pertanyaan dibuka di akhir
                 sesi.
               </p>
-              <MonoLabel
+              <Button
+                variant="gold"
                 as="a"
                 href="#"
-                className="self-start mt-2 bg-gold text-forest-darker px-[22px] py-3 hover:bg-cream-text transition-colors"
+                className="self-start mt-2 px-[22px] py-3"
               >
                 Gabung kajian
-              </MonoLabel>
+              </Button>
             </div>
           </div>
 

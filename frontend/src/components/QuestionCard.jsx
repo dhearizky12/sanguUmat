@@ -1,67 +1,45 @@
-import { NavLink } from "react-router-dom";
 import { pictureUrl } from "../lib/api";
-import { handleAvatarError } from "../lib/image";
+import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
 import { formatDate } from "../lib/date";
 import { formatCount } from "../lib/format";
+import { categoryLabel } from "../lib/category";
+import QuestionRow from "./QuestionRow";
 
-function QuestionCard({ slug, adminId, question }) {
+// A question from GET /api/question as a canvas question row. The list
+// response carries no answer text or answerer, so the byline credits the
+// asker instead of "Dijawab oleh".
+function QuestionCard({ slug, question }) {
   const isAnswered = Boolean(question.isAnswered);
 
   return (
-    <div className="bg-surface-container-lowest rounded-xl border-primary-container border p-6 flex flex-col">
-      <NavLink to={`/question/detail/${slug}`}>
-        <div className="flex items-start justify-between gap-3 mb-4 cursor-pointer">
-          <h3 className="font-title-md text-title-md text-on-surface line-clamp-2">
-            {question.title}
-          </h3>
-          <span
-            className={`shrink-0 flex items-center gap-1 font-label-sm text-[11px] font-semibold px-2 py-0.5 rounded-full ${
-              isAnswered ? "bg-secondary-container text-on-secondary-container" : "text-on-surface/50"
-            }`}
-          >
-            {isAnswered ? "Terjawab" : "Menunggu"}
-            <span className="material-symbols-outlined text-[13px]">{isAnswered ? "check_circle" : "schedule"}</span>
+    <QuestionRow
+      to={`/question/detail/${slug}`}
+      meta={
+        <>
+          {question.category && <span className="text-forest">{categoryLabel(question.category)}</span>}
+          <span className="text-ink-faint">{formatDate(question.createdAt)}</span>
+          <span className="text-ink-faint">{formatCount(question.views)} dibaca</span>
+          <span className={isAnswered ? "text-gold-dark" : "text-ink-faint"}>
+            {isAnswered ? "Terjawab" : "Menunggu jawaban"}
           </span>
-        </div>
-        <p className="font-body-md text-body-md text-on-surface-variant line-clamp-3 mb-4 grow">
-          {question.content}
-        </p>
-      </NavLink>
-      <div className="border-t border-outline-variant/20 pt-4 mt-auto flex items-center justify-between gap-3">
-        <NavLink to={`/detail-admin/${adminId}`} className="flex items-center gap-2 cursor-pointer min-w-0">
+        </>
+      }
+      title={question.title}
+      excerpt={question.content}
+      byline={
+        <>
           <img
-            alt="Foto Ustadz"
-            className="w-9 h-9 rounded-full object-cover shrink-0"
-            src={pictureUrl(question.userPicture) ?? "/default-avatar.png"}
+            alt=""
+            className="size-5 rounded-full object-cover shrink-0"
+            src={pictureUrl(question.userPicture) ?? DEFAULT_AVATAR}
             onError={handleAvatarError}
           />
-          <div className="min-w-0">
-            <p className="font-label-sm text-label-sm text-on-surface font-semibold flex items-center gap-1">
-              <span className="truncate">{question.userName}</span>
-              {
-                question.role == "Guru" &&
-                (
-                  <span className="material-symbols-outlined icon-fill text-secondary-container text-[18px] shrink-0">
-                    verified
-                </span>
-                )
-              }
-            </p>
-            <p className="text-[12px] text-outline">{formatDate(question.createdAt)}</p>
-          </div>
-        </NavLink>
-        <div className="flex items-center gap-3 text-outline shrink-0">
-          <span className="flex items-center gap-1 font-label-sm text-label-sm">
-            <span className="material-symbols-outlined text-[16px]">visibility</span>
-            {formatCount(question.views)}
-          </span>
-          <span className="flex items-center gap-1 font-label-sm text-label-sm">
-            <span className="material-symbols-outlined text-[16px]">chat_bubble_outline</span>
-            {formatCount(question.commentCount)}
-          </span>
-        </div>
-      </div>
-    </div>
+          <span>Ditanyakan oleh</span>
+          <span className="text-forest">{question.userName}</span>
+          <span className="text-ink-faint">&middot; {formatCount(question.commentCount)} komentar</span>
+        </>
+      }
+    />
   );
 }
 

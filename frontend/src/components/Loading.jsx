@@ -1,17 +1,15 @@
+import Brand from "./Brand";
+import MonoLabel from "./MonoLabel";
+
+// Full-screen loader shown while the session is being resolved.
 function Loading() {
   return (
-    <div className="h-screen flex flex-col items-center justify-center">
-      <div className="fixed inset-0 girih-pattern pointer-events-none opacity-80"></div>
-      {/* <div className="fixed inset-0 bg-linear-to-b from-primary-container/20 via-transparent to-primary-container/40 pointer-events-none"></div> */}
-      <main className="relative z-10 flex flex-col items-center text-center">
-        <div className="flex flex-col items-center gap-2">
-          <span className="text-title-md font-bold text-primary-container">Sangu Umat</span>
-          <p className="">Mencari hikmah untuk perjalanan anda...</p>
-          <div className="mt-4 w-64 h-1 bg-secondary-container rounded-full overflow-hidden relative">
-            <div className="absolute h-full bg-gold rounded-full progress-animation bg-surface-variant"></div>
-          </div>
-        </div>
-      </main>
+    <div role="status" className="min-h-screen bg-cream flex flex-col items-center justify-center gap-4 px-page text-center">
+      <Brand link={false} />
+      <MonoLabel className="flex items-center gap-2 text-ink-muted">
+        <span className="size-1.5 rounded-full bg-gold-deep animate-live-pulse" />
+        Mencari hikmah untuk perjalanan Anda&hellip;
+      </MonoLabel>
     </div>
   );
 }

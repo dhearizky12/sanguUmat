@@ -29,16 +29,18 @@
 - [x] 2.7 `VerifiedBadge` — the ustadz check mark from the home and Tanya Jawab
       canvases.
 - [x] 2.8 Verify no inline `style={{` remains in the frontend source.
+- [x] 2.9 `Button` — the solid, outline and gold mono-label buttons, replacing
+      the utility strings repeated across `Header` and the dashboard.
 
 ## 3. Convert the shared components
 
-- [ ] 3.1 `EmptyState` — adopt the canvases' dashed-border empty state, with
+- [x] 3.1 `EmptyState` — adopt the canvases' dashed-border empty state, with
       their Bahasa Indonesia wording and call to action.
-- [ ] 3.2 `Loading` and `LoadingState`.
-- [ ] 3.3 `RichContent` — the answer and question body typography.
-- [ ] 3.4 `QuestionCard` — to the canvases' question row. Keep the base-path
+- [x] 3.2 `Loading` and `LoadingState`.
+- [x] 3.3 `RichContent` — the answer and question body typography.
+- [x] 3.4 `QuestionCard` — to the canvases' question row. Keep the base-path
       `pictureUrl()` handling and the view and comment counts.
-- [ ] 3.5 `CommentSection` — keep the owner and admin delete rules intact.
+- [x] 3.5 `CommentSection` — keep the owner and admin delete rules intact.
 - [ ] 3.6 Exercise every page that renders these, confirming behaviour is
       unchanged against `openspec/specs/`.
 

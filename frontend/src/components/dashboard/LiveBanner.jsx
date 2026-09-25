@@ -1,4 +1,5 @@
 import MonoLabel from "../MonoLabel";
+import Button from "../Button";
 // Static preview content — mirrors how the Articles section already ships placeholder
 // content ahead of a real backend. Swap for real session data once Ngaji Bareng is wired up.
 function LiveBanner() {
@@ -13,13 +14,14 @@ function LiveBanner() {
           Tafsir Surah Al-Kahfi, ayat 32&ndash;45{" "}
           <span className="text-[15px] text-sage-dim">bersama Ustadz Abdul Hakim &middot; 214 jamaah</span>
         </span>
-        <MonoLabel
+        <Button
+          variant="gold"
           as="a"
           href="#ngaji"
-          className="shrink-0 bg-gold text-forest-darker px-[18px] py-2.5 hover:bg-cream-text transition-colors"
+          className="shrink-0 px-[18px] py-2.5"
         >
           Gabung sekarang
-        </MonoLabel>
+        </Button>
       </div>
     </section>
   );

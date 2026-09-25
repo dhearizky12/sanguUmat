@@ -1,11 +1,11 @@
-function LoadingState({ message }) {
+import MonoLabel from "./MonoLabel";
+
+// Inline "loading…" placeholder for a list or section.
+function LoadingState({ message = "Memuat…" }) {
   return (
-    <div className="flex flex-col items-center justify-center gap-3 py-16 px-6 text-center">
-      <span className="material-symbols-outlined text-primary-container text-4xl! animate-spin" data-icon="progress_activity">
-        progress_activity
-      </span>
-      <p className="font-body-md text-body-md text-on-surface-variant">{message}</p>
-    </div>
+    <MonoLabel as="div" role="status" className="py-16 text-center text-ink-muted">
+      {message}
+    </MonoLabel>
   );
 }
 

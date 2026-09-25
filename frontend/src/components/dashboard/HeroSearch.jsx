@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MonoLabel from "../MonoLabel";
+import Button from "../Button";
 
 // Topics cycled through the search placeholder via a typewriter effect, so the copy itself
 // demonstrates the site covers more than just Fiqh.
@@ -75,13 +76,13 @@ function HeroSearch({ answeredCount }) {
             placeholder={placeholder}
             className="flex-1 min-w-[200px] border-0 outline-none bg-transparent px-4 md:px-5 h-[54px] md:h-[62px] text-base md:text-lg text-ink"
           />
-          <MonoLabel
+          <Button
             as="button"
             type="submit"
-            className="shrink-0 bg-forest text-cream-text px-5 md:px-6 hover:bg-ink transition-colors"
+            className="shrink-0 px-5 md:px-6"
           >
             Cari
-          </MonoLabel>
+          </Button>
         </form>
 
         <div className="flex flex-wrap justify-center items-center gap-x-5 gap-y-2">

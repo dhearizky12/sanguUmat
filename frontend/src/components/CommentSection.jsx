@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL, pictureUrl } from "../lib/api";
-import { handleAvatarError } from "../lib/image";
+import { DEFAULT_AVATAR, handleAvatarError } from "../lib/image";
+import Button from "./Button";
+import MonoLabel from "./MonoLabel";
 
 function CommentSection({ answerId }) {
   const { isAuthenticated, me } = useAuth();
@@ -80,55 +82,56 @@ function CommentSection({ answerId }) {
 
   return (
     <div>
-      <p className="font-label-sm text-label-sm text-on-surface-variant font-semibold mb-3">
-        {loading ? "Memuat komentar..." : `${comments.length} Komentar`}
-      </p>
+      <MonoLabel as="p" className="text-ink-muted mb-3">
+        {loading ? "Memuat komentar…" : `${comments.length} komentar`}
+      </MonoLabel>
 
-      <div className="space-y-3 mb-4">
-        {comments.map((c) => (
-          <div key={c.id} className="flex items-start gap-2">
-            <img
-              alt="Foto profil"
-              className="w-8 h-8 rounded-full object-cover shrink-0"
-              src={pictureUrl(c.userPicture) ?? "/default-avatar.png"}
-              onError={handleAvatarError}
-            />
-            <div className="bg-surface-container-low rounded-xl px-3 py-2 flex-1">
-              <p className="font-label-sm text-label-sm text-on-surface font-semibold">{c.userName}</p>
-              <p className="font-body-md text-body-md text-on-surface-variant">{c.content}</p>
+      {comments.length > 0 && (
+        <div className="flex flex-col mb-4 border-t border-stone-line-soft">
+          {comments.map((c) => (
+            <div key={c.id} className="flex items-start gap-3 py-3.5 border-b border-stone-line-soft">
+              <img
+                alt=""
+                className="size-8 rounded-full object-cover shrink-0 border border-stone-line"
+                src={pictureUrl(c.userPicture) ?? DEFAULT_AVATAR}
+                onError={handleAvatarError}
+              />
+              <div className="flex-1 min-w-0 flex flex-col gap-0.5">
+                <span className="text-[15px] font-medium text-ink">{c.userName}</span>
+                <p className="text-base leading-relaxed text-ink-soft text-pretty">{c.content}</p>
+              </div>
+              {(me?.id === c.userId || me?.role === "Admin") && (
+                <MonoLabel
+                  as="button"
+                  type="button"
+                  size="xs"
+                  onClick={() => handleDelete(c.id)}
+                  className="shrink-0 mt-1 text-rust hover:text-rust-deep cursor-pointer transition-colors"
+                >
+                  Hapus
+                </MonoLabel>
+              )}
             </div>
-            {(me?.id === c.userId || me?.role === "Admin") && (
-              <button
-                onClick={() => handleDelete(c.id)}
-                title="Hapus Komentar"
-                className="w-7 h-7 shrink-0 rounded-full flex items-center justify-center text-error hover:bg-error-container/20 transition cursor-pointer"
-              >
-                <span className="material-symbols-outlined text-[16px]">delete</span>
-              </button>
-            )}
-          </div>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
       {isAuthenticated ? (
-        <form onSubmit={handleSubmit} className="flex gap-2">
+        <form onSubmit={handleSubmit} className="flex items-stretch border border-stone-border bg-paper focus-within:border-forest transition-colors">
           <input
-            className="flex-1 bg-surface-container-low border border-outline-variant rounded-full px-4 py-2 font-body-md text-body-md text-on-surface outline-none focus:border-primary-container transition-colors"
-            placeholder="Tulis komentar..."
+            aria-label="Tulis komentar"
+            className="flex-1 min-w-0 bg-transparent px-4 h-12 text-base text-ink placeholder:text-ink-faint outline-none"
+            placeholder="Tulis komentar…"
             value={draft}
             onChange={(e) => setDraft(e.target.value)}
           />
-          <button
-            type="submit"
-            disabled={submitting}
-            className="bg-primary-container text-on-primary px-4 py-2 rounded-full font-label-sm text-label-sm hover:bg-tertiary transition-colors disabled:opacity-60"
-          >
+          <Button type="submit" disabled={submitting} className="px-5">
             Kirim
-          </button>
+          </Button>
         </form>
       ) : (
-        <p className="font-body-md text-body-md text-on-surface-variant">
-          <NavLink to="/login" className="text-primary-container font-semibold hover:underline">
+        <p className="text-base text-ink-muted">
+          <NavLink to="/login" className="text-forest border-b border-stone-border hover:text-gold-dark transition-colors">
             Masuk
           </NavLink>{" "}
           untuk menulis komentar.

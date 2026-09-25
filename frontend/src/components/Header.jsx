@@ -5,6 +5,7 @@ import { API_URL } from "../lib/api";
 import { handleAvatarError } from "../lib/image";
 import Brand from "./Brand";
 import MonoLabel from "./MonoLabel";
+import Button from "./Button";
 
 const NAV_ITEMS = [
   { label: "Beranda", to: "/", matchPaths: ["/"] },
@@ -78,20 +79,21 @@ function Header() {
 
         <div className="hidden md:flex items-center flex-wrap gap-4">
           {isAuthenticated && me?.role === "User" && (
-            <MonoLabel
+            <Button
               as={Link}
               to="/question/create"
-              className="bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
+              className="px-3.5 py-2.5 whitespace-nowrap"
             >
               Ajukan Pertanyaan
-            </MonoLabel>
+            </Button>
           )}
           {isAuthenticated && me?.role === "Guru" && (
-            <MonoLabel
+            <Button
+              variant="gold"
               as={Link}
               to="/jawab-pertanyaan"
               title={pendingAnswerCount > 0 ? `${pendingAnswerCount} pertanyaan menunggu jawaban anda` : undefined}
-              className="relative bg-gold text-forest-darker px-3.5 py-2.5 whitespace-nowrap hover:bg-cream-text transition-colors"
+              className="relative px-3.5 py-2.5 whitespace-nowrap"
             >
               Jawab Pertanyaan
               {pendingAnswerCount > 0 && (
@@ -99,7 +101,7 @@ function Header() {
                   {pendingAnswerCount}
                 </span>
               )}
-            </MonoLabel>
+            </Button>
           )}
           {isAdmin && (
             <MonoLabel
@@ -129,13 +131,13 @@ function Header() {
               <MonoLabel as={Link} to="/login" className="text-ink-muted hover:text-ink transition-colors">
                 Masuk
               </MonoLabel>
-              <MonoLabel
+              <Button
                 as={Link}
                 to="/question/create"
-                className="bg-forest text-cream-text px-3.5 py-2.5 whitespace-nowrap hover:bg-ink transition-colors"
+                className="px-3.5 py-2.5 whitespace-nowrap"
               >
                 Ajukan Pertanyaan
-              </MonoLabel>
+              </Button>
             </>
           )}
         </div>
@@ -192,32 +194,34 @@ function Header() {
 
             <div className="flex flex-wrap gap-3 pt-5">
               {isAuthenticated ? (
-                <MonoLabel
+                <Button
+                  variant="outline"
                   as={Link}
                   to="/profile"
                   onClick={() => setMenuOpen(false)}
-                  className="flex-1 min-w-[120px] text-center border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
+                  className="flex-1 min-w-[120px] text-center py-3.5"
                 >
                   Profil Saya
-                </MonoLabel>
+                </Button>
               ) : (
                 <>
-                  <MonoLabel
+                  <Button
+                    variant="outline"
                     as={Link}
                     to="/login"
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 min-w-[120px] text-center border border-stone-border text-forest py-3.5 hover:bg-cream-hover transition-colors"
+                    className="flex-1 min-w-[120px] text-center py-3.5"
                   >
                     Masuk
-                  </MonoLabel>
-                  <MonoLabel
+                  </Button>
+                  <Button
                     as={Link}
                     to="/question/create"
                     onClick={() => setMenuOpen(false)}
-                    className="flex-1 min-w-[160px] text-center bg-forest text-cream-text py-3.5 hover:bg-ink transition-colors"
+                    className="flex-1 min-w-[160px] text-center py-3.5"
                   >
                     Ajukan Pertanyaan
-                  </MonoLabel>
+                  </Button>
                 </>
               )}
             </div>

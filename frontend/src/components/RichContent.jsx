@@ -1,3 +1,5 @@
+import MonoLabel from "./MonoLabel";
+
 // Questions/answers here are plain text (backend only has a single Content field — see
 // BE_PLAN.md), but authors write them WhatsApp-style: an all-caps title, section labels like
 // PERTANYAAN/JAWABAN/PENJELASAN/REFERENSI/KESIMPULAN, numbered points, blank-line paragraph
@@ -17,13 +19,16 @@ const SECTION_LABELS = new Set([
   "KETERANGAN",
 ]);
 
+function isSectionLabel(line) {
+  return SECTION_LABELS.has(line.replace(/:$/, "").trim().toUpperCase());
+}
+
 function isHeadingLine(line) {
   if (!line) {
     return false;
   }
 
-  const bare = line.replace(/:$/, "").trim();
-  if (SECTION_LABELS.has(bare.toUpperCase())) {
+  if (isSectionLabel(line)) {
     return true;
   }
 
@@ -48,11 +53,17 @@ function RichContent({ text, className = "" }) {
       {lines.map((line, i) => {
         const trimmed = line.trim();
 
+        // An opening all-caps line is the author's title, unless it is itself a section
+        // label (JAWABAN, REFERENSI…); section labels are set as the design's mono label.
         if (isHeadingLine(trimmed)) {
-          return (
-            <p key={i} dir="auto" className={`font-bold text-primary-container ${i === 0 ? "text-xl mb-2" : "mt-4"}`}>
+          return i === 0 && !isSectionLabel(trimmed) ? (
+            <p key={i} dir="auto" className="font-serif text-[22px] leading-snug text-ink mb-2">
               {trimmed}
             </p>
+          ) : (
+            <MonoLabel as="p" key={i} dir="auto" className="mt-5 mb-1 text-forest">
+              {trimmed}
+            </MonoLabel>
           );
         }
 

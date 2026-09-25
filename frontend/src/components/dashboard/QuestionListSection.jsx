@@ -3,6 +3,9 @@ import { NavLink } from "react-router-dom";
 import QuestionListItem from "./QuestionListItem";
 import MonoLabel from "../MonoLabel";
 import SectionHeading from "../SectionHeading";
+import Button from "../Button";
+import EmptyState from "../EmptyState";
+import LoadingState from "../LoadingState";
 
 function OneColumnIcon() {
   return (
@@ -65,21 +68,13 @@ function QuestionListSection({ questions, loading, totalCount, activeCategoryLab
       />
 
       {loading ? (
-        <MonoLabel as="div" className="py-16 text-center text-ink-muted">Memuat pertanyaan terjawab&hellip;</MonoLabel>
+        <LoadingState message="Memuat pertanyaan terjawab…" />
       ) : questions.length === 0 ? (
-        <div className="border border-dashed border-stone-dotted py-14 px-7 text-center flex flex-col items-center gap-2.5">
-          <div className="font-serif text-xl md:text-[22px] text-ink">Belum ada jawaban yang cocok.</div>
-          <p className="max-w-[46ch] text-base text-ink-muted">
-            Coba kategori lain, atau ajukan pertanyaanmu langsung kepada para ustadz.
-          </p>
-          <MonoLabel
-            as={NavLink}
-            to="/question/create"
-            className="mt-2 bg-forest text-cream-text px-5 py-3 hover:bg-ink transition-colors"
-          >
-            Ajukan Pertanyaan
-          </MonoLabel>
-        </div>
+        <EmptyState
+          title="Belum ada jawaban yang cocok."
+          message="Coba kategori lain, atau ajukan pertanyaanmu langsung kepada para ustadz."
+          action={{ label: "Ajukan Pertanyaan", to: "/question/create" }}
+        />
       ) : (
         <div className={columns === 2 ? "grid grid-cols-1 md:grid-cols-2 md:gap-x-10" : "flex flex-col"}>
           {questions.map((question) => (
@@ -89,13 +84,14 @@ function QuestionListSection({ questions, loading, totalCount, activeCategoryLab
       )}
 
       <div className="mt-8 flex justify-center">
-        <MonoLabel
+        <Button
+          variant="outline"
           as={NavLink}
           to="/questions"
-          className="text-forest border border-stone-border px-6 py-3 hover:border-forest hover:bg-cream-hover transition-colors"
+          className="px-6 py-3 hover:border-forest"
         >
           Lihat semua jawaban
-        </MonoLabel>
+        </Button>
       </div>
     </section>
   );

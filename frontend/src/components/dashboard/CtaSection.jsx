@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import MonoLabel from "../MonoLabel";
+import Button from "../Button";
 
 function CtaSection() {
   return (
@@ -12,13 +13,13 @@ function CtaSection() {
           </h2>
           <p className="text-base leading-relaxed text-ink-soft">Rata-rata dijawab dalam 2 hari kerja, lengkap dengan rujukan dalil.</p>
         </div>
-        <MonoLabel
+        <Button
           as={NavLink}
           to="/question/create"
-          className="shrink-0 bg-forest text-cream-text px-7 py-4 hover:bg-ink transition-colors"
+          className="shrink-0 px-7 py-4"
         >
           Ajukan Pertanyaan
-        </MonoLabel>
+        </Button>
       </div>
     </section>
   );
