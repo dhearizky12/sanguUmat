@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Breadcrumb from "../components/Breadcrumb";
@@ -9,12 +9,23 @@ import { FieldLabel, Input, TextArea, FormError } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { BASE_PATH } from "../lib/basePath";
+import { safeNext } from "../lib/next";
 import Avatar from "../components/Avatar";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
+const WHY = [
+  { label: "Nama", text: "Dipakai untuk menyapa Anda, dan tampil di pertanyaan serta komentar Anda." },
+  { label: "Email", text: "Dari akun Google Anda; tidak dapat diubah di sini." },
+  { label: "Nomor telepon · opsional", text: "Agar ustadz dapat menghubungi Anda bila sebuah jawaban perlu penjelasan lebih lanjut." },
+  { label: "Alamat · opsional", text: "Boleh dikosongkan." },
+];
+
 function EditProfile() {
   const { me, profile } = useAuth();
-  // A first sign-in lands here from the Dashboard until phone and address are filled in.
+  const [params] = useSearchParams();
+  // Sign-in sends an incomplete profile here once (see SignInComplete), with the page to
+  // continue to as ?next=.
+  const next = safeNext(params.get("next"));
   const isCompleting = !me?.hasCompletedProfile;
 
   const [fullName, setFullName] = useState(profile?.name || "");
@@ -43,9 +54,9 @@ function EditProfile() {
   const saveProfile = async (e) => {
     e.preventDefault();
 
-    // The backend refuses to complete a profile without both.
-    if (!phone.trim() || !address.trim()) {
-      setError("Nomor telepon dan alamat wajib diisi.");
+    // Only the name is required; phone and address are optional.
+    if (!fullName.trim()) {
+      setError("Nama harus diisi.");
       return;
     }
 
@@ -76,9 +87,9 @@ function EditProfile() {
         return;
       }
 
-      // A full reload so AuthProvider picks up the completed profile; through BASE_PATH so it
-      // lands on the app's home under a path prefix too.
-      window.location.href = `${BASE_PATH}/`;
+      // A full reload so AuthProvider picks up the saved profile; through BASE_PATH so it
+      // lands correctly under a path prefix too.
+      window.location.href = `${BASE_PATH}${next}`;
     } catch (err) {
       console.error(err);
       setError("Terjadi kesalahan. Silakan coba lagi.");
@@ -114,13 +125,13 @@ function EditProfile() {
           </PageTitle>
           <PageLead>
             {isCompleting
-              ? "Satu langkah lagi. Isi nomor telepon dan alamat Anda untuk mulai memakai Sangu Umat."
+              ? "Satu langkah lagi. Isi nama Anda untuk mulai memakai Sangu Umat."
               : "Perbarui nama, foto, nomor telepon dan alamat Anda."}
           </PageLead>
         </PageHeader>
 
-        <PageBody>
-          <form onSubmit={saveProfile} className="max-w-[760px] flex flex-col gap-6">
+        <PageBody className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_300px] gap-x-[clamp(32px,5vw,60px)] gap-y-10 items-start">
+          <form onSubmit={saveProfile} className="flex flex-col gap-6 min-w-0">
             <MonoLabel as="h2" className="block tracking-[0.14em] text-ink pb-2.5 border-b border-ink">
               Data diri
             </MonoLabel>
@@ -140,14 +151,23 @@ function EditProfile() {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-x-5 gap-y-6">
               <div className="flex flex-col gap-2.5">
                 <FieldLabel htmlFor="profile-name">Nama lengkap</FieldLabel>
-                <Input id="profile-name" type="text" placeholder="Nama lengkap" value={fullName} onChange={edit(setFullName)} />
+                <Input
+                  id="profile-name"
+                  type="text"
+                  placeholder="Nama lengkap"
+                  value={fullName}
+                  onChange={edit(setFullName)}
+                  invalid={!!error && !fullName.trim()}
+                />
               </div>
               <div className="flex flex-col gap-2.5">
                 <FieldLabel htmlFor="profile-email">Email</FieldLabel>
                 <Input id="profile-email" type="email" value={profile?.email ?? ""} disabled />
               </div>
               <div className="flex flex-col gap-2.5">
-                <FieldLabel htmlFor="profile-phone">Nomor telepon</FieldLabel>
+                <FieldLabel htmlFor="profile-phone">
+                  Nomor telepon <span className="text-ink-hint">opsional</span>
+                </FieldLabel>
                 <Input
                   id="profile-phone"
                   type="tel"
@@ -155,20 +175,20 @@ function EditProfile() {
                   placeholder="081234567890"
                   value={phone}
                   onChange={edit(setPhone)}
-                  invalid={!!error && !phone.trim()}
                 />
               </div>
             </div>
 
             <div className="flex flex-col gap-2.5">
-              <FieldLabel htmlFor="profile-address">Alamat</FieldLabel>
+              <FieldLabel htmlFor="profile-address">
+                Alamat <span className="text-ink-hint">opsional</span>
+              </FieldLabel>
               <TextArea
                 id="profile-address"
                 rows="4"
                 placeholder="Tulis alamat lengkap Anda."
                 value={address}
                 onChange={edit(setAddress)}
-                invalid={!!error && !address.trim()}
               />
             </div>
 
@@ -187,6 +207,23 @@ function EditProfile() {
               )}
             </div>
           </form>
+
+          <aside className="flex flex-col lg:sticky lg:top-24">
+            <MonoLabel as="h2" className="block tracking-[0.14em] text-ink pb-2.5 border-b border-ink">
+              Mengapa kami meminta data ini?
+            </MonoLabel>
+            {WHY.map((row) => (
+              <div key={row.label} className="flex flex-col gap-1 py-4 border-b border-stone-line-soft">
+                <MonoLabel size="sm" className="tracking-[0.12em] text-forest">
+                  {row.label}
+                </MonoLabel>
+                <span className="text-[15px] leading-relaxed text-ink-soft text-pretty">{row.text}</span>
+              </div>
+            ))}
+            <p className="pt-4 text-[15px] leading-relaxed text-ink-faint text-pretty">
+              Nomor telepon dan alamat tidak ditampilkan di halaman publik mana pun.
+            </p>
+          </aside>
         </PageBody>
       </main>
       <Footer />

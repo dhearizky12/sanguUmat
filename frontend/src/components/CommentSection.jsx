@@ -1,13 +1,15 @@
 import { useEffect, useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL, pictureUrl } from "../lib/api";
 import Avatar from "./Avatar";
 import Button from "./Button";
 import MonoLabel from "./MonoLabel";
+import { loginPath } from "../lib/next";
 
 function CommentSection({ answerId }) {
   const { isAuthenticated, me } = useAuth();
+  const location = useLocation();
   const [comments, setComments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [draft, setDraft] = useState("");
@@ -120,7 +122,7 @@ function CommentSection({ answerId }) {
         </form>
       ) : (
         <p className="text-base text-ink-muted">
-          <NavLink to="/login" className="text-forest border-b border-stone-border hover:text-gold-dark transition-colors">
+          <NavLink to={loginPath(location.pathname)} className="text-forest border-b border-stone-border hover:text-gold-dark transition-colors">
             Masuk
           </NavLink>{" "}
           untuk menulis komentar.

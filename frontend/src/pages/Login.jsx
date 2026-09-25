@@ -1,5 +1,6 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { API_URL } from "../lib/api";
+import { safeNext } from "../lib/next";
 import AutoGrid from "../components/AutoGrid";
 import Brand from "../components/Brand";
 import MonoLabel from "../components/MonoLabel";
@@ -24,8 +25,13 @@ function GoogleMark() {
 }
 
 function Login() {
+  const [params] = useSearchParams();
+  // The page to come back to after signing in (see SignInComplete).
+  const next = safeNext(params.get("next"));
+
   const loginGoogle = () => {
-    window.location.href = `${API_URL}/api/auth/login`;
+    const returnUrl = next === "/" ? "" : `?returnUrl=${encodeURIComponent(next)}`;
+    window.location.href = `${API_URL}/api/auth/login${returnUrl}`;
   };
 
   return (
@@ -54,7 +60,9 @@ function Login() {
                 </MonoLabel>
                 <h1 className="text-[clamp(30px,4vw,40px)] leading-[1.1] font-normal tracking-[-0.02em]">Selamat datang di Sangu Umat</h1>
                 <p className="text-base leading-relaxed text-ink-soft max-w-[42ch] text-pretty">
-                  Masuk dengan akun Google Anda untuk melanjutkan.
+                  {next === "/"
+                  ? "Masuk dengan akun Google Anda untuk melanjutkan."
+                  : "Masuk dengan akun Google Anda, lalu kami kembalikan ke halaman yang Anda tuju."}
                 </p>
               </div>
   

@@ -13,6 +13,7 @@ import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { CATEGORIES } from "../lib/category";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
+import { loginPath } from "../lib/next";
 
 // The Ajukan Pertanyaan canvas, built to what the backend supports today. Left out until
 // their roadmap changes land: the monthly quota, ticket numbers and review statuses, the
@@ -35,7 +36,7 @@ function SignInGate() {
         <h1 className="text-[26px] font-normal tracking-[-0.015em]">Masuk untuk mengajukan pertanyaan</h1>
         <p className="text-base leading-relaxed text-ink-muted">Hanya pengguna yang sudah masuk dapat mengajukan pertanyaan.</p>
         <div className="mt-1.5 flex flex-wrap justify-center gap-3">
-          <Button as={Link} to="/login" className="tracking-[0.16em] px-[22px] py-3.5">
+          <Button as={Link} to={loginPath("/question/create")} className="tracking-[0.16em] px-[22px] py-3.5">
             Masuk sekarang
           </Button>
           <Button as={Link} to="/" variant="outline" className="px-5 py-3.5">

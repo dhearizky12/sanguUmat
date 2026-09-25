@@ -1,12 +1,10 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import HeroSearch from "../components/dashboard/HeroSearch";
 import TopicIndex from "../components/dashboard/TopicIndex";
 import QuestionListSection from "../components/dashboard/QuestionListSection";
 import CtaSection from "../components/dashboard/CtaSection";
-import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { CATEGORIES } from "../lib/category";
 
@@ -16,15 +14,6 @@ function Dashboard() {
   const [answeredQuestions, setAnsweredQuestions] = useState([]);
   const [loadingAnswered, setLoadingAnswered] = useState(true);
   const [category, setCategory] = useState("semua");
-  const navigate = useNavigate();
-
-  const { isAuthenticated, me } = useAuth();
-
-  useEffect(() => {
-    if (isAuthenticated && me && !me.hasCompletedProfile) {
-      navigate("/edit-profile");
-    }
-  }, [isAuthenticated, me, navigate]);
 
   useEffect(() => {
     // GET /api/question?status=answered gives the real answered set, but still no answer

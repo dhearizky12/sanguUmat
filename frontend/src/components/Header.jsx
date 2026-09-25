@@ -6,6 +6,7 @@ import Avatar from "./Avatar";
 import Brand from "./Brand";
 import MonoLabel from "./MonoLabel";
 import Button from "./Button";
+import { loginPath } from "../lib/next";
 
 const NAV_ITEMS = [
   { label: "Beranda", to: "/", matchPaths: ["/"] },
@@ -54,6 +55,9 @@ function Header() {
       cancelled = true;
     };
   }, [me?.role]);
+
+  // "Masuk" brings the visitor back to this page after signing in.
+  const loginHref = loginPath(location.pathname + location.search);
 
   return (
     <header className="sticky top-0 z-40 bg-cream/95 backdrop-blur-sm border-b border-stone-line">
@@ -122,7 +126,7 @@ function Header() {
             </Link>
           ) : (
             <>
-              <MonoLabel as={Link} to="/login" className="text-ink-muted hover:text-ink transition-colors">
+              <MonoLabel as={Link} to={loginHref} className="text-ink-muted hover:text-ink transition-colors">
                 Masuk
               </MonoLabel>
               <Button
@@ -202,7 +206,7 @@ function Header() {
                   <Button
                     variant="outline"
                     as={Link}
-                    to="/login"
+                    to={loginHref}
                     onClick={() => setMenuOpen(false)}
                     className="flex-1 min-w-[120px] text-center py-3.5"
                   >

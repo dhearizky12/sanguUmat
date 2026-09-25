@@ -9,6 +9,7 @@ import DetailArticle from "./pages/DetailArticle";
 import DetailQuestion from "./pages/DetailQuestion";
 import Live from "./pages/Live";
 import Login from "./pages/Login";
+import SignInComplete from "./pages/SignInComplete";
 import Questions from "./pages/Questions";
 import AuthProvider from "./providers/AuthProvider";
 import CreateQuestion from "./pages/CreateQuestion";
@@ -24,6 +25,7 @@ function App() {
         <Routes>
           {/* Public */}
           <Route path="/login" element={<Login />} />
+          <Route path="/masuk/selesai" element={<SignInComplete />} />
 
           <Route path="/" element={<Dashboard />} />
 

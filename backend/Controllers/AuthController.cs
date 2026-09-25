@@ -28,16 +28,26 @@ namespace backend.Controllers
         }
 
         [HttpGet("login")]
-        public async Task<IActionResult> Login()
+        public async Task<IActionResult> Login([FromQuery] string? returnUrl)
         {
+            // After Google the frontend's /masuk/selesai decides where to go: the profile
+            // form for an incomplete profile, otherwise the page the visitor came from.
+            var next = IsLocalPath(returnUrl) ? returnUrl! : "/";
             return Challenge(
                 new AuthenticationProperties
                 {
-                    RedirectUri = _frontendBaseUrl
+                    RedirectUri = _frontendBaseUrl + "/masuk/selesai?next=" + Uri.EscapeDataString(next)
                 },
                 await IsMockGoogleUpAsync() ? DevAuth.MockGoogleScheme : GoogleDefaults.AuthenticationScheme
             );
         }
+
+        // Only a path within the app — one leading "/", not "//" or "/\" (both of which
+        // browsers read as another host) — so returnUrl cannot become an open redirect.
+        private static bool IsLocalPath(string? path) =>
+            !string.IsNullOrEmpty(path)
+            && path[0] == '/'
+            && (path.Length == 1 || (path[1] != '/' && path[1] != '\\'));
 
         // The mock Google scheme only exists in Development with DevAuth:MockGoogleUrl set
         // (see Program.cs). Even then it is used only while the mock server answers, so
@@ -91,15 +101,18 @@ namespace backend.Controllers
                         Role = isBootstrapAdmin ? Roles.Admin : Roles.User,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
-                        LastLogin = DateTime.UtcNow,
-                        HasCompletedProfile = false
+                        LastLogin = DateTime.UtcNow
                     };
+                    user.HasCompletedProfile = user.IsProfileComplete();
                     _db.Users.Add(user);
                     existingUser = user;
                 }
                 else
                 {
                     existingUser.LastLogin = DateTime.UtcNow;
+                    // Re-evaluated on every visit so accounts created under the earlier
+                    // phone-and-address rule are corrected without a data migration.
+                    existingUser.HasCompletedProfile = existingUser.IsProfileComplete();
                 }
 
                 await _db.SaveChangesAsync();
@@ -143,18 +156,17 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
+            // Only the name is required; phone and address are optional.
+            if (string.IsNullOrWhiteSpace(request.Name))
+            {
+                return BadRequest("Nama harus diisi");
+            }
+
             user.Name = request.Name;
             user.Phone = request.Phone;
             user.Address = request.Address;
             user.UpdatedAt = DateTime.UtcNow;
-            if ( !string.IsNullOrEmpty(request.Phone) && !string.IsNullOrEmpty(request.Address) )
-            {
-                user.HasCompletedProfile = true;
-            }
-            else
-            {
-                throw new Exception("Phone dan Address harus diisi untuk menyelesaikan profile");
-            }
+            user.HasCompletedProfile = user.IsProfileComplete();
 
             await _db.SaveChangesAsync();
             return Ok();
