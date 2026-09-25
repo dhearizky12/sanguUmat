@@ -44,5 +44,5 @@
 
 ## 4. Specs and roadmap
 
-- [ ] 4.1 Tick change 2 in `openspec/ROADMAP.md` once archived. Verify:
+- [x] 4.1 Tick change 2 in `openspec/ROADMAP.md` once archived. Verify:
       `openspec validate categories-as-data` passes.

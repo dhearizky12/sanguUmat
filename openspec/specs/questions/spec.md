@@ -29,17 +29,6 @@ optional category.
 - **WHEN** an unauthenticated caller posts to `POST /api/question`
 - **THEN** the response is 401 and nothing is stored
 
-### Requirement: Categories
-
-Questions MUST use one fixed set of categories, shared by both ends: `sholat`,
-`puasa`, `zakat`, `keluarga`, `muamalah`.
-
-#### Scenario: Both ends agree
-
-- **WHEN** a category key is added, removed or renamed
-- **THEN** `backend/Models/Categories.cs` and `frontend/src/lib/category.js`
-  are changed together
-
 ### Requirement: Browsing questions
 
 Anyone, signed in or not, MUST be able to list questions, newest first, and

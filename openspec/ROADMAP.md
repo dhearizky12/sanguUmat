@@ -34,7 +34,7 @@ Ajukan Pertanyaan, WhatsApp OTP on Masuk, facets and paging on Tanya Jawab) are
 restyled around what works today. The missing parts arrive with their own
 change, listed below.
 
-### 2. `categories-as-data` — full stack
+### 2. `categories-as-data` — full stack — ✓ archived 2026-09-26
 Move the fixed five-key category list out of `Categories.cs` and
 `category.js` into a table an Admin edits, so the taxonomy grows without a
 migration each time. The design's twelve topics then become data, not a code
