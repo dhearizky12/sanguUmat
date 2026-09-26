@@ -38,13 +38,22 @@ namespace backend.Controllers
                     .Select(c => (int?)c.Id)
                     .FirstOrDefaultAsync();
 
+            if (request.DirectedTo != null
+                && !await _db.Users.AnyAsync(u => u.Id == request.DirectedTo && u.Role == Roles.Guru))
+            {
+                return BadRequest("Ustadz yang dipilih tidak tersedia");
+            }
+
             var question = new Question
             {
                 Title = request.Title,
                 Content = request.Content,
                 CategoryId = categoryId,
                 CreatedAt = DateTime.UtcNow,
-                UserId = user.Id
+                UserId = user.Id,
+                DirectedToId = request.DirectedTo,
+                IsAnonymous = request.IsAnonymous,
+                AllowPublish = request.AllowPublish
             };
 
             _db.Questions.Add(question);
@@ -69,12 +78,14 @@ namespace backend.Controllers
                 );
             }
 
-            // Only answered questions are published. Unanswered ones are listed only for the
-            // people who answer them (Guru, Admin), and only when asked for explicitly.
-            if (status == "pending")
+            // Only published questions are public. Unanswered ones (consented or not) are
+            // listed only for the people who answer them (Guru, Admin), and only when asked
+            // for explicitly — those directed to the caller first.
+            var caller = await this.GetCurrentUserAsync(_db);
+            var pending = status == "pending";
+            if (pending)
             {
-                var caller = await this.GetCurrentUserAsync(_db);
-                if (!IsStaff(caller))
+                if (!QuestionVisibility.IsStaff(caller))
                 {
                     return StatusCode(StatusCodes.Status403Forbidden);
                 }
@@ -82,7 +93,7 @@ namespace backend.Controllers
             }
             else
             {
-                query = query.Where(x => x.Answers.Any());
+                query = query.Published();
             }
 
             if (!string.IsNullOrWhiteSpace(category))
@@ -90,11 +101,15 @@ namespace backend.Controllers
                 query = query.Where(x => x.Category != null && x.Category.Key == category);
             }
 
-            var questions = await query.OrderByDescending(x => x.CreatedAt)
+            var callerId = caller?.Id ?? 0;
+            var ordered = pending
+                ? query.OrderByDescending(x => x.DirectedToId == callerId).ThenByDescending(x => x.CreatedAt)
+                : query.OrderByDescending(x => x.CreatedAt);
+            var questions = await ordered
                             .ToListItems()
                             .ToListAsync();
 
-            return Ok(questions);
+            return Ok(questions.Mask(caller));
         }
 
         // Tanya Jawab: published questions with search, category and ustadz facets (several
@@ -110,7 +125,7 @@ namespace backend.Controllers
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 8)
         {
-            var published = _db.Questions.Where(x => x.Answers.Any());
+            var published = _db.Questions.Published();
             if (!string.IsNullOrWhiteSpace(search))
             {
                 var term = search.Trim().ToLower();
@@ -163,7 +178,8 @@ namespace backend.Controllers
             var current = Math.Clamp(page, 1, totalPages);
             var pageIds = sortedIds.Skip((current - 1) * size).Take(size).ToList();
 
-            var loaded = await _db.Questions.Where(x => pageIds.Contains(x.Id)).ToListItems().ToListAsync();
+            var viewer = await this.GetCurrentUserAsync(_db);
+            var loaded = (await _db.Questions.Where(x => pageIds.Contains(x.Id)).ToListItems().ToListAsync()).Mask(viewer);
             var items = pageIds.Select(id => loaded.First(q => q.Id == id)).ToList();
 
             var categoryFacet = await _db.Categories
@@ -173,7 +189,7 @@ namespace backend.Controllers
 
             // Every Guru credited with a published question, whatever the current search.
             var guruIds = await _db.Questions
-                .Where(x => x.Answers.Any())
+                .Published()
                 .Select(x => x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt)
                     .Select(a => a.User.Role == Roles.Guru ? (int?)a.UserId : null).FirstOrDefault())
                 .Where(id => id != null)
@@ -185,7 +201,7 @@ namespace backend.Controllers
                 .Select(u => new { u.Id, u.Name, u.Picture })
                 .ToListAsync();
 
-            var totalPublished = await _db.Questions.CountAsync(x => x.Answers.Any());
+            var totalPublished = await _db.Questions.Published().CountAsync();
 
             return Ok(new
             {
@@ -254,15 +270,20 @@ namespace backend.Controllers
                     .Include(x => x.Answers)
                     .ThenInclude(x => x.Comments)
 
+                    .Include(x => x.DirectedTo)
+
                     .FirstOrDefaultAsync(x =>
                         x.Id == id);
 
             // A hidden question answers 404 like a missing one, so a link does not reveal
-            // that an unanswered question exists.
-            if (question == null || !CanSee(question, await this.GetCurrentUserAsync(_db)))
+            // that an unpublished question exists.
+            var viewer = await this.GetCurrentUserAsync(_db);
+            if (question == null || !QuestionVisibility.CanSee(question, viewer))
             {
                 return NotFound();
             }
+
+            var masked = question.IsAnonymous && !QuestionVisibility.SeesAsker(question.UserId, viewer);
 
             return Ok(new
             {
@@ -276,13 +297,17 @@ namespace backend.Controllers
 
                 // Was missing entirely before — canEditQuestion/canDeleteQuestion on the FE
                 // compare against this and silently never matched for the real owner.
-                UserId = question.UserId,
+                UserId = masked ? (int?)null : question.UserId,
 
                 UserName =
-                    question.User.Name,
+                    masked ? QuestionVisibility.AnonymousName : question.User.Name,
 
                 UserPicture =
-                    question.User.Picture,
+                    masked ? null : question.User.Picture,
+
+                question.IsAnonymous,
+                question.AllowPublish,
+                DirectedTo = question.DirectedTo == null ? null : new { question.DirectedTo.Id, question.DirectedTo.Name },
 
                 Answers =
                     question.Answers
@@ -319,7 +344,7 @@ namespace backend.Controllers
                 .Include(x => x.Answers)
                 .FirstOrDefaultAsync(x => x.Id == id);
 
-            if (question == null || !CanSee(question, await this.GetCurrentUserAsync(_db)))
+            if (question == null || !QuestionVisibility.CanSee(question, await this.GetCurrentUserAsync(_db)))
             {
                 return NotFound();
             }
@@ -364,6 +389,8 @@ namespace backend.Controllers
 
             question.Title = request.Title;
             question.Content = request.Content;
+            question.IsAnonymous = request.IsAnonymous ?? question.IsAnonymous;
+            question.AllowPublish = request.AllowPublish ?? question.AllowPublish;
             await _db.SaveChangesAsync();
 
             return Ok();
@@ -407,13 +434,5 @@ namespace backend.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
-
-        private static bool IsStaff(User? user) =>
-            user != null && (user.Role == Roles.Guru || user.Role == Roles.Admin);
-
-        // Published (answered) questions are public; an unanswered one only to its asker and
-        // to the Gurus and Admins who answer or moderate it.
-        private static bool CanSee(Question question, User? user) =>
-            question.Answers.Any() || (user != null && (user.Id == question.UserId || IsStaff(user)));
     }
 }

@@ -19,7 +19,11 @@ function QuestionListItem({ question }) {
       views={question.views}
       title={question.title}
       excerpt={answer?.content}
-      asker={{ name: question.userName, picture: pictureUrl(question.userPicture) }}
+      asker={{
+        name: question.userName,
+        picture: pictureUrl(question.userPicture),
+        anonymous: question.isAnonymous && question.userId != null,
+      }}
       answerer={answer && { name: answer.userName, picture: pictureUrl(answer.userPicture), isGuru: answer.role === "Guru" }}
     />
   );

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Breadcrumb from "../Breadcrumb";
 import Button from "../Button";
 import Byline from "../Byline";
+import CheckRow from "../CheckRow";
 import MonoLabel from "../MonoLabel";
 import RichContent from "../RichContent";
 import { FieldLabel, Input, TextArea } from "../Field";
@@ -12,6 +13,8 @@ import { categoryLabel, useCategories } from "../../lib/category";
 import { formatDate } from "../../lib/date";
 import { formatCount } from "../../lib/format";
 import { PageHeader } from "../Page";
+import { useAuth } from "../../hooks/useAuth";
+import QuestionFlags from "./QuestionFlags";
 
 // The question itself, set as the page's warm header band so it reads as the subject the
 // answers below respond to. Owns the owner's inline edit and the owner/admin delete.
@@ -20,12 +23,17 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState("");
   const [editContent, setEditContent] = useState("");
+  const [editAnonymous, setEditAnonymous] = useState(false);
+  const [editPublish, setEditPublish] = useState(true);
+  const { me } = useAuth();
   const [savingEdit, setSavingEdit] = useState(false);
   const navigate = useNavigate();
 
   const startEditQuestion = () => {
     setEditTitle(question.title);
     setEditContent(question.content);
+    setEditAnonymous(question.isAnonymous);
+    setEditPublish(question.allowPublish);
     setIsEditing(true);
   };
 
@@ -52,11 +60,13 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
         body: JSON.stringify({
           title: editTitle,
           content: editContent,
+          isAnonymous: editAnonymous,
+          allowPublish: editPublish,
         }),
       });
 
       if (response.ok) {
-        onUpdated({ title: editTitle, content: editContent });
+        onUpdated({ title: editTitle, content: editContent, isAnonymous: editAnonymous, allowPublish: editPublish });
         setIsEditing(false);
       } else {
         alert("Gagal menyimpan perubahan. Silakan coba lagi.");
@@ -91,6 +101,8 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
   };
 
   const category = categoryLabel(categories, question.category);
+  // The real name of an anonymous asker reaches only the asker, Gurus and Admins.
+  const anonymousShown = question.isAnonymous && question.userId != null;
 
   return (
     <PageHeader>
@@ -105,6 +117,14 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
           <div className="flex flex-col gap-2.5">
             <FieldLabel htmlFor="edit-content">Detail pertanyaan</FieldLabel>
             <TextArea id="edit-content" rows="8" value={editContent} onChange={(e) => setEditContent(e.target.value)} />
+          </div>
+          <div className="flex flex-col gap-3">
+            <CheckRow checked={editAnonymous} onChange={setEditAnonymous}>
+              Tampilkan sebagai anonim. Nama saya disembunyikan dari halaman publik.
+            </CheckRow>
+            <CheckRow checked={editPublish} onChange={setEditPublish}>
+              Jawaban boleh ditayangkan di Tanya Jawab agar bermanfaat bagi jamaah lain.
+            </CheckRow>
           </div>
           <div className="flex flex-wrap justify-end gap-3">
             <Button variant="outline" onClick={cancelEditQuestion} className="px-5 py-3">
@@ -122,7 +142,13 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
               <span className="text-forest">{category}</span>
               <span className="text-ink-faint">{formatDate(question.createdAt)}</span>
               <span className="text-ink-faint">{formatCount(question.views)} dibaca</span>
+              <QuestionFlags question={question} meId={me?.id} linkUstadz />
             </MonoLabel>
+            {question.allowPublish === false && (
+              <MonoLabel as="div" size="sm" className="self-start px-3 py-2 tracking-[0.13em] bg-gold-tint border border-gold-line text-gold-ink">
+                Privat — tidak ditayangkan di Tanya Jawab
+              </MonoLabel>
+            )}
             <h1 className="font-serif text-[clamp(30px,4.4vw,46px)] leading-[1.1] font-normal tracking-[-0.02em] text-ink max-w-[30ch] text-balance">
               {question.title}
             </h1>
@@ -133,6 +159,7 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
               <Avatar src={pictureUrl(question.userPicture)} name={question.userName} size={28} />
               <span>Ditanyakan oleh</span>
               <span className="text-forest">{question.userName}</span>
+              {anonymousShown && <span className="text-ink-faint">(anonim)</span>}
             </Byline>
 
             {(canEdit || canDelete) && (

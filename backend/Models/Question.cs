@@ -13,6 +13,15 @@ namespace backend.Models
 
         public int UserId {get;set;}
         public User User {get; set;}
+
+        // The asker's choices when asking. Anonymous hides their name from the public;
+        // without AllowPublish an answered question stays private (QuestionVisibility).
+        public bool IsAnonymous { get; set; }
+        public bool AllowPublish { get; set; } = true;
+
+        // The ustadz the asker addressed it to, if any. Any Guru may still answer.
+        public int? DirectedToId { get; set; }
+        public User? DirectedTo { get; set; }
         public ICollection<Answer> Answers{ get; set; }
     } 
 }

@@ -2,6 +2,7 @@ import { NavLink } from "react-router-dom";
 import EmptyState from "../EmptyState";
 import LoadingState from "../LoadingState";
 import MonoLabel from "../MonoLabel";
+import QuestionFlags from "../question/QuestionFlags";
 import { categoryLabel, useCategories } from "../../lib/category";
 import { formatDate } from "../../lib/date";
 
@@ -55,6 +56,7 @@ function MyQuestions({ questions, loading }) {
                 <StatusBadge answered={q.isAnswered} />
                 <span className="text-forest">{categoryLabel(categories, q.category)}</span>
                 <span className="text-ink-faint">{formatDate(q.createdAt)}</span>
+                <QuestionFlags question={q} />
               </MonoLabel>
               <span className="text-[clamp(18px,2.1vw,22px)] leading-[1.3] tracking-[-0.01em] text-ink text-pretty">{q.title}</span>
               <span className="text-base leading-relaxed text-ink-soft max-w-[72ch] line-clamp-2 text-pretty">{q.content}</span>

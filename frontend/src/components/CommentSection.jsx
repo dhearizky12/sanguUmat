@@ -18,7 +18,8 @@ function CommentSection({ answerId }) {
   useEffect(() => {
     let cancelled = false;
 
-    fetch(`${API_URL}/api/answer/${answerId}/comments`)
+    // With the cookie: staff see an anonymous asker by name, and a private answer's comments.
+    fetch(`${API_URL}/api/answer/${answerId}/comments`, { credentials: "include" })
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (!cancelled) setComments(data);

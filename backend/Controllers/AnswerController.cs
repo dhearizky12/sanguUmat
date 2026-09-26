@@ -2,6 +2,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
 using backend.Models;
+using backend.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -123,6 +124,16 @@ namespace backend.Controllers
         [HttpGet("{answerId}/comments")]
         public async Task<IActionResult> GetComments(int answerId)
         {
+            // Comments follow their question: a private answer's discussion is as hidden as
+            // the answer, and an anonymous asker's own comments are masked like the question.
+            var viewer = await this.GetCurrentUserAsync(_db);
+            var question = await QuestionOfAsync(answerId);
+            if (question == null || !QuestionVisibility.CanSee(question, viewer))
+            {
+                return NotFound();
+            }
+            var maskAsker = question.IsAnonymous && !QuestionVisibility.SeesAsker(question.UserId, viewer);
+
             var comments = await _db.Comments
                 .Where(x => x.AnswerId == answerId)
                 .Include(x => x.User)
@@ -138,7 +149,9 @@ namespace backend.Controllers
                 })
                 .ToListAsync();
 
-            return Ok(comments);
+            return Ok(comments.Select(c => maskAsker && c.UserId == question.UserId
+                ? new { c.Id, c.Content, c.CreatedAt, UserId = (int?)null, UserName = QuestionVisibility.AnonymousName, UserPicture = (string?)null }
+                : new { c.Id, c.Content, c.CreatedAt, UserId = (int?)c.UserId, c.UserName, c.UserPicture }));
         }
 
         [HttpPost("{answerId}/comments")]
@@ -151,9 +164,9 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            var answer = await _db.Answers.FirstOrDefaultAsync(x => x.Id == answerId);
+            var question = await QuestionOfAsync(answerId);
 
-            if (answer == null)
+            if (question == null || !QuestionVisibility.CanSee(question, user))
             {
                 return NotFound();
             }
@@ -207,6 +220,10 @@ namespace backend.Controllers
             await _db.SaveChangesAsync();
             return Ok();
         }
-    }
 
+        // The question an answer belongs to, with its answers loaded for CanSee.
+        private Task<Question?> QuestionOfAsync(int answerId) =>
+            _db.Questions.Include(q => q.Answers)
+                .FirstOrDefaultAsync(q => q.Answers.Any(a => a.Id == answerId));
+    }
 }

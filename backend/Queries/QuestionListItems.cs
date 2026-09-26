@@ -3,7 +3,8 @@ using backend.Models;
 
 namespace backend.Queries
 {
-    // One question as the lists show it: GET /api/question, /mine and /browse.
+    // One question as the lists show it: GET /api/question, /mine and /browse. Pass it
+    // through QuestionVisibility.Mask before returning it to anyone.
     public class QuestionListItem
     {
         public int Id { get; set; }
@@ -12,7 +13,8 @@ namespace backend.Queries
         public DateTime CreatedAt { get; set; }
         public int Views { get; set; }
         public string? Category { get; set; }
-        public int UserId { get; set; }
+        // Null for an anonymous asker the viewer may not see (QuestionVisibility.Mask).
+        public int? UserId { get; set; }
         public string UserName { get; set; } = "";
         public string? UserPicture { get; set; }
         public string? AnsweredBy { get; set; }
@@ -21,10 +23,19 @@ namespace backend.Queries
         public bool IsAnswered { get; set; }
         public int CommentCount { get; set; }
         public int ReadMinutes { get; set; }
+        public bool IsAnonymous { get; set; }
+        public bool AllowPublish { get; set; }
+        public PersonRef? DirectedTo { get; set; }
 
         // Used by /browse to filter by ustadz; not part of the response.
         [JsonIgnore]
         public int? AnsweredById { get; set; }
+    }
+
+    public class PersonRef
+    {
+        public int Id { get; set; }
+        public string Name { get; set; } = "";
     }
 
     public static class QuestionListItems
@@ -44,6 +55,9 @@ namespace backend.Queries
                 Views = x.Views,
                 Category = x.Category == null ? null : x.Category.Key,
                 UserId = x.User.Id,
+                IsAnonymous = x.IsAnonymous,
+                AllowPublish = x.AllowPublish,
+                DirectedTo = x.DirectedTo == null ? null : new PersonRef { Id = x.DirectedTo.Id, Name = x.DirectedTo.Name },
                 UserName = x.User.Name,
                 UserPicture = x.User.Picture,
                 AnsweredById = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.UserId).FirstOrDefault(),

@@ -101,11 +101,18 @@ function UstadzDetail() {
                     </MonoLabel>
                   </div>
                 </div>
-                {canEdit && (
-                  <Button as={Link} to={`/ustadz/${id}/ubah`} variant="outline" className="px-5 py-3">
-                    Ubah profil ustadz
-                  </Button>
-                )}
+                <div className="flex flex-wrap gap-3">
+                  {String(me?.id) !== String(id) && (
+                    <Button as={Link} to={`/question/create?ustadz=${id}`} className="px-5 py-3">
+                      Tanya ustadz ini
+                    </Button>
+                  )}
+                  {canEdit && (
+                    <Button as={Link} to={`/ustadz/${id}/ubah`} variant="outline" className="px-5 py-3">
+                      Ubah profil ustadz
+                    </Button>
+                  )}
+                </div>
               </div>
             </PageHeader>
 

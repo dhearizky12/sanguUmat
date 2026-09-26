@@ -8,11 +8,13 @@ import MonoLabel from "../components/MonoLabel";
 import QuestionCard from "../components/QuestionCard";
 import { FilterChip, FilterRow } from "../components/Filters";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
+import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
 import { ALL_CATEGORIES, useCategories } from "../lib/category";
 
 function AnswerQueue() {
   const categories = useCategories();
+  const { me } = useAuth();
   const [questions, setQuestions] = useState([]);
   const [loading, setLoading] = useState(true);
   const [category, setCategory] = useState("semua");
@@ -46,7 +48,9 @@ function AnswerQueue() {
     };
   }, []);
 
+  // The server lists questions directed to this ustadz first, then newest first.
   const filtered = category === "semua" ? questions : questions.filter((q) => q.category === category);
+  const toMe = filtered.filter((q) => q.directedTo && String(q.directedTo.id) === String(me?.id)).length;
 
   return (
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
@@ -73,7 +77,9 @@ function AnswerQueue() {
 
           <div className="pb-3 border-b border-ink">
             <MonoLabel className="text-ink-muted">
-              {loading ? "Memuat…" : `${filtered.length} pertanyaan menunggu jawaban`}
+              {loading
+                ? "Memuat…"
+                : `${filtered.length} pertanyaan menunggu jawaban${toMe > 0 ? ` · ${toMe} ditujukan kepada Anda` : ""}`}
             </MonoLabel>
           </div>
 
@@ -89,7 +95,7 @@ function AnswerQueue() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-10">
               {filtered.map((q) => (
-                <QuestionCard key={q.id} slug={q.id} question={q} />
+                <QuestionCard key={q.id} slug={q.id} question={q} flags meId={me?.id} />
               ))}
             </div>
           )}

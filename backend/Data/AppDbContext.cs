@@ -41,6 +41,12 @@ namespace backend.Data
                 .HasForeignKey(x => x.CategoryId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+            modelBuilder.Entity<Question>()
+                .HasOne(x => x.DirectedTo)
+                .WithMany()
+                .HasForeignKey(x => x.DirectedToId)
+                .OnDelete(DeleteBehavior.SetNull);
+
             modelBuilder.Entity<UstadzProfile>().HasKey(x => x.UserId);
             modelBuilder.Entity<UstadzProfile>()
                 .HasOne(x => x.User)

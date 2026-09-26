@@ -174,7 +174,8 @@ namespace backend.Controllers
 
         // Answers are only ever on published questions (a question is published once answered).
         private async Task<Dictionary<int, int>> AnswerCountsAsync(List<int> ids) =>
-            await _db.Answers.Where(a => ids.Contains(a.UserId))
+            // Only answers on published questions: a private answer is not shown, so not counted.
+            await _db.Answers.Where(a => ids.Contains(a.UserId) && a.Question.AllowPublish)
                 .GroupBy(a => a.UserId)
                 .Select(g => new { g.Key, Count = g.Count() })
                 .ToDictionaryAsync(x => x.Key, x => x.Count);

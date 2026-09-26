@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Breadcrumb from "../components/Breadcrumb";
@@ -8,6 +8,7 @@ import Loading from "../components/Loading";
 import LogoMark from "../components/LogoMark";
 import MonoLabel from "../components/MonoLabel";
 import MyQuestions from "../components/ask/MyQuestions";
+import CheckRow from "../components/CheckRow";
 import { FieldLabel, Input, Select, TextArea, FormError } from "../components/Field";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
@@ -16,8 +17,8 @@ import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 import { loginPath } from "../lib/next";
 
 // The Ajukan Pertanyaan canvas, built to what the backend supports today. Left out until
-// their roadmap changes land: the monthly quota, ticket numbers and review statuses, the
-// ustadz picker, anonymous posting and the review-flow panel.
+// their roadmap changes land: the monthly quota, ticket numbers and review statuses, and
+// the review-flow panel. `?ustadz=<id>` preselects "Ditujukan kepada" (from an ustadz's page).
 const TIPS = [
   "Satu pertanyaan untuk satu masalah, agar jawabannya bisa fokus.",
   "Sebutkan konteksnya: pekerjaan, kondisi kesehatan, atau kebiasaan setempat yang relevan.",
@@ -54,6 +55,11 @@ function CreateQuestion() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [category, setCategory] = useState("");
+  const [params] = useSearchParams();
+  const [directedTo, setDirectedTo] = useState(params.get("ustadz") ?? "");
+  const [isAnonymous, setIsAnonymous] = useState(false);
+  const [allowPublish, setAllowPublish] = useState(true);
+  const [ustadzList, setUstadzList] = useState([]);
   const [error, setError] = useState("");
   const [sending, setSending] = useState(false);
   const [sent, setSent] = useState(false);
@@ -94,6 +100,13 @@ function CreateQuestion() {
     };
   }, [isAuthenticated, refreshKey]);
 
+  useEffect(() => {
+    fetch(`${API_URL}/api/ustadz`)
+      .then((res) => (res.ok ? res.json() : []))
+      .then((list) => setUstadzList([...list].sort((a, b) => a.name.localeCompare(b.name, "id"))))
+      .catch((err) => console.error(err));
+  }, []);
+
   const submitQuestion = async (e) => {
     e.preventDefault();
 
@@ -114,6 +127,9 @@ function CreateQuestion() {
           title,
           content,
           category: category || null,
+          directedTo: directedTo ? Number(directedTo) : null,
+          isAnonymous,
+          allowPublish,
         }),
       });
 
@@ -121,10 +137,13 @@ function CreateQuestion() {
         setTitle("");
         setContent("");
         setCategory("");
+        setDirectedTo("");
+        setIsAnonymous(false);
+        setAllowPublish(true);
         setSent(true);
         setRefreshKey((k) => k + 1);
       } else {
-        setError("Gagal mengirim pertanyaan. Silakan coba lagi.");
+        setError((response.status === 400 && (await response.text())) || "Gagal mengirim pertanyaan. Silakan coba lagi.");
       }
     } catch (err) {
       console.error(err);
@@ -190,18 +209,34 @@ function CreateQuestion() {
               </div>
             ) : (
               <form onSubmit={submitQuestion} className="flex flex-col gap-6 pt-6">
-                <div className="flex flex-col gap-2.5 max-w-[360px]">
-                  <FieldLabel htmlFor="ask-category">
-                    Kategori <span className="text-ink-hint">opsional</span>
-                  </FieldLabel>
-                  <Select id="ask-category" value={category} onChange={(e) => setCategory(e.target.value)}>
-                    <option value="">Pilih kategori</option>
-                    {categories.map((cat) => (
-                      <option key={cat.key} value={cat.key}>
-                        {cat.name}
-                      </option>
-                    ))}
-                  </Select>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-6">
+                  <div className="flex flex-col gap-2.5">
+                    <FieldLabel htmlFor="ask-category">
+                      Kategori <span className="text-ink-hint">opsional</span>
+                    </FieldLabel>
+                    <Select id="ask-category" value={category} onChange={(e) => setCategory(e.target.value)}>
+                      <option value="">Pilih kategori</option>
+                      {categories.map((cat) => (
+                        <option key={cat.key} value={cat.key}>
+                          {cat.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
+
+                  <div className="flex flex-col gap-2.5">
+                    <FieldLabel htmlFor="ask-ustadz">
+                      Ditujukan kepada <span className="text-ink-hint">opsional</span>
+                    </FieldLabel>
+                    <Select id="ask-ustadz" value={directedTo} onChange={(e) => setDirectedTo(e.target.value)}>
+                      <option value="">Ustadz mana saja</option>
+                      {ustadzList.map((u) => (
+                        <option key={u.id} value={String(u.id)}>
+                          {u.name}
+                        </option>
+                      ))}
+                    </Select>
+                  </div>
                 </div>
 
                 <div className="flex flex-col gap-2.5">
@@ -228,6 +263,15 @@ function CreateQuestion() {
                     invalid={!!error && !content.trim()}
                     size="lg"
                   />
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  <CheckRow checked={isAnonymous} onChange={setIsAnonymous}>
+                    Tampilkan sebagai anonim. Nama saya disembunyikan dari halaman publik.
+                  </CheckRow>
+                  <CheckRow checked={allowPublish} onChange={setAllowPublish}>
+                    Jawaban boleh ditayangkan di Tanya Jawab agar bermanfaat bagi jamaah lain.
+                  </CheckRow>
                 </div>
 
                 {error && (
