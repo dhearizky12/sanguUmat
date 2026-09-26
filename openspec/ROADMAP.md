@@ -94,7 +94,7 @@ facets, sort and paging. Depends on 3 and 5.
 "Khusus Anggota" tag, the Akses facet and the "Jadi Anggota" banner arrive with
 `membership`.)
 
-### 12. `ngaji-bareng` — full stack
+### 12. `ngaji-bareng` — full stack — ✓ archived 2026-09-26
 Live sessions and the recordings archive: live state and viewer count, weekly
 schedule in WIB, series and session numbering, durations, catatan ngaji, and
 the member-only parts. Needs the video source decided first — an embed versus a
