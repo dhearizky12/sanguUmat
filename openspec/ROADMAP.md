@@ -41,7 +41,7 @@ migration each time. The design's twelve topics then become data, not a code
 change. Needs a backfill for questions already categorised and a decision on
 uncategorised ones.
 
-### 3. `listing-sort-pagination-facets` — full stack
+### 3. `listing-sort-pagination-facets` — full stack — ✓ archived 2026-09-26
 Sort (Terbaru, Terlama, Paling banyak dibaca, Waktu baca tersingkat, Judul
 A–Z), pagination, and facet counts on the questions endpoint. Every list in the
 design needs these, so building them once unblocks Tanya Jawab, Artikel and
@@ -50,7 +50,9 @@ Ngaji Bareng alike. Depends on 2 for category facets.
 ### 4. `ustadz-profiles` — full stack
 Promote Ustadz from a role string to something with a profile: Dewan Ustadz
 listing, per-ustadz page, verified badge, and the per-ustadz facet counts the
-Tanya Jawab and Artikel canvases filter on. Depends on 3 for facets.
+Tanya Jawab and Artikel canvases filter on. Depends on 3 for facets. (The Ustadz
+facet on Tanya Jawab already shipped with change 3, credited by featured answer;
+this change adds the profile pages it can link to.)
 
 ### 5. `membership` — full stack
 The tier behind "Khusus Anggota" and every "Jadi Anggota" call to action.

@@ -35,5 +35,5 @@
 
 ## 3. Roadmap
 
-- [ ] 3.1 On archive, tick change 3 and note in change 4 that the Ustadz facet
+- [x] 3.1 On archive, tick change 3 and note in change 4 that the Ustadz facet
       already exists. Verify: `openspec validate listing-sort-pagination-facets`.
