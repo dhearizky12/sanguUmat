@@ -66,6 +66,10 @@ function UstadzDetail() {
   const notFound = loaded.id === id && loaded.notFound;
   const canEdit = me && (String(me.id) === String(id) || me.role === "Admin");
   const answerData = answers?.data;
+  // With nothing in the profile, the aside is dropped for visitors (the answers take the full
+  // width) and becomes a nudge to fill it in for the ustadz and Admins.
+  const hasProfile = !!ustadz && (!!ustadz.bio || ustadz.expertise.length > 0 || ustadz.education.length > 0);
+  const showAside = hasProfile || canEdit;
 
   return (
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
@@ -116,35 +120,52 @@ function UstadzDetail() {
               </div>
             </PageHeader>
 
-            <PageBody className="grid grid-cols-1 lg:grid-cols-[300px_minmax(0,1fr)] gap-x-[clamp(32px,5vw,60px)] gap-y-10 items-start">
-              <aside className="flex flex-col gap-8 lg:sticky lg:top-24">
-                {ustadz.bio && (
-                  <AsideSection title="Profil singkat">
-                    <p className="text-base leading-relaxed text-ink-soft whitespace-pre-line text-pretty">{ustadz.bio}</p>
-                  </AsideSection>
-                )}
-                {ustadz.expertise.length > 0 && (
-                  <AsideSection title="Bidang keahlian">
-                    <ExpertiseTags expertise={ustadz.expertise} ustadzId={ustadz.id} />
-                  </AsideSection>
-                )}
-                {ustadz.education.length > 0 && (
-                  <AsideSection title="Riwayat pendidikan">
-                    <ul className="flex flex-col">
-                      {ustadz.education.map((e, i) => (
-                        <li key={i} className="flex flex-col gap-0.5 py-3 border-b border-stone-line-soft">
-                          <span className="text-base text-ink">{e.institution}</span>
-                          {(e.degree || years(e)) && (
-                            <MonoLabel size="xs" className="text-ink-faint">
-                              {[e.degree, years(e)].filter(Boolean).join(" · ")}
-                            </MonoLabel>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-                  </AsideSection>
-                )}
-              </aside>
+            <PageBody
+              className={`grid grid-cols-1 gap-x-[clamp(32px,5vw,60px)] gap-y-10 items-start ${
+                showAside ? "lg:grid-cols-[300px_minmax(0,1fr)]" : ""
+              }`}
+            >
+              {showAside && (
+                <aside className="flex flex-col gap-8 lg:sticky lg:top-24">
+                  {!hasProfile && (
+                    <div className="flex flex-col gap-3 border border-dashed border-stone-dotted p-5">
+                      <span className="text-lg text-ink">Profil belum diisi.</span>
+                      <p className="text-[15px] leading-relaxed text-ink-muted">
+                        Tambahkan profil singkat, bidang keahlian, dan riwayat pendidikan agar jamaah mengenal ustadz ini.
+                      </p>
+                      <Button as={Link} to={`/ustadz/${id}/ubah`} variant="link" className="self-start">
+                        Lengkapi profil
+                      </Button>
+                    </div>
+                  )}
+                  {ustadz.bio && (
+                    <AsideSection title="Profil singkat">
+                      <p className="text-base leading-relaxed text-ink-soft whitespace-pre-line text-pretty">{ustadz.bio}</p>
+                    </AsideSection>
+                  )}
+                  {ustadz.expertise.length > 0 && (
+                    <AsideSection title="Bidang keahlian">
+                      <ExpertiseTags expertise={ustadz.expertise} ustadzId={ustadz.id} />
+                    </AsideSection>
+                  )}
+                  {ustadz.education.length > 0 && (
+                    <AsideSection title="Riwayat pendidikan">
+                      <ul className="flex flex-col">
+                        {ustadz.education.map((e, i) => (
+                          <li key={i} className="flex flex-col gap-0.5 py-3 border-b border-stone-line-soft">
+                            <span className="text-base text-ink">{e.institution}</span>
+                            {(e.degree || years(e)) && (
+                              <MonoLabel size="xs" className="text-ink-faint">
+                                {[e.degree, years(e)].filter(Boolean).join(" · ")}
+                              </MonoLabel>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+                    </AsideSection>
+                  )}
+                </aside>
+              )}
 
               <section className="flex flex-col min-w-0">
                 <SectionHeading
@@ -157,7 +178,8 @@ function UstadzDetail() {
                   <EmptyState className="mt-6" title="Belum ada jawaban." message="Jawaban ustadz ini akan tampil di sini." />
                 ) : (
                   <>
-                    <div className="grid grid-cols-1 min-[900px]:grid-cols-2 min-[900px]:gap-x-10">
+                    {/* Beside the profile the column is too narrow for two cards, so they stack. */}
+                    <div className={showAside ? "flex flex-col" : "grid grid-cols-1 min-[900px]:grid-cols-2 min-[900px]:gap-x-10"}>
                       {answerData.items.map((q) => (
                         <QuestionCard key={q.id} slug={q.id} question={q} />
                       ))}

@@ -102,6 +102,10 @@ the design system and in Bahasa Indonesia.
   bio, expertise and education — and "Jawaban dari {name}": their answered
   questions, eight a page, with pagination
 - **AND** a missing part of the profile is simply left out
+- **WHEN** the whole profile is empty
+- **THEN** visitors see the answers across the full width, with no profile
+  column; the ustadz and Admins instead see "Profil belum diisi." with
+  "Lengkapi profil"
 - **WHEN** the id is not a Guru
 - **THEN** the page shows "Ustadz tidak ditemukan." with a link to Dewan Ustadz
 
