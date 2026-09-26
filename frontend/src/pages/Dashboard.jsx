@@ -2,61 +2,58 @@ import { useEffect, useState } from "react";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import HeroSearch from "../components/dashboard/HeroSearch";
+import LiveStrip from "../components/dashboard/LiveStrip";
 import QuestionListSection from "../components/dashboard/QuestionListSection";
+import NgajiSection from "../components/dashboard/NgajiSection";
+import ArticleSection from "../components/dashboard/ArticleSection";
 import CtaSection from "../components/dashboard/CtaSection";
 import { API_URL } from "../lib/api";
 
-const MAX_LIST_ITEMS = 8;
+const LIST_SIZE = 8;
 
-function Dashboard() {
-  const [answeredQuestions, setAnsweredQuestions] = useState([]);
-  const [loadingAnswered, setLoadingAnswered] = useState(true);
-
+// One GET that resolves to its JSON, or null if it fails — each home section then shows or
+// hides on its own, and one failing request never blanks the page.
+function useJson(path) {
+  const [state, setState] = useState({ loading: true, data: null });
   useEffect(() => {
-    // GET /api/question?status=answered gives the real answered set, but still no answer
-    // content in the list response, so each one's detail is fetched to get the actual answer
-    // text to preview. Fine for a homepage widget at today's question volume; revisit if this
-    // ever needs to scale further.
-    const fetchAnswered = async () => {
-      setLoadingAnswered(true);
-      try {
-        const listRes = await fetch(`${API_URL}/api/question?status=answered`, { credentials: "include" });
-        if (!listRes.ok) throw new Error("Failed to fetch questions");
-        const list = await listRes.json();
-
-        const details = await Promise.all(
-          list.map((q) =>
-            fetch(`${API_URL}/api/question/${q.id}`)
-              .then((r) => (r.ok ? r.json() : null))
-              .then((detail) => (detail ? { ...q, ...detail } : null))
-              .catch(() => null)
-          )
-        );
-
-        setAnsweredQuestions(details.filter((d) => d && d.answers && d.answers.length > 0));
-      } catch (err) {
+    let cancelled = false;
+    fetch(`${API_URL}${path}`, { credentials: "include" })
+      .then((res) => (res.ok ? res.json() : null))
+      .catch((err) => {
         console.error(err);
-      } finally {
-        setLoadingAnswered(false);
-      }
+        return null;
+      })
+      .then((data) => !cancelled && setState({ loading: false, data }));
+    return () => {
+      cancelled = true;
     };
+  }, [path]);
+  return state;
+}
 
-    fetchAnswered();
-  }, []);
-
-  const latestQuestions = answeredQuestions.slice(0, MAX_LIST_ITEMS);
+// Beranda, after the home canvas: hero, live strip, Jawaban Terbaru, Ngaji Bareng, Artikel
+// Pilihan and the call to action. Five parallel requests, none per item.
+function Dashboard() {
+  const summary = useJson("/api/home/summary");
+  const answers = useJson(`/api/question/browse?pageSize=${LIST_SIZE}`);
+  const now = useJson("/api/kajian/now");
+  const recordings = useJson("/api/kajian?pageSize=4");
+  const articles = useJson("/api/articles?pageSize=4");
 
   return (
     <div className="font-serif min-h-screen flex flex-col bg-cream text-ink">
       <Header />
 
       <main className="grow">
-        <HeroSearch answeredCount={answeredQuestions.length} />
+        <HeroSearch summary={summary.data} />
+        {now.data?.live && <LiveStrip kajian={now.data.live} />}
         <QuestionListSection
-          questions={latestQuestions}
-          loading={loadingAnswered}
-          totalCount={answeredQuestions.length}
+          questions={answers.data?.items ?? []}
+          loading={answers.loading}
+          totalCount={answers.data?.totalPublished ?? 0}
         />
+        <NgajiSection now={now.data} recordings={recordings.data?.items} />
+        <ArticleSection articles={articles.data?.items} />
         <CtaSection />
       </main>
 

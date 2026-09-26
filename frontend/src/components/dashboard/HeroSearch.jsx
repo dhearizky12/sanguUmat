@@ -2,6 +2,9 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import MonoLabel from "../MonoLabel";
 import Button from "../Button";
+import { daysAgoLabel } from "../../lib/wib";
+
+const nf = new Intl.NumberFormat("id-ID");
 
 // Topics cycled through the search placeholder via a typewriter effect, so the copy itself
 // demonstrates the site covers more than just Fiqh.
@@ -41,7 +44,8 @@ function useTypewriterPlaceholder(paused) {
   return `Cari pertanyaan, misalnya: ${SEARCH_TOPICS[topicIndex].slice(0, typedLength)}`;
 }
 
-function HeroSearch({ answeredCount }) {
+// `summary` is GET /api/home/summary: published answers, ustadz, and the newest answer.
+function HeroSearch({ summary }) {
   const [search, setSearch] = useState("");
   const navigate = useNavigate();
   const placeholder = useTypewriterPlaceholder(search.trim() !== "");
@@ -99,8 +103,11 @@ function HeroSearch({ answeredCount }) {
           ))}
         </div>
 
-        {answeredCount > 0 && (
-          <MonoLabel as="div" className="mt-2 text-sage-dark">{answeredCount} jawaban terverifikasi</MonoLabel>
+        {summary?.publishedAnswers > 0 && (
+          <MonoLabel as="div" className="mt-2 text-sage-dark">
+            {nf.format(summary.publishedAnswers)} jawaban terverifikasi &nbsp;/&nbsp; {nf.format(summary.ustadz)} ustadz
+            {summary.lastAnsweredAt && <> &nbsp;/&nbsp; diperbarui {daysAgoLabel(summary.lastAnsweredAt)}</>}
+          </MonoLabel>
         )}
       </div>
     </section>

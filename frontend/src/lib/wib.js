@@ -9,6 +9,17 @@ const fullDateFmt = new Intl.DateTimeFormat("id-ID", { timeZone: TZ, day: "numer
 const timeFmt = new Intl.DateTimeFormat("id-ID", { timeZone: TZ, hour: "2-digit", minute: "2-digit", hour12: false });
 
 export const wibDay = (iso) => dayFmt.format(new Date(iso));
+
+// The WIB calendar date as a day number, so two moments can be compared by date.
+export const wibDateKey = (value) => Math.floor((new Date(value).getTime() + WIB_OFFSET_MS) / 86_400_000);
+
+// "hari ini", "kemarin", "3 hari lalu" by WIB calendar date.
+export function daysAgoLabel(iso, now = Date.now()) {
+  const days = wibDateKey(now) - wibDateKey(iso);
+  if (days <= 0) return "hari ini";
+  if (days === 1) return "kemarin";
+  return `${days} hari lalu`;
+}
 export const wibDate = (iso) => dateFmt.format(new Date(iso));
 export const wibFullDate = (iso) => fullDateFmt.format(new Date(iso));
 // "19.30", the Indonesian way of writing times.

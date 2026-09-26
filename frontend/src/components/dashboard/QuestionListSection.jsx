@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
-import QuestionListItem from "./QuestionListItem";
+import QuestionCard from "../QuestionCard";
 import MonoLabel from "../MonoLabel";
 import SectionHeading from "../SectionHeading";
 import Button from "../Button";
@@ -8,6 +8,8 @@ import EmptyState from "../EmptyState";
 import LoadingState from "../LoadingState";
 import { OneColumnIcon, TwoColumnIcon } from "../Icons";
 
+// "Jawaban Terbaru": the first page of published questions from the browse endpoint, as the
+// same cards Tanya Jawab shows — so nothing is fetched per question.
 function QuestionListSection({ questions, loading, totalCount, activeCategoryLabel }) {
   const [columns, setColumns] = useState(2);
 
@@ -54,14 +56,14 @@ function QuestionListSection({ questions, loading, totalCount, activeCategoryLab
         <LoadingState message="Memuat pertanyaan terjawab…" />
       ) : questions.length === 0 ? (
         <EmptyState
-          title="Belum ada jawaban yang cocok."
-          message="Coba kategori lain, atau ajukan pertanyaanmu langsung kepada para ustadz."
+          title="Belum ada jawaban."
+          message="Jawaban para ustadz akan tampil di sini. Ajukan pertanyaanmu langsung kepada mereka."
           action={{ label: "Ajukan Pertanyaan", to: "/question/create" }}
         />
       ) : (
         <div className={columns === 2 ? "grid grid-cols-1 md:grid-cols-2 md:gap-x-10" : "flex flex-col"}>
           {questions.map((question) => (
-            <QuestionListItem key={question.id} question={question} />
+            <QuestionCard key={question.id} slug={question.id} question={question} />
           ))}
         </div>
       )}
