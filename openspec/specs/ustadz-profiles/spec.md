@@ -109,6 +109,20 @@ the design system and in Bahasa Indonesia.
 - **WHEN** the id is not a Guru
 - **THEN** the page shows "Ustadz tidak ditemukan." with a link to Dewan Ustadz
 
+#### Scenario: The ustadz's work in tabs
+
+- **WHEN** the ustadz has published articles or leads kajian
+- **THEN** the main column offers tabs "Jawaban (N)", "Artikel (N)" and "Kajian
+  (N)", each shown only when it has something, with Jawaban first
+- **AND** Artikel lists their published articles as on Artikel, newest first,
+  eight a page, with pagination
+- **AND** Kajian lists their live and this week's kajian first, then their
+  recordings, newest first, eight a page, with pagination
+- **AND** the chosen tab and its page are kept in the URL (`?tab=artikel`,
+  `?tab=kajian`, `?page=N`), and switching tab returns to page 1
+- **WHEN** they have only answers
+- **THEN** there are no tabs and the page shows "Jawaban dari {name}" as before
+
 #### Scenario: Editing from the app
 
 - **WHEN** the ustadz or an Admin views the ustadz's page

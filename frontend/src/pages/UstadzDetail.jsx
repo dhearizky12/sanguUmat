@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useParams, useSearchParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Avatar from "../components/Avatar";
@@ -8,10 +8,8 @@ import Button from "../components/Button";
 import EmptyState from "../components/EmptyState";
 import LoadingState from "../components/LoadingState";
 import MonoLabel from "../components/MonoLabel";
-import Pagination from "../components/Pagination";
-import QuestionCard from "../components/QuestionCard";
-import SectionHeading from "../components/SectionHeading";
 import ExpertiseTags from "../components/ustadz/ExpertiseTags";
+import UstadzWork from "../components/ustadz/UstadzWork";
 import { PageBody, PageHeader } from "../components/Page";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL, pictureUrl } from "../lib/api";
@@ -34,15 +32,12 @@ function AsideSection({ title, children }) {
   );
 }
 
-// One ustadz: their profile beside the questions they answered, paged through the
-// browse endpoint (?page= in the URL). Parts of the profile left empty are left out.
+// One ustadz: their profile beside their work — answers, articles and kajian
+// (components/ustadz/UstadzWork). Parts of the profile left empty are left out.
 function UstadzDetail() {
   const { id } = useParams();
-  const [params, setParams] = useSearchParams();
-  const page = Math.max(1, Number.parseInt(params.get("page") ?? "1", 10) || 1);
   const { me } = useAuth();
   const [loaded, setLoaded] = useState({ id: null, ustadz: null, notFound: false });
-  const [answers, setAnswers] = useState(null);
 
   useEffect(() => {
     fetch(`${API_URL}/api/ustadz/${id}`)
@@ -51,21 +46,9 @@ function UstadzDetail() {
       .catch(() => setLoaded({ id, ustadz: null, notFound: true }));
   }, [id]);
 
-  useEffect(() => {
-    let cancelled = false;
-    fetch(`${API_URL}/api/question/browse?ustadz=${id}&page=${page}`)
-      .then((res) => (res.ok ? res.json() : null))
-      .then((data) => !cancelled && setAnswers({ key: `${id}:${page}`, data }))
-      .catch((err) => console.error(err));
-    return () => {
-      cancelled = true;
-    };
-  }, [id, page]);
-
   const ustadz = loaded.id === id ? loaded.ustadz : null;
   const notFound = loaded.id === id && loaded.notFound;
   const canEdit = me && (String(me.id) === String(id) || me.role === "Admin");
-  const answerData = answers?.data;
   // With nothing in the profile, the aside is dropped for visitors (the answers take the full
   // width) and becomes a nudge to fill it in for the ustadz and Admins.
   const hasProfile = !!ustadz && (!!ustadz.bio || ustadz.expertise.length > 0 || ustadz.education.length > 0);
@@ -167,34 +150,7 @@ function UstadzDetail() {
                 </aside>
               )}
 
-              <section className="flex flex-col min-w-0">
-                <SectionHeading
-                  title={`Jawaban dari ${ustadz.name}`}
-                  meta={answerData ? `${formatCount(answerData.total)} jawaban` : ""}
-                />
-                {!answerData ? (
-                  <LoadingState message="Memuat jawaban…" />
-                ) : answerData.items.length === 0 ? (
-                  <EmptyState className="mt-6" title="Belum ada jawaban." message="Jawaban ustadz ini akan tampil di sini." />
-                ) : (
-                  <>
-                    {/* Beside the profile the column is too narrow for two cards, so they stack. */}
-                    <div className={showAside ? "flex flex-col" : "grid grid-cols-1 min-[900px]:grid-cols-2 min-[900px]:gap-x-10"}>
-                      {answerData.items.map((q) => (
-                        <QuestionCard key={q.id} slug={q.id} question={q} />
-                      ))}
-                    </div>
-                    <Pagination
-                      page={answerData.page}
-                      totalPages={answerData.totalPages}
-                      onChange={(p) => {
-                        setParams(p > 1 ? { page: String(p) } : {});
-                        window.scrollTo({ top: 0, behavior: "smooth" });
-                      }}
-                    />
-                  </>
-                )}
-              </section>
+              <UstadzWork ustadz={ustadz} stack={showAside} />
             </PageBody>
           </>
         )}
