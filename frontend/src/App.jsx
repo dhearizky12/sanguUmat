@@ -21,6 +21,10 @@ import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCategories from "./pages/AdminCategories";
+import AdminOverview from "./pages/AdminOverview";
+import AdminQuestions from "./pages/AdminQuestions";
+import AdminComments from "./pages/AdminComments";
+import AdminContent from "./pages/AdminContent";
 import MyArticles from "./pages/MyArticles";
 import Notifications from "./pages/Notifications";
 import KajianDetail from "./pages/KajianDetail";
@@ -102,6 +106,10 @@ function App() {
 
           {/* Admin only */}
           <Route element={<RoleGuard allow={["Admin"]} />}>
+            <Route path="/admin" element={<AdminOverview />} />
+            <Route path="/admin/pertanyaan" element={<AdminQuestions />} />
+            <Route path="/admin/komentar" element={<AdminComments />} />
+            <Route path="/admin/konten" element={<AdminContent />} />
             <Route path="/admin/users" element={<AdminUsers />} />
             <Route path="/admin/categories" element={<AdminCategories />} />
           </Route>

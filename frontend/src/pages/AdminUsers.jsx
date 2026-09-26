@@ -95,7 +95,7 @@ function AdminUsers() {
       <Header />
       <main className="grow">
         <PageHeader>
-          <Breadcrumb items={[{ label: "Panel Admin", to: "/admin/users" }, { label: "Pengguna" }]} />
+          <Breadcrumb items={[{ label: "Panel Admin", to: "/admin" }, { label: "Pengguna" }]} />
           <div className="flex flex-col gap-2.5">
             <PageTitle>Panel Admin</PageTitle>
             <PageLead>Kelola pengguna Sangu Umat dan peran mereka.</PageLead>

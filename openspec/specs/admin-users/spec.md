@@ -25,6 +25,13 @@ Every endpoint under `/api/admin` MUST be reachable only by an `Admin`.
 - **WHEN** a signed-in user is not an `Admin`
 - **THEN** the admin entry point is absent from the UI
 
+#### Scenario: The panel's tabs
+
+- **WHEN** an Admin opens "Panel Admin" from the header
+- **THEN** it opens on Ringkasan (`/admin`)
+- **AND** every Panel Admin page offers the tabs Ringkasan, Pertanyaan, Komentar,
+  Konten, Pengguna and Kategori
+
 ### Requirement: Browsing users
 
 An Admin MUST be able to list every user, sorted by name, and narrow the list by

@@ -96,6 +96,6 @@ Admin. Nobody else may change them.
 #### Scenario: The Kategori page
 
 - **WHEN** an Admin opens Panel Admin
-- **THEN** they can switch between "Pengguna" and "Kategori"
+- **THEN** Kategori is one of the Panel Admin tabs (see admin-users)
 - **AND** the Kategori page lists every category with its question count and its
   article count, and lets them add, rename, move up or down, and delete

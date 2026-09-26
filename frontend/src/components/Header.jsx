@@ -114,7 +114,7 @@ function Header() {
           {isAdmin && (
             <MonoLabel
               as={Link}
-              to="/admin/users"
+              to="/admin"
               className={`border px-3.5 py-2.5 whitespace-nowrap transition-colors ${
                 isMenuActive(location.pathname, ["/admin"])
                   ? "border-forest text-forest bg-cream-hover"
@@ -191,7 +191,7 @@ function Header() {
             {isAdmin && (
               <MonoLabel
                 as={Link}
-                to="/admin/users"
+                to="/admin"
                 onClick={() => setMenuOpen(false)}
                 className="py-3.5 border-b border-stone-line-soft text-forest"
               >

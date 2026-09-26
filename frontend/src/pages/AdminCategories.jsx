@@ -138,7 +138,7 @@ function AdminCategories() {
       <Header />
       <main className="grow">
         <PageHeader>
-          <Breadcrumb items={[{ label: "Panel Admin", to: "/admin/users" }, { label: "Kategori" }]} />
+          <Breadcrumb items={[{ label: "Panel Admin", to: "/admin" }, { label: "Kategori" }]} />
           <div className="flex flex-col gap-2.5">
             <PageTitle>Panel Admin</PageTitle>
             <PageLead>Kelola kategori yang dipakai untuk menyaring pertanyaan dan jawaban.</PageLead>
