@@ -21,6 +21,7 @@ namespace backend.Data
         public DbSet<UstadzExpertise> UstadzExpertise {get;set;}
         public DbSet<UstadzEducation> UstadzEducation {get;set;}
         public DbSet<Article> Articles {get;set;}
+        public DbSet<Kajian> Kajian {get;set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -74,6 +75,18 @@ namespace backend.Data
                 e.HasOne(x => x.Author).WithMany().HasForeignKey(x => x.AuthorId).OnDelete(DeleteBehavior.Cascade);
                 e.HasIndex(x => new { x.Status, x.PublishedAt });
                 e.HasIndex(x => x.AuthorId);
+            });
+
+            modelBuilder.Entity<Kajian>(e =>
+            {
+                e.Property(x => x.Title).HasMaxLength(160);
+                e.Property(x => x.Description).HasMaxLength(1000);
+                e.Property(x => x.Series).HasMaxLength(60);
+                e.Property(x => x.YoutubeId).HasMaxLength(11);
+                e.HasOne(x => x.Ustadz).WithMany().HasForeignKey(x => x.UstadzId).OnDelete(DeleteBehavior.Cascade);
+                e.HasIndex(x => x.StartsAt);
+                e.HasIndex(x => x.UstadzId);
+                e.HasIndex(x => x.Series);
             });
         }
     }

@@ -22,6 +22,8 @@ import EditProfile from "./pages/EditProfile";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCategories from "./pages/AdminCategories";
 import MyArticles from "./pages/MyArticles";
+import KajianDetail from "./pages/KajianDetail";
+import KajianManage from "./pages/KajianManage";
 import Loading from "./components/Loading";
 
 // The article editor (and TipTap with it) loads only when someone writes.
@@ -29,6 +31,12 @@ const ArticleEdit = lazy(() => import("./pages/ArticleEdit"));
 const articleEditor = (
   <Suspense fallback={<Loading />}>
     <ArticleEdit />
+  </Suspense>
+);
+const KajianEdit = lazy(() => import("./pages/KajianEdit"));
+const kajianEditor = (
+  <Suspense fallback={<Loading />}>
+    <KajianEdit />
   </Suspense>
 );
 
@@ -56,6 +64,7 @@ function App() {
           <Route path="/detail-article/:slug" element={<Navigate to="/articles" replace />} />
 
           <Route path="/live" element={<Live />} />
+          <Route path="/live/:id" element={<KajianDetail />} />
 
           <Route path="/ustadz" element={<Ustadz />} />
           <Route path="/ustadz/:id" element={<UstadzDetail />} />
@@ -71,12 +80,18 @@ function App() {
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/ustadz/:id/ubah" element={<UstadzEdit />} />
             <Route path="/articles/:id/ubah" element={articleEditor} />
+            <Route path="/live/:id/ubah" element={kajianEditor} />
           </Route>
 
           {/* Guru only */}
           <Route element={<RoleGuard allow={["Guru", "Admin"]} fallback="/articles" />}>
             <Route path="/articles/tulis" element={articleEditor} />
             <Route path="/articles/saya" element={<MyArticles />} />
+          </Route>
+
+          <Route element={<RoleGuard allow={["Guru", "Admin"]} fallback="/live" />}>
+            <Route path="/live/tambah" element={kajianEditor} />
+            <Route path="/live/kelola" element={<KajianManage />} />
           </Route>
 
           <Route element={<RoleGuard allow={["Guru"]} />}>

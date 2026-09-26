@@ -13,3 +13,6 @@ const href = document.querySelector("base")?.getAttribute("href") ?? "/";
 export const BASE_PATH = new URL(href, window.location.origin)
   .pathname
   .replace(/\/+$/, "");
+
+// A full URL to an app route, for links that leave the app (a calendar event's details).
+export const absoluteAppUrl = (path) => `${window.location.origin}${BASE_PATH}${path}`;

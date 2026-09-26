@@ -49,3 +49,13 @@ export function FormError({ children }) {
     </div>
   );
 }
+
+// The small sentence-case mono line under a field: a hint, or (`error`) what is wrong.
+// Not a MonoLabel, which is always uppercase — hints can carry ids and addresses.
+export function FieldHint({ error = false, className = "", children }) {
+  return (
+    <span className={`font-mono text-mono-label-xs leading-[1.6] tracking-[0.04em] ${error ? "text-rust" : "text-ink-hint"} ${className}`}>
+      {children}
+    </span>
+  );
+}

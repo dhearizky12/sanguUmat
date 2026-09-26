@@ -6,10 +6,9 @@ import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button";
 import Loading from "../components/Loading";
 import LoadingState from "../components/LoadingState";
-import MonoLabel from "../components/MonoLabel";
 import ArticleCover from "../components/article/ArticleCover";
 import Editor from "../components/article/Editor";
-import { FieldLabel, FormError, Input, Select, TextArea } from "../components/Field";
+import { FieldHint, FieldLabel, FormError, Input, Select, TextArea } from "../components/Field";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
@@ -229,9 +228,9 @@ function ArticleEditor({ id }) {
                         </Button>
                       )}
                     </div>
-                    <MonoLabel size="xs" className="text-ink-hint normal-case tracking-[0.04em]">
+                    <FieldHint>
                       JPG, PNG atau WebP, maksimal 5 MB. Rasio 3:2 atau 16:9 paling pas.
-                    </MonoLabel>
+                    </FieldHint>
                     {coverError && <FormError>{coverError}</FormError>}
                   </div>
                 </div>

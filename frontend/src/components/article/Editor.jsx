@@ -3,8 +3,7 @@ import { EditorContent, useEditor, useEditorState } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import { Placeholder } from "@tiptap/extensions";
 import Button from "../Button";
-import MonoLabel from "../MonoLabel";
-import { Input } from "../Field";
+import { FieldHint, Input } from "../Field";
 import { ARTICLE_TYPE } from "./articleType";
 
 // The rich text editor for an article body. Its formatting is exactly what the server keeps
@@ -207,9 +206,9 @@ export default function Editor({ value, onChange, placeholder = "Tulis isi artik
             </Button>
           </div>
           {linkError && (
-            <MonoLabel size="xs" className="text-rust normal-case tracking-[0.04em]">
+            <FieldHint error>
               {linkError}
-            </MonoLabel>
+            </FieldHint>
           )}
         </div>
       )}
