@@ -85,6 +85,8 @@ many there are, with the questions directed to them first.
 
 - **WHEN** a `Guru` opens the answer queue
 - **THEN** they see the unanswered questions and can answer them
+- **AND** each question card has a "Jawab" button, which opens the question
+  scrolled to "Tulis jawaban" with the cursor in the box
 
 #### Scenario: Directed questions
 

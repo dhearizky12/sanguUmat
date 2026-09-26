@@ -40,14 +40,16 @@ function DetailQuestion() {
       .catch(() => setLoaded({ id, question: null, notFound: true }));
   }, [id]);
 
-  // A notification links to one answer (#jawaban-{id}); scroll there once the answers exist,
-  // once per question and anchor — not again when an edit updates the question.
+  // A notification links to one answer (#jawaban-{id}), the queue's "Jawab" to the form
+  // (#jawab); scroll there once the page exists, once per question and anchor — not again
+  // when an edit updates the question.
   const scrolledTo = useRef(null);
   useEffect(() => {
     const target = `${id}${hash}`;
-    if (!question || !hash.startsWith("#jawaban-") || scrolledTo.current === target) return;
+    if (!question || !(hash.startsWith("#jawaban-") || hash === "#jawab") || scrolledTo.current === target) return;
     scrolledTo.current = target;
     document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (hash === "#jawab") document.getElementById("answer-body")?.focus({ preventScroll: true });
   }, [question, hash, id]);
 
   const canEditQuestion = me?.id === question?.userId && question?.answers.length === 0;

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import Button from "../components/Button";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingState from "../components/LoadingState";
@@ -95,7 +97,18 @@ function AnswerQueue() {
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 md:gap-x-10">
               {filtered.map((q) => (
-                <QuestionCard key={q.id} slug={q.id} question={q} flags meId={me?.id} />
+                <QuestionCard
+                  key={q.id}
+                  slug={q.id}
+                  question={q}
+                  flags
+                  meId={me?.id}
+                  action={
+                    <Button as={Link} to={`/question/detail/${q.id}#jawab`} className="px-6 py-3 tracking-[0.16em]">
+                      Jawab
+                    </Button>
+                  }
+                />
               ))}
             </div>
           )}

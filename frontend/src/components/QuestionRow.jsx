@@ -35,12 +35,15 @@ function Count({ icon, value, label }) {
 // line stay level: who asked (`asker` { name, picture }) on the left and who answered
 // (`answerer` { name, picture, isGuru }) on the right. `comments` and `readMinutes` are
 // optional. `asker.anonymous` marks an anonymous asker shown by name (to staff); `flags` is
-// an optional node beside the category (the answer queue's QuestionFlags).
-export default function QuestionRow({ to, category, date, views, comments, readMinutes, title, excerpt, asker, answerer, flags }) {
-  return (
+// an optional node beside the category (the answer queue's QuestionFlags). `action` is a
+// node set below the link, inside the same card (a link cannot hold a button).
+export default function QuestionRow({ to, category, date, views, comments, readMinutes, title, excerpt, asker, answerer, flags, action }) {
+  const link = (
     <NavLink
       to={to}
-      className="flex flex-col gap-2.5 py-6 md:px-4 border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors"
+      className={`flex flex-col gap-2.5 md:px-4 ${
+        action ? "flex-1 pt-6 pb-4" : "py-6 border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors"
+      }`}
     >
       <MonoLabel as="div" className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
         <span className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
@@ -76,5 +79,13 @@ export default function QuestionRow({ to, category, date, views, comments, readM
         </div>
       )}
     </NavLink>
+  );
+
+  if (!action) return link;
+  return (
+    <div className="flex flex-col border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors">
+      {link}
+      <div className="flex flex-wrap items-center justify-end gap-3 pb-6 md:px-4">{action}</div>
+    </div>
   );
 }

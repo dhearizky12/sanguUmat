@@ -8,7 +8,7 @@ import QuestionFlags from "./question/QuestionFlags";
 // who answered it (the list carries the answerer's name and role, not the answer text).
 // An anonymous asker arrives as "Hamba Allah" for the public; staff get the real name,
 // marked anonim. `flags` shows the asker's choices (the answer queue), `meId` the viewer.
-function QuestionCard({ slug, question, flags = false, meId }) {
+function QuestionCard({ slug, question, flags = false, meId, action }) {
   const categories = useCategories();
 
   return (
@@ -27,6 +27,7 @@ function QuestionCard({ slug, question, flags = false, meId }) {
         anonymous: question.isAnonymous && question.userId != null,
       }}
       flags={flags ? <QuestionFlags question={question} meId={meId} /> : null}
+      action={action}
       answerer={
         question.answeredBy && {
           name: question.answeredBy,

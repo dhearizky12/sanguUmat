@@ -3,7 +3,8 @@ import { API_URL } from "../../lib/api";
 import Button from "../Button";
 import { FieldLabel, TextArea } from "../Field";
 
-// The Guru's "Tulis Jawaban" box under the answers.
+// The Guru's "Tulis Jawaban" box under the answers. `#jawab` (the queue's "Jawab" button)
+// scrolls here and puts the cursor in the box.
 function AnswerForm({ questionId }) {
   const [answer, setAnswer] = useState("");
 
@@ -26,7 +27,7 @@ function AnswerForm({ questionId }) {
   };
 
   return (
-    <section className="border border-stone-line bg-paper p-[clamp(20px,3vw,28px)] flex flex-col gap-4">
+    <section id="jawab" className="scroll-mt-24 border border-stone-line bg-paper p-[clamp(20px,3vw,28px)] flex flex-col gap-4">
       <FieldLabel htmlFor="answer-body">Tulis jawaban</FieldLabel>
       <TextArea
         id="answer-body"
