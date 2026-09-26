@@ -36,6 +36,6 @@
 
 ## 3. Roadmap
 
-- [ ] 3.1 On archive, record notifications in `openspec/ROADMAP.md`, and note
+- [x] 3.1 On archive, record notifications in `openspec/ROADMAP.md`, and note
       that roadmap 7 (WhatsApp notifications) can reuse these events. Verify:
       `openspec validate notifications`.

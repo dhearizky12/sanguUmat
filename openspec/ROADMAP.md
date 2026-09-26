@@ -69,6 +69,11 @@ Completes the Masuk canvas that change 1 restyles.
 Notify an asker on WhatsApp when an ustadz starts answering. Depends on 6 for
 the provider integration and a verified phone number.
 
+In-app notifications shipped 2026-09-26 (`notifications`): the bell, the
+Notifikasi page and the event rules in `specs/notifications`. A WhatsApp (or
+any other) channel only has to deliver those same events. On hold: no paid
+service can be used, so a free channel is preferred.
+
 ### 8. `question-review-workflow` — full stack — deferred 2026-09-26
 Questions stop publishing instantly and enter a moderation queue: statuses,
 ticket id, moderator notes, and the "Perbaiki pertanyaan" revision loop, with
