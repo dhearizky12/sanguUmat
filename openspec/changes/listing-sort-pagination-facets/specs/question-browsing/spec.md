@@ -83,10 +83,9 @@ Bahasa Indonesia.
 - **WHEN** the page is wider than 900px
 - **THEN** a 232px panel sits beside the results and stays in view while
   scrolling, with a "Kategori" and an "Ustadz" section
-- **AND** each section has a search box ("Cari kategori" / "Cari ustadz"), check
-  boxes with counts, the top eight categories or five ustadz by count with
-  "Lihat semua" / "Tampilkan lebih sedikit", selected values kept visible, and a
-  "Semua" link that clears the section
+- **AND** each section has a search box ("Cari kategori" / "Cari ustadz"), and
+  lists every value, most-used first, as check boxes with counts, in a list that
+  scrolls once it passes nine rows, with a "Semua" link that clears the section
 - **WHEN** the page is 900px or narrower
 - **THEN** the panel sits above the results
 

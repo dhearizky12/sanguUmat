@@ -143,7 +143,6 @@ function Questions() {
               onToggle={(v) => toggle("categories", v)}
               onClear={() => update({ categories: [] })}
               searchLabel="Cari kategori"
-              capacity={8}
             />
             <FacetPanel
               title="Ustadz"
@@ -152,7 +151,6 @@ function Questions() {
               onToggle={(v) => toggle("ustadz", v)}
               onClear={() => update({ ustadz: [] })}
               searchLabel="Cari ustadz"
-              capacity={5}
             />
           </aside>
 

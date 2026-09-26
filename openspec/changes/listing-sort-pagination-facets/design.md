@@ -63,10 +63,10 @@ are removed.
 **URL is the single source of UI state.** `search`, `category` (repeated),
 `ustadz` (repeated), `sort` and `page` are read from and written to the query
 string; the page renders from them and fetches on change. The in-facet search
-boxes and "Lihat semua" stay local, as in the canvas.
+boxes stay local, as in the canvas.
 
-**Components.** `FacetPanel` (one facet section: search, check-box list, top-N,
-pinning, "Lihat semua"), `Pagination`, and a `SortSelect` built on the existing
+**Components.** `FacetPanel` (one facet section: search and a scrolling check-box list
+of every value), `Pagination`, and a `SortSelect` built on the existing
 `Select`. The column toggle reuses the icons from the home list section. The
 row gains a clock icon with `readMinutes` beside the view and comment counts.
 

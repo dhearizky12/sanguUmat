@@ -18,8 +18,8 @@
 - [x] 2.1 URL-state helpers for search, categories, ustadz, sort and page (any
       change but page resets to 1). Verify: reload and back/forward keep the
       state.
-- [x] 2.2 `FacetPanel` — search box, check boxes with counts, top N by count,
-      pinned selections, "Lihat semua" / "Tampilkan lebih sedikit", "Semua".
+- [x] 2.2 `FacetPanel` — search box, every value as check boxes with counts in
+      a list that scrolls past nine rows, "Semua".
       Verify in the browser with the Kategori (12) and Ustadz facets.
 - [x] 2.3 `Pagination` — "Halaman X dari Y", "Sebelumnya", numbers,
       "Berikutnya", disabled ends. Verify across first, middle and last pages.

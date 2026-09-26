@@ -4,25 +4,17 @@ import MonoLabel from "./MonoLabel";
 const SCROLL_AT = 9;
 const nf = new Intl.NumberFormat("id-ID");
 
-// One facet of the Tanya Jawab panel, after the canvas: type-to-search, the top
-// `capacity` values by count, selected values pinned in view, "Lihat semua" for the rest,
-// and a scrolling list once it grows past nine rows. `items` is [{ value, label, count }].
-export default function FacetPanel({ title, items, selected, onToggle, onClear, searchLabel, capacity }) {
+// One facet of the Tanya Jawab panel: type-to-search and every value, most-used first,
+// in a list that scrolls once it grows past nine rows. `items` is [{ value, label, count }].
+export default function FacetPanel({ title, items, selected, onToggle, onClear, searchLabel }) {
   const [query, setQuery] = useState("");
-  const [expanded, setExpanded] = useState(false);
 
   const q = query.trim().toLowerCase();
   const matched = items
     .filter((it) => !q || it.label.toLowerCase().includes(q))
     .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label, "id"));
-  let visible = expanded || q ? matched.slice(0, 200) : matched.slice(0, capacity);
-  const pinned = matched.filter((it) => selected.includes(it.value) && !visible.includes(it));
-  visible = [...pinned, ...visible];
-  const hasMore = !q && matched.length > capacity;
-  const meta =
-    visible.length < matched.length
-      ? `Menampilkan ${visible.length} dari ${nf.format(matched.length)}`
-      : `${nf.format(matched.length)} pilihan${visible.length > SCROLL_AT ? " · gulir" : ""}`;
+  const scrolls = matched.length > SCROLL_AT;
+  const meta = `${nf.format(matched.length)} pilihan`;
 
   return (
     <section className="flex flex-col">
@@ -67,12 +59,12 @@ export default function FacetPanel({ title, items, selected, onToggle, onClear, 
 
       <div
         className={`flex flex-col pt-1 ${
-          visible.length > SCROLL_AT
+          scrolls
             ? "max-h-[323px] overflow-y-auto border-b border-stone-line-soft [mask-image:linear-gradient(to_bottom,black_calc(100%-26px),transparent)]"
             : ""
         }`}
       >
-        {visible.map((it) => {
+        {matched.map((it) => {
           const active = selected.includes(it.value);
           return (
             <button
@@ -100,22 +92,9 @@ export default function FacetPanel({ title, items, selected, onToggle, onClear, 
         })}
       </div>
 
-      {visible.length === 0 && <p className="py-3.5 px-1.5 text-[15px] text-ink-faint">Tidak ditemukan.</p>}
+      {matched.length === 0 && <p className="py-3.5 px-1.5 text-[15px] text-ink-faint">Tidak ditemukan.</p>}
 
-      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1.5 pt-3">
-        <span className="basis-full font-mono text-mono-label-xs tracking-[0.1em] text-ink-hint">{meta}</span>
-        {hasMore && (
-          <MonoLabel
-            as="button"
-            type="button"
-            size="sm"
-            onClick={() => setExpanded((v) => !v)}
-            className="tracking-[0.13em] text-forest border-b border-stone-border hover:text-gold-dark cursor-pointer transition-colors"
-          >
-            {expanded ? "Tampilkan lebih sedikit" : "Lihat semua"}
-          </MonoLabel>
-        )}
-      </div>
+      <span className="pt-3 font-mono text-mono-label-xs tracking-[0.1em] text-ink-hint">{meta}</span>
     </section>
   );
 }

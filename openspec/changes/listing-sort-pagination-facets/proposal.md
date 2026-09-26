@@ -29,9 +29,9 @@ Both backend and frontend.
   minimum one minute, and shown on each row.
 - Tanya Jawab is rebuilt to the canvas:
   - left facet panel (232px, sticky; stacked above the list below 900px) with
-    Kategori and Ustadz, each with a check-box list and counts, an in-facet
-    search, the top eight categories / five ustadz with "Lihat semua", selected
-    values pinned, and "Semua" to clear the facet;
+    Kategori and Ustadz, each with an in-facet search and every value as a
+    check-box list with counts, scrolling past nine rows, and "Semua" to clear
+    the facet;
   - results bar with "N dari M jawaban", the sort select ("Urutkan") and the
     one/two-column toggle;
   - "Saringan aktif" chips for each chosen value and the search, with "Hapus
