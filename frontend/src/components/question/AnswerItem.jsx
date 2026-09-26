@@ -76,7 +76,13 @@ function AnswerItem({ answer, canManage, onUpdated }) {
     <article className="py-8 border-b border-stone-line">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} verified={answer.role === "Guru"} />
+          {answer.role === "Guru" ? (
+            <Link to={`/ustadz/${answer.userId}`} aria-hidden="true" tabIndex={-1} className="shrink-0">
+              <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} verified />
+            </Link>
+          ) : (
+            <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} />
+          )}
           <div className="flex flex-col gap-0.5 min-w-0">
             {answer.role === "Guru" ? (
               <Link to={`/ustadz/${answer.userId}`} className="font-serif text-lg text-ink hover:text-forest transition-colors">
