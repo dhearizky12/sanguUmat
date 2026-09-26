@@ -149,7 +149,7 @@ Everything the stack owns is bind-mounted into one folder, gitignored:
 
 ```
 deploy/data/postgres/   the database
-deploy/data/uploads/    profile pictures
+deploy/data/uploads/    profile pictures, and article covers under uploads/articles/
 deploy/data/dp-keys/    Data Protection key ring
 ```
 

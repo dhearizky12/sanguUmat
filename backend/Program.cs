@@ -170,7 +170,7 @@ if (app.Environment.IsDevelopment())
     app.UseHttpsRedirection();
 }
 
-// wwwroot holds two things: uploads/ (profile pictures, a mounted volume) and the
+// wwwroot holds two things: uploads/ (profile pictures and article covers, a mounted volume) and the
 // built React bundle, which the Docker build drops in next to it. Serving both
 // from here is what puts the SPA and the API on one origin.
 app.UseDefaultFiles();
