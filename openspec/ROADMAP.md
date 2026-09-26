@@ -106,5 +106,6 @@ stream or upload) played in an embedded player; nothing is hosted here.
 ## Deferred, not yet sequenced
 
 - Payment and billing behind `membership`.
-- The home page details not yet built: the one/two-column list toggle, the
-  "Sering dicari" suggestions. (The verified-ustadz badge shipped with change 4.)
+- ~~The home page details~~ — done 2026-09-26 in `home-page-sections`: live strip,
+  stats line, Ngaji Bareng and Artikel Pilihan sections (the toggle and "Sering
+  dicari" were already there; the verified-ustadz badge shipped with change 4).

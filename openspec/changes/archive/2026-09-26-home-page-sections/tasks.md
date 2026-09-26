@@ -25,6 +25,6 @@
 
 ## 3. Roadmap
 
-- [ ] 3.1 On archive, record the home page sections under "Deferred, not yet
+- [x] 3.1 On archive, record the home page sections under "Deferred, not yet
       sequenced" as done in `openspec/ROADMAP.md`. Verify:
       `openspec validate home-page-sections`.
