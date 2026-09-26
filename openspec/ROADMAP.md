@@ -60,19 +60,26 @@ Start with an admin-granted membership flag and the gating rules; leave payment
 to its own change. Gating must exist before Artikel and Ngaji Bareng ship, or
 their member-only states have nothing to check.
 
-### 6. `whatsapp-otp-login` — full stack
+### 6. `whatsapp-otp-login` — full stack — skipped 2026-09-26
 Second sign-in path beside Google: phone entry, OTP send, verify, resend
 countdown, and rate limiting. Needs a WhatsApp Business provider chosen first.
 Completes the Masuk canvas that change 1 restyles.
+Skipped: WhatsApp messages the business starts (OTP, notifications) are paid on
+the official API, and unofficial gateways risk the number being banned; only
+free services can be used. Google sign-in covers login. If people without a
+Google account become a problem, an email magic link on a free email tier is
+the fallback.
 
-### 7. `whatsapp-notifications` — full stack
+### 7. `outside-notifications` (was `whatsapp-notifications`) — full stack — skipped 2026-09-26
 Notify an asker on WhatsApp when an ustadz starts answering. Depends on 6 for
 the provider integration and a verified phone number.
 
 In-app notifications shipped 2026-09-26 (`notifications`): the bell, the
 Notifikasi page and the event rules in `specs/notifications`. A WhatsApp (or
-any other) channel only has to deliver those same events. On hold: no paid
-service can be used, so a free channel is preferred.
+any other) channel only has to deliver those same events.
+Skipped for now: the in-app bell is enough. When revisited, use a free channel:
+browser Web Push (no third party; iPhone needs Add to Home Screen), a Telegram
+bot, or email on a free tier. WhatsApp is out, since it is paid.
 
 ### 8. `question-review-workflow` — full stack — deferred 2026-09-26
 Questions stop publishing instantly and enter a moderation queue: statuses,
