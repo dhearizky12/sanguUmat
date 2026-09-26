@@ -55,3 +55,18 @@ export function TwoColumnIcon() {
     </svg>
   );
 }
+
+export function BellIcon({ size = 20 }) {
+  return (
+    <svg viewBox="0 0 24 24" width={size} height={size} aria-hidden="true" className="shrink-0">
+      <path
+        d="M6 16V11a6 6 0 1 1 12 0v5l1.5 2h-15L6 16z"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+      <path d="M10 20.5a2.2 2.2 0 0 0 4 0" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" />
+    </svg>
+  );
+}

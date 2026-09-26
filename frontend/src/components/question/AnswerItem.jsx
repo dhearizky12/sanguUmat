@@ -73,7 +73,7 @@ function AnswerItem({ answer, canManage, onUpdated }) {
   };
 
   return (
-    <article className="py-8 border-b border-stone-line">
+    <article id={`jawaban-${answer.id}`} className="py-8 border-b border-stone-line scroll-mt-24">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
           {answer.role === "Guru" ? (

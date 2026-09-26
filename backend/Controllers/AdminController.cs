@@ -2,6 +2,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
 using backend.Models;
+using backend.Notifications;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -12,10 +13,12 @@ namespace backend.Controllers
     public class AdminController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly Notifier _notifier;
 
-        public AdminController(AppDbContext db)
+        public AdminController(AppDbContext db, Notifier notifier)
         {
             _db = db;
+            _notifier = notifier;
         }
 
         [HttpGet]
@@ -97,8 +100,13 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
+            var changed = targetUser.Role != request.Role;
             targetUser.Role = request.Role;
             targetUser.UpdatedAt = DateTime.UtcNow;
+            if (changed)
+            {
+                _notifier.RoleChanged(targetUser, currentUser);
+            }
 
             await _db.SaveChangesAsync();
 

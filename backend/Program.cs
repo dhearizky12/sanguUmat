@@ -29,6 +29,7 @@ builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
 // PostgreSQL
+builder.Services.AddScoped<backend.Notifications.Notifier>();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection"),

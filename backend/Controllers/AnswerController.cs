@@ -2,6 +2,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
 using backend.Models;
+using backend.Notifications;
 using backend.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace backend.Controllers
     public class AnswerController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly Notifier _notifier;
 
-        public AnswerController(AppDbContext db)
+        public AnswerController(AppDbContext db, Notifier notifier)
         {
             _db = db;
+            _notifier = notifier;
         }
 
         [HttpPost("{questionId}")]
@@ -60,6 +63,7 @@ namespace backend.Controllers
             };
 
             _db.Answers.Add(answer);
+            await _notifier.AnswerPosted(question, answer, user);
 
             await _db.SaveChangesAsync();
 
@@ -117,6 +121,8 @@ namespace backend.Controllers
             }
 
             answer.Content = request.Content;
+            var answered = await _db.Questions.FirstAsync(q => q.Id == answer.QuestionId);
+            await _notifier.AnswerEdited(answered, answer, user);
             await _db.SaveChangesAsync();
             return Ok();
         }
@@ -179,6 +185,8 @@ namespace backend.Controllers
                 UserId = user.Id
             };
 
+            // Before the add, so the earlier commenters are exactly the ones already there.
+            await _notifier.CommentPosted(question, question.Answers.First(a => a.Id == answerId), user);
             _db.Comments.Add(comment);
             await _db.SaveChangesAsync();
 

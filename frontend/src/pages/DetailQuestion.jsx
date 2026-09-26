@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useEffect, useRef, useState } from "react";
+import { useLocation, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingState from "../components/LoadingState";
@@ -22,6 +22,7 @@ function DetailQuestion() {
   const notFound = loaded.id === id && loaded.notFound;
   const setQuestion = (update) => setLoaded((prev) => ({ ...prev, question: update(prev.question) }));
   const { me } = useAuth();
+  const { hash } = useLocation();
 
   useEffect(() => {
     fetch(`${API_URL}/api/Question/${id}`, { credentials: "include" })
@@ -38,6 +39,16 @@ function DetailQuestion() {
       })
       .catch(() => setLoaded({ id, question: null, notFound: true }));
   }, [id]);
+
+  // A notification links to one answer (#jawaban-{id}); scroll there once the answers exist,
+  // once per question and anchor — not again when an edit updates the question.
+  const scrolledTo = useRef(null);
+  useEffect(() => {
+    const target = `${id}${hash}`;
+    if (!question || !hash.startsWith("#jawaban-") || scrolledTo.current === target) return;
+    scrolledTo.current = target;
+    document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }, [question, hash, id]);
 
   const canEditQuestion = me?.id === question?.userId && question?.answers.length === 0;
   // Admin moderation isn't subject to the zero-answers rule.

@@ -1,11 +1,13 @@
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
+import { useMediaQuery } from "../hooks/useMediaQuery";
 import { API_URL } from "../lib/api";
 import Avatar from "./Avatar";
 import Brand from "./Brand";
 import MonoLabel from "./MonoLabel";
 import Button from "./Button";
+import NotificationBell from "./NotificationBell";
 import { loginPath } from "../lib/next";
 
 const NAV_ITEMS = [
@@ -31,6 +33,8 @@ function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [pendingAnswerCount, setPendingAnswerCount] = useState(null);
   const isAdmin = me?.role === "Admin";
+  // One bell only (it polls): beside the avatar on wide screens, beside the menu on phones.
+  const wide = useMediaQuery("(min-width: 768px)");
 
   useEffect(() => {
     if (me?.role !== "Guru") {
@@ -120,6 +124,7 @@ function Header() {
               Panel Admin
             </MonoLabel>
           )}
+          {isAuthenticated && wide && <NotificationBell />}
           {isAuthenticated ? (
             <Link to="/profile" aria-label="Profil saya" className="shrink-0">
               <Avatar src={profile?.picture} name={profile?.name} size={36} />
@@ -140,14 +145,18 @@ function Header() {
           )}
         </div>
 
-        <button
-          type="button"
-          onClick={() => setMenuOpen((open) => !open)}
-          aria-label="Menu"
-          className="md:hidden w-11 h-11 shrink-0 flex items-center justify-center border border-stone-border text-forest text-xl hover:bg-cream-hover"
-        >
-          {menuOpen ? "✕" : "≡"}
-        </button>
+        {/* On phones the bell stays beside the menu button, so it is seen without opening it. */}
+        <div className="md:hidden flex items-center gap-3">
+          {isAuthenticated && !wide && <NotificationBell />}
+          <button
+            type="button"
+            onClick={() => setMenuOpen((open) => !open)}
+            aria-label="Menu"
+            className="w-11 h-11 shrink-0 flex items-center justify-center border border-stone-border text-forest text-xl hover:bg-cream-hover"
+          >
+            {menuOpen ? "✕" : "≡"}
+          </button>
+        </div>
       </div>
 
       {menuOpen && (

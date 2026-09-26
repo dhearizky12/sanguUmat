@@ -2,6 +2,7 @@ using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
 using backend.Models;
+using backend.Notifications;
 using backend.Queries;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,10 +14,12 @@ namespace backend.Controllers
     public class QuestionController : Controller
     {
         private readonly AppDbContext _db;
+        private readonly Notifier _notifier;
 
-        public QuestionController(AppDbContext db)
+        public QuestionController(AppDbContext db, Notifier notifier)
         {
             _db = db;
+            _notifier = notifier;
         }
 
         [HttpPost]
@@ -57,6 +60,7 @@ namespace backend.Controllers
             };
 
             _db.Questions.Add(question);
+            await _notifier.QuestionAsked(question, user);
 
             await _db.SaveChangesAsync();
             return Ok();
@@ -391,6 +395,7 @@ namespace backend.Controllers
             question.Content = request.Content;
             question.IsAnonymous = request.IsAnonymous ?? question.IsAnonymous;
             question.AllowPublish = request.AllowPublish ?? question.AllowPublish;
+            await _notifier.QuestionEdited(question, user);
             await _db.SaveChangesAsync();
 
             return Ok();
@@ -430,6 +435,10 @@ namespace backend.Controllers
                 return Conflict();
             }
 
+            if (!isOwner)
+            {
+                await _notifier.QuestionDeletedByAdmin(question, user);
+            }
             _db.Questions.Remove(question);
             await _db.SaveChangesAsync();
             return Ok();

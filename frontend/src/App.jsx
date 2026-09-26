@@ -22,6 +22,7 @@ import EditProfile from "./pages/EditProfile";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCategories from "./pages/AdminCategories";
 import MyArticles from "./pages/MyArticles";
+import Notifications from "./pages/Notifications";
 import KajianDetail from "./pages/KajianDetail";
 import KajianManage from "./pages/KajianManage";
 import Loading from "./components/Loading";
@@ -77,6 +78,7 @@ function App() {
           {/* Protected */}
           <Route element={<AuthGuard />}>
             <Route path="/profile" element={<Profile />} />
+            <Route path="/notifikasi" element={<Notifications />} />
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/ustadz/:id/ubah" element={<UstadzEdit />} />
             <Route path="/articles/:id/ubah" element={articleEditor} />

@@ -22,6 +22,7 @@ namespace backend.Data
         public DbSet<UstadzEducation> UstadzEducation {get;set;}
         public DbSet<Article> Articles {get;set;}
         public DbSet<Kajian> Kajian {get;set;}
+        public DbSet<Notification> Notifications {get;set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -87,6 +88,19 @@ namespace backend.Data
                 e.HasIndex(x => x.StartsAt);
                 e.HasIndex(x => x.UstadzId);
                 e.HasIndex(x => x.Series);
+            });
+
+            modelBuilder.Entity<Notification>(e =>
+            {
+                e.Property(x => x.Type).HasMaxLength(32);
+                e.Property(x => x.Actor).HasMaxLength(200);
+                e.Property(x => x.Text).HasMaxLength(300);
+                e.Property(x => x.Link).HasMaxLength(300);
+                e.HasOne(x => x.Recipient).WithMany().HasForeignKey(x => x.RecipientId).OnDelete(DeleteBehavior.Cascade);
+                e.HasOne(x => x.Question).WithMany().HasForeignKey(x => x.QuestionId).OnDelete(DeleteBehavior.SetNull);
+                e.HasOne(x => x.Answer).WithMany().HasForeignKey(x => x.AnswerId).OnDelete(DeleteBehavior.SetNull);
+                e.HasIndex(x => new { x.RecipientId, x.ReadAt });
+                e.HasIndex(x => new { x.RecipientId, x.CreatedAt });
             });
         }
     }
