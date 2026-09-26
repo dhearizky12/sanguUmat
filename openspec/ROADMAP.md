@@ -69,11 +69,13 @@ Completes the Masuk canvas that change 1 restyles.
 Notify an asker on WhatsApp when an ustadz starts answering. Depends on 6 for
 the provider integration and a verified phone number.
 
-### 8. `question-review-workflow` — full stack
+### 8. `question-review-workflow` — full stack — deferred 2026-09-26
 Questions stop publishing instantly and enter a moderation queue: statuses,
 ticket id, moderator notes, and the "Perbaiki pertanyaan" revision loop, with
 the status tabs the Ajukan Pertanyaan canvas shows. The largest behavioural
 change to an existing capability — it rewrites much of `specs/questions`.
+Deferred: questions go straight to the ustadz queue, and an Admin can delete a
+bad one. Revisit if spam or unclear questions become a real burden.
 
 ### 9. `question-quota` — full stack
 A monthly per-user question allowance, with the remaining count shown on the
@@ -97,6 +99,9 @@ Live sessions and the recordings archive: live state and viewer count, weekly
 schedule in WIB, series and session numbering, durations, catatan ngaji, and
 the member-only parts. Needs the video source decided first — an embed versus a
 streaming provider. Depends on 3 and 5.
+
+Decided 2026-09-26: YouTube only. Each session is a pasted YouTube link (live
+stream or upload) played in an embedded player; nothing is hosted here.
 
 ## Deferred, not yet sequenced
 
