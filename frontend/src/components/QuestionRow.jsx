@@ -36,13 +36,14 @@ function Count({ icon, value, label }) {
 // (`answerer` { name, picture, isGuru }) on the right. `comments` and `readMinutes` are
 // optional. `asker.anonymous` marks an anonymous asker shown by name (to staff); `flags` is
 // an optional node beside the category (the answer queue's QuestionFlags). `action` is a
-// node set below the link, inside the same card (a link cannot hold a button).
+// node set level with the asker at the card's bottom right, where the answerer would be —
+// beside the link rather than in it, since a link cannot hold a button.
 export default function QuestionRow({ to, category, date, views, comments, readMinutes, title, excerpt, asker, answerer, flags, action }) {
   const link = (
     <NavLink
       to={to}
       className={`flex flex-col gap-2.5 md:px-4 ${
-        action ? "flex-1 pt-6 pb-4" : "py-6 border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors"
+        action ? "flex-1 py-6" : "py-6 border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors"
       }`}
     >
       <MonoLabel as="div" className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
@@ -71,7 +72,7 @@ export default function QuestionRow({ to, category, date, views, comments, readM
       {excerpt && <p className="text-base leading-relaxed text-ink-soft max-w-[74ch] text-pretty line-clamp-2">{excerpt}</p>}
 
       {(asker || answerer) && (
-        <div className="mt-auto flex flex-wrap items-end justify-between gap-x-4 gap-y-3 pt-1">
+        <div className={`mt-auto flex flex-wrap items-end justify-between gap-x-4 gap-y-3 pt-1 ${action ? "pr-28" : ""}`}>
           {asker && <Person label={asker.anonymous ? "Ditanyakan · anonim" : "Ditanyakan"} name={asker.name} picture={asker.picture} />}
           {answerer && (
             <Person label="Dijawab" name={answerer.name} picture={answerer.picture} verified={answerer.isGuru} alignEnd />
@@ -83,9 +84,9 @@ export default function QuestionRow({ to, category, date, views, comments, readM
 
   if (!action) return link;
   return (
-    <div className="flex flex-col border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors">
+    <div className="relative flex flex-col border-b border-stone-line border-l-2 border-l-transparent hover:bg-cream-hover hover:border-l-gold-deep transition-colors">
       {link}
-      <div className="flex flex-wrap items-center justify-end gap-3 pb-6 md:px-4">{action}</div>
+      <div className="absolute right-0 md:right-4 bottom-[22px]">{action}</div>
     </div>
   );
 }

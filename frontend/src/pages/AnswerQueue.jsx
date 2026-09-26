@@ -104,7 +104,7 @@ function AnswerQueue() {
                   flags
                   meId={me?.id}
                   action={
-                    <Button as={Link} to={`/question/detail/${q.id}#jawab`} className="px-6 py-3 tracking-[0.16em]">
+                    <Button as={Link} to={`/question/detail/${q.id}#jawab`} className="px-5 py-2.5 tracking-[0.16em]">
                       Jawab
                     </Button>
                   }
