@@ -72,14 +72,14 @@ Admin. Nobody else may change them.
 
 - **WHEN** an Admin sends `DELETE /api/admin/categories/{key}`
 - **THEN** the category is removed and the response is 204
-- **AND** every question that used it becomes uncategorised and is labelled
-  "Lainnya"
+- **AND** every question and every article that used it becomes uncategorised
+  and is labelled "Lainnya"
 
 #### Scenario: Confirming a delete
 
 - **WHEN** an Admin deletes a category on the Kategori page
 - **THEN** they are asked to confirm first, and the prompt says how many
-  questions will become "Lainnya"
+  questions and how many articles will become "Lainnya"
 
 #### Scenario: Unknown category
 
@@ -97,5 +97,5 @@ Admin. Nobody else may change them.
 
 - **WHEN** an Admin opens Panel Admin
 - **THEN** they can switch between "Pengguna" and "Kategori"
-- **AND** the Kategori page lists every category with its question count, and
-  lets them add, rename, move up or down, and delete
+- **AND** the Kategori page lists every category with its question count and its
+  article count, and lets them add, rename, move up or down, and delete

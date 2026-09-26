@@ -73,5 +73,5 @@
 
 ## 3. Roadmap
 
-- [ ] 3.1 On archive, tick change 11 in `openspec/ROADMAP.md`, noting that the
+- [x] 3.1 On archive, tick change 11 in `openspec/ROADMAP.md`, noting that the
       membership parts are deferred. Verify: `openspec validate articles`.

@@ -84,10 +84,13 @@ lifecycle. Likely interacts with 5, if members get a larger allowance.
 Anonymous posting, consent to publish the answer, and directing a question to a
 chosen ustadz. Depends on 4 for the ustadz picker.
 
-### 11. `articles` — full stack
+### 11. `articles` — full stack — ✓ archived 2026-09-26
 The Artikel capability: model, rubrics, authors including guest authors, read
 time, read counts, the free/members-only flag, lead article, and the list with
 facets, sort and paging. Depends on 3 and 5.
+(Shipped ahead of 5 with every article free to read and no guest authors; the
+"Khusus Anggota" tag, the Akses facet and the "Jadi Anggota" banner arrive with
+`membership`.)
 
 ### 12. `ngaji-bareng` — full stack
 Live sessions and the recordings archive: live state and viewer count, weekly
