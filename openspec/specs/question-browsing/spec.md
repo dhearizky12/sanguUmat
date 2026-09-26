@@ -9,15 +9,17 @@ between pages — so browsing stays fast as answers accumulate.
 
 ### Requirement: Browsing endpoint
 
-Anyone MUST be able to page through published questions with search, facets and
-sort from one endpoint. Unanswered questions MUST never appear in it.
+Anyone MUST be able to page through published questions — answered, with the
+asker's consent — with search, facets and sort from one endpoint. Unanswered
+questions and private answers MUST never appear in it.
 
 #### Scenario: Default page
 
 - **WHEN** anyone requests `GET /api/question/browse`
 - **THEN** the response is 200 with `{ items, total, totalPublished, page, pageSize, totalPages, facets }`
 - **AND** `items` holds the first 8 published questions, newest first, each
-  shaped like a `GET /api/question` item, including `readMinutes`
+  shaped like a `GET /api/question` item (asker masked when anonymous),
+  including `readMinutes`
 - **AND** `total` counts every published question matching the query,
   `totalPublished` counts every published question, and `totalPages` is at
   least 1

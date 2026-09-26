@@ -40,5 +40,5 @@
 
 ## 3. Roadmap
 
-- [ ] 3.1 On archive, tick change 10 in `openspec/ROADMAP.md`. Verify:
+- [x] 3.1 On archive, tick change 10 in `openspec/ROADMAP.md`. Verify:
       `openspec validate question-extras`.

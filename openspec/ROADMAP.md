@@ -80,7 +80,7 @@ A monthly per-user question allowance, with the remaining count shown on the
 form. Reads more naturally once 8 exists, since quota and review share a
 lifecycle. Likely interacts with 5, if members get a larger allowance.
 
-### 10. `question-extras` — full stack
+### 10. `question-extras` — full stack — ✓ archived 2026-09-26
 Anonymous posting, consent to publish the answer, and directing a question to a
 chosen ustadz. Depends on 4 for the ustadz picker.
 

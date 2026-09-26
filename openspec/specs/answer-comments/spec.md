@@ -7,19 +7,34 @@ signed-in user, so askers can follow up on what a teacher said.
 
 ### Requirement: Reading comments
 
-Anyone, signed in or not, MUST be able to read the comments on an answer, oldest
-first.
+Anyone who may see a question MUST be able to read the comments on its answers,
+oldest first. Nobody else may.
 
 #### Scenario: Listing comments
 
-- **WHEN** anyone requests `GET /api/answer/{answerId}/comments`
+- **WHEN** anyone requests `GET /api/answer/{answerId}/comments` for an answer
+  on a question they may see
 - **THEN** the comments are returned oldest first
 - **AND** each carries `id`, `content`, `createdAt`, `userId`, `userName` and
   `userPicture`
 
+#### Scenario: A question the caller may not see
+
+- **WHEN** the answer belongs to a private answer and the caller is not its
+  asker, a Guru or an Admin
+- **THEN** the response is 404
+
+#### Scenario: The anonymous asker's comments
+
+- **WHEN** the question is anonymous and a comment is by its asker
+- **THEN** that comment is masked like the question: "Hamba Allah", with
+  `userId` and `userPicture` null, for everyone except the asker, Gurus and
+  Admins
+
 ### Requirement: Writing a comment
 
-Any signed-in user MAY comment on an answer, whatever their role.
+Any signed-in user who may see a question MAY comment on its answers, whatever
+their role.
 
 #### Scenario: Posting a comment
 
@@ -36,7 +51,8 @@ Any signed-in user MAY comment on an answer, whatever their role.
 
 #### Scenario: Unknown answer
 
-- **WHEN** the answer id matches nothing
+- **WHEN** the answer id matches nothing, or belongs to a private answer the
+  caller may not see
 - **THEN** the response is 404
 
 ### Requirement: Deleting a comment
