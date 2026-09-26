@@ -1,7 +1,7 @@
 import { NavLink } from "react-router-dom";
 import Avatar from "./Avatar";
 import MonoLabel from "./MonoLabel";
-import { CommentIcon, EyeIcon } from "./Icons";
+import { ClockIcon, CommentIcon, EyeIcon } from "./Icons";
 import { formatCount } from "../lib/format";
 
 // One side of the row's footer: avatar beside a small mono label over the name. The
@@ -33,8 +33,9 @@ function Count({ icon, value, label }) {
 // The canvases' question row. Top: category on the left; date, views and comments on the
 // right. Then the serif title and a two-line excerpt. Bottom, pinned so rows sharing a grid
 // line stay level: who asked (`asker` { name, picture }) on the left and who answered
-// (`answerer` { name, picture, isGuru }) on the right. `comments` is optional.
-export default function QuestionRow({ to, category, date, views, comments, title, excerpt, asker, answerer }) {
+// (`answerer` { name, picture, isGuru }) on the right. `comments` and `readMinutes` are
+// optional.
+export default function QuestionRow({ to, category, date, views, comments, readMinutes, title, excerpt, asker, answerer }) {
   return (
     <NavLink
       to={to}
@@ -42,10 +43,17 @@ export default function QuestionRow({ to, category, date, views, comments, title
     >
       <MonoLabel as="div" className="flex flex-wrap items-center justify-between gap-x-4 gap-y-1">
         <span className="text-forest">{category}</span>
-        <span className="flex items-center gap-x-3.5 text-ink-faint">
+        <span className="ml-auto flex flex-wrap items-center justify-end gap-x-3 gap-y-1 text-ink-faint">
           <span>{date}</span>
           {views != null && <Count icon={<EyeIcon />} value={views} label="dibaca" />}
           {comments != null && <Count icon={<CommentIcon />} value={comments} label="komentar" />}
+          {readMinutes != null && (
+            <span className="inline-flex items-center gap-1.5">
+              <ClockIcon />
+              {readMinutes} mnt
+              <span className="sr-only">baca</span>
+            </span>
+          )}
         </span>
       </MonoLabel>
 

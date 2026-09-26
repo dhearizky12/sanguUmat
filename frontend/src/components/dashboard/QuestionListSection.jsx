@@ -6,24 +6,7 @@ import SectionHeading from "../SectionHeading";
 import Button from "../Button";
 import EmptyState from "../EmptyState";
 import LoadingState from "../LoadingState";
-
-function OneColumnIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-      <rect x="1.5" y="2.5" width="13" height="4" fill="none" stroke="currentColor" strokeWidth="1.4" />
-      <rect x="1.5" y="9.5" width="13" height="4" fill="none" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
-  );
-}
-
-function TwoColumnIcon() {
-  return (
-    <svg viewBox="0 0 16 16" width="14" height="14" aria-hidden="true">
-      <rect x="1.5" y="2.5" width="5.5" height="11" fill="none" stroke="currentColor" strokeWidth="1.4" />
-      <rect x="9" y="2.5" width="5.5" height="11" fill="none" stroke="currentColor" strokeWidth="1.4" />
-    </svg>
-  );
-}
+import { OneColumnIcon, TwoColumnIcon } from "../Icons";
 
 function QuestionListSection({ questions, loading, totalCount, activeCategoryLabel }) {
   const [columns, setColumns] = useState(2);

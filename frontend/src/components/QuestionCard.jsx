@@ -15,6 +15,7 @@ function QuestionCard({ slug, question }) {
       date={formatDate(question.createdAt)}
       views={question.views}
       comments={question.commentCount}
+      readMinutes={question.readMinutes}
       title={question.title}
       excerpt={question.content}
       asker={{ name: question.userName, picture: pictureUrl(question.userPicture) }}
