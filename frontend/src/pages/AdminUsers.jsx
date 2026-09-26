@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import LoadingState from "../components/LoadingState";
@@ -151,6 +152,11 @@ function AdminUsers() {
                           {isSelf && <span className="text-ink-faint"> (Anda)</span>}
                         </span>
                         <span className="font-mono text-mono-label tracking-[0.04em] text-ink-muted truncate">{u.email}</span>
+                        {u.role === "Guru" && (
+                          <MonoLabel as={Link} to={`/ustadz/${u.id}/ubah`} size="xs" className="self-start mt-1 text-forest border-b border-stone-border hover:text-gold-dark transition-colors">
+                            Ubah profil ustadz
+                          </MonoLabel>
+                        )}
                       </div>
                     </div>
                     <MonoLabel role="cell" size="sm" className="text-ink-muted">

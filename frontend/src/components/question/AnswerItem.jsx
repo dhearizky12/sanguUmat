@@ -1,11 +1,11 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import RichContent from "../RichContent";
 import CommentSection from "../CommentSection";
 import { API_URL, pictureUrl } from "../../lib/api";
 import Avatar from "../Avatar";
 import Button from "../Button";
 import MonoLabel from "../MonoLabel";
-import VerifiedBadge from "../VerifiedBadge";
 import { TextArea } from "../Field";
 
 // One answer with its comments. `canManage` (the answer's author or an Admin) unlocks the
@@ -76,12 +76,15 @@ function AnswerItem({ answer, canManage, onUpdated }) {
     <article className="py-8 border-b border-stone-line">
       <div className="flex items-start justify-between gap-4">
         <div className="flex items-center gap-3 min-w-0">
-          <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} />
+          <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} verified={answer.role === "Guru"} />
           <div className="flex flex-col gap-0.5 min-w-0">
-            <span className="inline-flex items-center gap-1.5 font-serif text-lg text-ink">
-              {answer.userName}
-              {answer.role === "Guru" && <VerifiedBadge />}
-            </span>
+            {answer.role === "Guru" ? (
+              <Link to={`/ustadz/${answer.userId}`} className="font-serif text-lg text-ink hover:text-forest transition-colors">
+                {answer.userName}
+              </Link>
+            ) : (
+              <span className="font-serif text-lg text-ink">{answer.userName}</span>
+            )}
             <MonoLabel size="xs" className="text-ink-faint">
               {answer.role === "Guru" ? "Guru" : "Anggota"}
             </MonoLabel>

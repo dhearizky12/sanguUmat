@@ -1,14 +1,16 @@
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { BASE_PATH } from "./lib/basePath";
 import AuthGuard from "./components/AuthGuard";
 import RoleGuard from "./components/RoleGuard";
 import Articles from "./pages/Articles";
 import Dashboard from "./pages/Dashboard";
-import DetailAdmin from "./pages/DetailAdmin";
 import DetailArticle from "./pages/DetailArticle";
 import DetailQuestion from "./pages/DetailQuestion";
 import Live from "./pages/Live";
 import Login from "./pages/Login";
+import Ustadz from "./pages/Ustadz";
+import UstadzDetail from "./pages/UstadzDetail";
+import UstadzEdit from "./pages/UstadzEdit";
 import SignInComplete from "./pages/SignInComplete";
 import Questions from "./pages/Questions";
 import AuthProvider from "./providers/AuthProvider";
@@ -18,6 +20,11 @@ import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCategories from "./pages/AdminCategories";
+
+function RedirectToUstadz() {
+  const { id } = useParams();
+  return <Navigate to={`/ustadz/${id}`} replace />;
+}
 
 function App() {
   return (
@@ -38,6 +45,11 @@ function App() {
 
           <Route path="/live" element={<Live />} />
 
+          <Route path="/ustadz" element={<Ustadz />} />
+          <Route path="/ustadz/:id" element={<UstadzDetail />} />
+          {/* The old "Profil ustadz" placeholder. */}
+          <Route path="/detail-admin/:id" element={<RedirectToUstadz />} />
+
           {/* Public, but asks signed-out visitors to sign in (the "Perlu masuk" screen). */}
           <Route path="/question/create" element={<CreateQuestion />} />
 
@@ -45,7 +57,7 @@ function App() {
           <Route element={<AuthGuard />}>
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
-            <Route path="/detail-admin/:adminId" element={<DetailAdmin />} />
+            <Route path="/ustadz/:id/ubah" element={<UstadzEdit />} />
           </Route>
 
           {/* Guru only */}
