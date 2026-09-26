@@ -47,7 +47,7 @@ A–Z), pagination, and facet counts on the questions endpoint. Every list in th
 design needs these, so building them once unblocks Tanya Jawab, Artikel and
 Ngaji Bareng alike. Depends on 2 for category facets.
 
-### 4. `ustadz-profiles` — full stack
+### 4. `ustadz-profiles` — full stack — ✓ archived 2026-09-26
 Promote Ustadz from a role string to something with a profile: Dewan Ustadz
 listing, per-ustadz page, verified badge, and the per-ustadz facet counts the
 Tanya Jawab and Artikel canvases filter on. Depends on 3 for facets. (The Ustadz
@@ -99,4 +99,4 @@ streaming provider. Depends on 3 and 5.
 
 - Payment and billing behind `membership`.
 - The home page details not yet built: the one/two-column list toggle, the
-  "Sering dicari" suggestions, and the verified-ustadz badge.
+  "Sering dicari" suggestions. (The verified-ustadz badge shipped with change 4.)

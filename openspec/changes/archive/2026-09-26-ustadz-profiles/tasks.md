@@ -32,5 +32,5 @@
 
 ## 3. Roadmap
 
-- [ ] 3.1 Tick change 4 in `openspec/ROADMAP.md` on archive. Verify:
+- [x] 3.1 Tick change 4 in `openspec/ROADMAP.md` on archive. Verify:
       `openspec validate ustadz-profiles`.
