@@ -50,6 +50,16 @@ function Profile() {
                   Profil ustadz
                 </Button>
               )}
+              {(profile?.role === "Guru" || profile?.role === "Admin") && (
+                <Button as={Link} to="/articles/saya" variant="outline" className="px-5 py-3">
+                  Artikel saya
+                </Button>
+              )}
+              {(profile?.role === "Guru" || profile?.role === "Admin") && (
+                <Button as={Link} to="/articles/tulis" variant="outline" className="px-5 py-3">
+                  Tulis artikel
+                </Button>
+              )}
               <Button as={Link} to="/edit-profile" className="px-5 py-3">
                 Ubah profil
               </Button>

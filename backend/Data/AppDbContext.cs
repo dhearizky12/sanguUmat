@@ -20,6 +20,7 @@ namespace backend.Data
         public DbSet<UstadzProfile> UstadzProfiles {get;set;}
         public DbSet<UstadzExpertise> UstadzExpertise {get;set;}
         public DbSet<UstadzEducation> UstadzEducation {get;set;}
+        public DbSet<Article> Articles {get;set;}
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -57,6 +58,17 @@ namespace backend.Data
             modelBuilder.Entity<UstadzEducation>()
                 .HasOne<User>().WithMany().HasForeignKey(x => x.UserId).OnDelete(DeleteBehavior.Cascade);
             modelBuilder.Entity<UstadzEducation>().HasIndex(x => new { x.UserId, x.SortOrder });
+
+            modelBuilder.Entity<Article>(e =>
+            {
+                e.Property(x => x.Title).HasMaxLength(160);
+                e.Property(x => x.Summary).HasMaxLength(300);
+                e.Property(x => x.Status).HasMaxLength(16);
+                e.HasOne(x => x.Category).WithMany().HasForeignKey(x => x.CategoryId).OnDelete(DeleteBehavior.SetNull);
+                e.HasOne(x => x.Author).WithMany().HasForeignKey(x => x.AuthorId).OnDelete(DeleteBehavior.Cascade);
+                e.HasIndex(x => new { x.Status, x.PublishedAt });
+                e.HasIndex(x => x.AuthorId);
+            });
         }
     }
 }

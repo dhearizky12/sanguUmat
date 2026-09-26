@@ -1,3 +1,4 @@
+import { Suspense, lazy } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router-dom";
 import { BASE_PATH } from "./lib/basePath";
 import AuthGuard from "./components/AuthGuard";
@@ -20,6 +21,16 @@ import Profile from "./pages/Profile";
 import EditProfile from "./pages/EditProfile";
 import AdminUsers from "./pages/AdminUsers";
 import AdminCategories from "./pages/AdminCategories";
+import MyArticles from "./pages/MyArticles";
+import Loading from "./components/Loading";
+
+// The article editor (and TipTap with it) loads only when someone writes.
+const ArticleEdit = lazy(() => import("./pages/ArticleEdit"));
+const articleEditor = (
+  <Suspense fallback={<Loading />}>
+    <ArticleEdit />
+  </Suspense>
+);
 
 function RedirectToUstadz() {
   const { id } = useParams();
@@ -41,7 +52,8 @@ function App() {
           <Route path="/question/detail/:id" element={<DetailQuestion />} />
 
           <Route path="/articles" element={<Articles />} />
-          <Route path="/detail-article/:slug" element={<DetailArticle />} />
+          <Route path="/articles/:id" element={<DetailArticle />} />
+          <Route path="/detail-article/:slug" element={<Navigate to="/articles" replace />} />
 
           <Route path="/live" element={<Live />} />
 
@@ -58,9 +70,15 @@ function App() {
             <Route path="/profile" element={<Profile />} />
             <Route path="/edit-profile" element={<EditProfile />} />
             <Route path="/ustadz/:id/ubah" element={<UstadzEdit />} />
+            <Route path="/articles/:id/ubah" element={articleEditor} />
           </Route>
 
           {/* Guru only */}
+          <Route element={<RoleGuard allow={["Guru", "Admin"]} fallback="/articles" />}>
+            <Route path="/articles/tulis" element={articleEditor} />
+            <Route path="/articles/saya" element={<MyArticles />} />
+          </Route>
+
           <Route element={<RoleGuard allow={["Guru"]} />}>
             <Route path="/jawab-pertanyaan" element={<AnswerQueue />} />
           </Route>

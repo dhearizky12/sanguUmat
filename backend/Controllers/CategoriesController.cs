@@ -108,7 +108,7 @@ namespace backend.Controllers
                 return NotFound();
             }
 
-            // The foreign key is ON DELETE SET NULL, so its questions become uncategorised
+            // The foreign keys are ON DELETE SET NULL, so its questions and articles become uncategorised
             // ("Lainnya") in the same statement.
             _db.Categories.Remove(category);
             await _db.SaveChangesAsync();
@@ -164,13 +164,15 @@ namespace backend.Controllers
         private Task<List<CategoryDto>> ListAsync() =>
             _db.Categories
                 .OrderBy(c => c.SortOrder)
-                .Select(c => new CategoryDto(c.Key, c.Name, c.SortOrder, c.Questions.Count))
+                .Select(c => new CategoryDto(c.Key, c.Name, c.SortOrder, c.Questions.Count,
+                    _db.Articles.Count(a => a.CategoryId == c.Id)))
                 .ToListAsync();
 
         private async Task<CategoryDto> ToDtoAsync(Category category) =>
             new(category.Key, category.Name, category.SortOrder,
-                await _db.Questions.CountAsync(q => q.CategoryId == category.Id));
+                await _db.Questions.CountAsync(q => q.CategoryId == category.Id),
+                await _db.Articles.CountAsync(a => a.CategoryId == category.Id));
 
-        private record CategoryDto(string Key, string Name, int SortOrder, int QuestionCount);
+        private record CategoryDto(string Key, string Name, int SortOrder, int QuestionCount, int ArticleCount);
     }
 }

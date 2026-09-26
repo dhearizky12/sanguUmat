@@ -31,7 +31,7 @@ function subscribe(listener) {
   return () => listeners.delete(listener);
 }
 
-// [{ key, name, sortOrder, questionCount }], in the Admin's order; [] until loaded.
+// [{ key, name, sortOrder, questionCount, articleCount }], in the Admin's order; [] until loaded.
 export function useCategories() {
   useEffect(() => {
     if (!request) refreshCategories();

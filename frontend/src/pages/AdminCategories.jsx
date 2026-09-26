@@ -40,10 +40,13 @@ function CategoryRow({ category, index, count, busy, run }) {
   };
 
   const remove = () => {
-    const n = category.questionCount;
+    const parts = [
+      category.questionCount > 0 && `${category.questionCount} pertanyaan`,
+      category.articleCount > 0 && `${category.articleCount} artikel`,
+    ].filter(Boolean);
     const message =
-      n > 0
-        ? `Hapus kategori "${category.name}"? ${n} pertanyaan akan menjadi "Lainnya".`
+      parts.length > 0
+        ? `Hapus kategori "${category.name}"? ${parts.join(" dan ")} akan menjadi "Lainnya".`
         : `Hapus kategori "${category.name}"?`;
     if (window.confirm(message)) run("DELETE", `/${category.key}`);
   };
@@ -73,7 +76,7 @@ function CategoryRow({ category, index, count, busy, run }) {
         <div className="flex-1 min-w-[180px] flex flex-col gap-0.5">
           <span className="text-[17px] text-ink">{category.name}</span>
           <span className="font-mono text-mono-label tracking-[0.04em] text-ink-faint">
-            {category.key} &middot; {category.questionCount} pertanyaan
+            {category.key} &middot; {category.questionCount} pertanyaan &middot; {category.articleCount ?? 0} artikel
           </span>
         </div>
       )}
