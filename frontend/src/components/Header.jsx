@@ -1,3 +1,4 @@
+import { canAnswer } from "../lib/roles";
 import { Link, NavLink, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
@@ -36,8 +37,10 @@ function Header() {
   // One bell only (it polls): beside the avatar on wide screens, beside the menu on phones.
   const wide = useMediaQuery("(min-width: 768px)");
 
+  const mayAnswer = canAnswer(me);
+
   useEffect(() => {
-    if (me?.role !== "Guru") {
+    if (!mayAnswer) {
       return;
     }
 
@@ -58,7 +61,7 @@ function Header() {
     return () => {
       cancelled = true;
     };
-  }, [me?.role]);
+  }, [mayAnswer]);
 
   // "Masuk" brings the visitor back to this page after signing in.
   const loginHref = loginPath(location.pathname + location.search);
@@ -95,7 +98,7 @@ function Header() {
               Ajukan Pertanyaan
             </Button>
           )}
-          {isAuthenticated && me?.role === "Guru" && (
+          {isAuthenticated && canAnswer(me) && (
             <Button
               variant="gold"
               as={Link}
@@ -182,7 +185,7 @@ function Header() {
               );
             })}
 
-            {isAuthenticated && me?.role === "Guru" && (
+            {isAuthenticated && canAnswer(me) && (
               <MonoLabel
                 as={Link}
                 to="/jawab-pertanyaan"

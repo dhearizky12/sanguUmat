@@ -37,7 +37,10 @@ function PostForm() {
   const [answer, setAnswer] = useState("");
   const [category, setCategory] = useState("");
   // `?ustadz=` (from an ustadz's page) preselects who an Admin posts for.
-  const [ustadzId, setUstadzId] = useState(params.get("ustadz") ?? "");
+  // An Admin shown as an ustadz posts as themselves unless they choose someone else (the page
+  // sits behind RoleGuard, so `me` is already loaded here).
+  const [ustadzId, setUstadzId] = useState(params.get("ustadz") ?? (me?.role === "Admin" && me.isUstadz ? String(me.id) : ""));
+
   const [loading, setLoading] = useState(editing);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState("");

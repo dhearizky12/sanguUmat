@@ -105,7 +105,7 @@ function App() {
             <Route path="/live/kelola" element={<KajianManage />} />
           </Route>
 
-          <Route element={<RoleGuard allow={["Guru"]} />}>
+          <Route element={<RoleGuard allow={["Guru", "Admin"]} fallback="/questions" />}>
             <Route path="/jawab-pertanyaan" element={<AnswerQueue />} />
           </Route>
 

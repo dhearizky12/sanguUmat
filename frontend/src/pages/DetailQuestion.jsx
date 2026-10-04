@@ -1,3 +1,4 @@
+import { canAnswer } from "../lib/roles";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useParams } from "react-router-dom";
 import Footer from "../components/Footer";
@@ -122,10 +123,10 @@ function DetailQuestion() {
                   )}
                 </section>
 
-                {me?.role === "Guru" && !question.isPost && <AnswerForm questionId={id} />}
+                {canAnswer(me) && !question.isPost && <AnswerForm questionId={id} />}
               </div>
 
-              <RelatedSidebar question={question} isGuru={me?.role === "Guru"} />
+              <RelatedSidebar question={question} isGuru={canAnswer(me)} />
             </PageBody>
           </>
         )}

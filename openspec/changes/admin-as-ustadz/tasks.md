@@ -2,11 +2,11 @@
 
 ## 1. Backend
 
-- [ ] 1.1 `User.HideAsUstadz` (migration, default false) and the shared rule: `Roles.CanAnswer`, an EF-translatable `IsUstadz` expression and an in-memory form. Verify: `dotnet build` passes and the migration applies; existing users are all not hidden.
-- [ ] 1.2 Answers and the queue for Admins: `POST /api/answer` accepts an `Admin`, a `User` still gets 403, and the featured-answer ordering counts an Admin answer like a Guru's. Verify with test tokens: an Admin (hidden and not) answers, a User gets 403, and the question list shows the Admin as `answeredBy`.
-- [ ] 1.3 Ustadz endpoints, directed-to, notifications and counts use the shared rule: `GET /api/ustadz` and `/{id}` and `PUT /{id}`, the directed-to check, `Notifier` recipients, the ustadz facet and the home count. Verify: a visible Admin is listed, has a page, can be directed to and gets the new-question notification; a hidden Admin does none of these and `/api/ustadz/{id}` is 404 for them; a Guru is unchanged.
-- [ ] 1.4 Posts, kajian and `isUstadz` flags: an Admin posting with no `ustadzId` credits themselves when visible and gets 400 when hidden, a named non-ustadz gets 400; a kajian's ustadz must pass the rule; `isUstadz` on `/api/auth/me`, answers, list items and article authors. Verify with test tokens for a Guru, a visible Admin and a hidden Admin.
-- [ ] 1.5 `PATCH /api/admin/users/{id}/ustadz` and `hiddenAsUstadz` in `GET /api/admin/users`. Verify: an Admin hides and shows an Admin (themselves too), a non-Admin target gets 400, an unknown id 404, a User caller 403, and the hidden Admin disappears from `/api/ustadz` and returns when shown.
+- [x] 1.1 `User.HideAsUstadz` (migration, default false) and the shared rule: `Roles.CanAnswer`, an EF-translatable `IsUstadz` expression and an in-memory form. Verify: `dotnet build` passes and the migration applies; existing users are all not hidden.
+- [x] 1.2 Answers and the queue for Admins: `POST /api/answer` accepts an `Admin`, a `User` still gets 403, and the featured-answer ordering counts an Admin answer like a Guru's. Verify with test tokens: an Admin (hidden and not) answers, a User gets 403, and the question list shows the Admin as `answeredBy`.
+- [x] 1.3 Ustadz endpoints, directed-to, notifications and counts use the shared rule: `GET /api/ustadz` and `/{id}` and `PUT /{id}`, the directed-to check, `Notifier` recipients, the ustadz facet and the home count. Verify: a visible Admin is listed, has a page, can be directed to and gets the new-question notification; a hidden Admin does none of these and `/api/ustadz/{id}` is 404 for them; a Guru is unchanged.
+- [x] 1.4 Posts, kajian and `isUstadz` flags: an Admin posting with no `ustadzId` credits themselves when visible and gets 400 when hidden, a named non-ustadz gets 400; a kajian's ustadz must pass the rule; `isUstadz` on `/api/auth/me`, answers, list items and article authors. Verify with test tokens for a Guru, a visible Admin and a hidden Admin.
+- [x] 1.5 `PATCH /api/admin/users/{id}/ustadz` and `hiddenAsUstadz` in `GET /api/admin/users`. Verify: an Admin hides and shows an Admin (themselves too), a non-Admin target gets 400, an unknown id 404, a User caller 403, and the hidden Admin disappears from `/api/ustadz` and returns when shown.
 
 ## 2. Frontend
 

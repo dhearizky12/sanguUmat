@@ -7,6 +7,7 @@ import EmptyState from "../components/EmptyState";
 import AdminNav from "../components/AdminNav";
 import Avatar from "../components/Avatar";
 import Breadcrumb from "../components/Breadcrumb";
+import Button from "../components/Button";
 import MonoLabel from "../components/MonoLabel";
 import { Input, Select } from "../components/Field";
 import { FilterChip, FilterRow } from "../components/Filters";
@@ -89,6 +90,30 @@ function AdminUsers() {
     }
   };
 
+  // An Admin can be hidden from (or shown in) the ustadz lists; the row updates from the answer.
+  const toggleHidden = async (u) => {
+    setSavingId(u.id);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/users/${u.id}/ustadz`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ hidden: !u.hiddenAsUstadz }),
+      });
+
+      if (res.ok) {
+        const updated = await res.json();
+        setUsers((prev) => prev.map((x) => (x.id === u.id ? { ...x, hiddenAsUstadz: updated.hiddenAsUstadz } : x)));
+      } else {
+        alert("Gagal mengubah tampilan di daftar ustadz.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal mengubah tampilan di daftar ustadz.");
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
       <Header />
@@ -151,10 +176,20 @@ function AdminUsers() {
                           {isSelf && <span className="text-ink-faint"> (Anda)</span>}
                         </span>
                         <span className="font-mono text-mono-label tracking-[0.04em] text-ink-muted truncate">{u.email}</span>
-                        {u.role === "Guru" && (
+                        {(u.role === "Guru" || (u.role === "Admin" && !u.hiddenAsUstadz)) && (
                           <MonoLabel as={Link} to={`/ustadz/${u.id}/ubah`} size="xs" className="self-start mt-1 text-forest border-b border-stone-border hover:text-gold-dark transition-colors">
                             Ubah profil ustadz
                           </MonoLabel>
+                        )}
+                        {u.role === "Admin" && (
+                          <span className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">
+                            <MonoLabel size="xs" className="text-ink-faint">
+                              {u.hiddenAsUstadz ? "Disembunyikan dari daftar ustadz" : "Tampil di daftar ustadz"}
+                            </MonoLabel>
+                            <Button variant="link" disabled={savingId === u.id} onClick={() => toggleHidden(u)}>
+                              {u.hiddenAsUstadz ? "Tampilkan" : "Sembunyikan"}
+                            </Button>
+                          </span>
                         )}
                       </div>
                     </div>

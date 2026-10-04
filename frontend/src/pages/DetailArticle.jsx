@@ -47,7 +47,7 @@ function DetailArticle() {
   const article = loaded.id === id ? loaded.article : null;
   const notFound = loaded.id === id && loaded.notFound;
   const canManage = canManageArticle(me, article);
-  const isGuru = article?.author.role === "Guru";
+  const isGuru = article?.author.isUstadz === true;
 
   const remove = async () => {
     if (!window.confirm("Hapus artikel ini? Tindakan ini tidak dapat dibatalkan.")) return;

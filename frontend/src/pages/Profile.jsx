@@ -45,7 +45,7 @@ function Profile() {
               </div>
             </div>
             <div className="flex flex-wrap gap-3">
-              {profile?.role === "Guru" && (
+              {profile?.isUstadz && (
                 <Button as={Link} to={`/ustadz/${profile.id}`} variant="outline" className="px-5 py-3">
                   Profil ustadz
                 </Button>

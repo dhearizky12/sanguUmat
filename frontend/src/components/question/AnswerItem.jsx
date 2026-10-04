@@ -76,7 +76,7 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
       {!isPost && (
         <div className="flex items-start justify-between gap-4">
           <div className="flex items-center gap-3 min-w-0">
-            {answer.role === "Guru" ? (
+            {answer.isUstadz ? (
               <Link to={`/ustadz/${answer.userId}`} aria-hidden="true" tabIndex={-1} className="shrink-0">
                 <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} verified />
               </Link>
@@ -84,7 +84,7 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
               <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} />
             )}
             <div className="flex flex-col gap-0.5 min-w-0">
-              {answer.role === "Guru" ? (
+              {answer.isUstadz ? (
                 <Link to={`/ustadz/${answer.userId}`} className="font-serif text-lg text-ink hover:text-forest transition-colors">
                   {answer.userName}
                 </Link>
@@ -92,7 +92,7 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
                 <span className="font-serif text-lg text-ink">{answer.userName}</span>
               )}
               <MonoLabel size="xs" className="text-ink-faint">
-                {answer.role === "Guru" ? "Guru" : "Anggota"}
+                {answer.role === "Guru" ? "Guru" : answer.role === "Admin" ? "Admin" : "Anggota"}
               </MonoLabel>
             </div>
           </div>

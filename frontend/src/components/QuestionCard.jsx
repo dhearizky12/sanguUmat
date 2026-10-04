@@ -41,7 +41,7 @@ function QuestionCard({ slug, question, flags = false, meId, action }) {
         !question.isPost && question.answeredBy && {
           name: question.answeredBy,
           picture: pictureUrl(question.answeredByPicture),
-          isGuru: question.answeredByRole === "Guru",
+          isGuru: question.answeredByIsUstadz === true,
         }
       }
     />

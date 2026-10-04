@@ -8,7 +8,7 @@ export default function ArticleByline({ author, views }) {
     <span className="flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-mono-label tracking-[0.08em] text-ink-muted">
       <span>Oleh</span>
       <span className="inline-flex items-center gap-1.5 text-forest">
-        {author.role === "Guru" && <VerifiedBadge size={15} />}
+        {author.isUstadz && <VerifiedBadge size={15} />}
         {author.name}
       </span>
       {views != null && <span className="text-ink-faint">&middot; {formatCount(views)} dibaca</span>}
