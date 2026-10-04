@@ -69,9 +69,9 @@ Guru and Admin MUST have a dedicated page for writing a post, in Bahasa Indonesi
 
 #### Scenario: Reaching the page
 
-- **WHEN** a Guru or Admin looks at the header
-- **THEN** it has "Tulis Posting", linking to the page
-- **AND** their Profil has a "Tulis posting" button beside "Tulis artikel"
+- **WHEN** a Guru or Admin opens their Profil
+- **THEN** it has a "Tulis posting" button beside "Tulis artikel", linking to the page
+- **AND** the header does not carry a link to it, to keep the menu short
 - **AND** an ustadz's page offers "Tulis posting" to that ustadz and to Admins,
   opening the page with that ustadz already chosen (`/posting/baru?ustadz={id}`)
 
