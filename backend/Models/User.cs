@@ -10,6 +10,9 @@ namespace backend.Models
         public string? Phone { get; set;}
         public string? Address { get; set;}
         public string Role { get; set;} = "User";
+
+        // An Admin hidden from the ustadz lists (specs/admin-users). Only meaningful for Admins.
+        public bool HideAsUstadz { get; set; }
         public bool HasCompletedProfile { get; set;} = false;
         public ICollection<Answer> Answers { get; set;}
         public DateTime CreatedAt { get; set;}

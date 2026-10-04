@@ -144,6 +144,7 @@ namespace backend.Controllers
                     email = existingUser.Email,
                     picture = existingUser.Picture,
                     role = existingUser.Role,
+                    isUstadz = UstadzRules.IsUstadz(existingUser),
                     hasCompletedProfile = existingUser.HasCompletedProfile
                 });
             }
@@ -199,6 +200,7 @@ namespace backend.Controllers
                 user.Phone,
                 user.Address,
                 user.Role,
+                IsUstadz = UstadzRules.IsUstadz(user),
                 user.CreatedAt,
                 user.LastLogin
             });

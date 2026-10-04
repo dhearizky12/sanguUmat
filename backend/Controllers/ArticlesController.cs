@@ -330,7 +330,7 @@ namespace backend.Controllers
                 {
                     a.Id, a.Title, a.Summary, a.BodyText, a.Cover, a.PublishedAt, a.CreatedAt, a.ReadMinutes, a.Views,
                     Category = a.Category == null ? null : new { key = a.Category.Key, name = a.Category.Name },
-                    Author = new { id = a.Author.Id, name = a.Author.Name, picture = a.Author.Picture, role = a.Author.Role }
+                    Author = new { id = a.Author.Id, name = a.Author.Name, picture = a.Author.Picture, role = a.Author.Role, isUstadz = a.Author.Role == Roles.Guru || (a.Author.Role == Roles.Admin && !a.Author.HideAsUstadz) }
                 })
                 .ToListAsync();
             return rows.ToDictionary(r => r.Id, r => (object)new
@@ -354,7 +354,7 @@ namespace backend.Controllers
             summary = a.Summary ?? "",
             cover = a.Cover,
             category = a.Category == null ? null : new { key = a.Category.Key, name = a.Category.Name },
-            author = new { id = a.Author.Id, name = a.Author.Name, picture = a.Author.Picture, role = a.Author.Role },
+            author = new { id = a.Author.Id, name = a.Author.Name, picture = a.Author.Picture, role = a.Author.Role, isUstadz = a.Author.Role == Roles.Guru || (a.Author.Role == Roles.Admin && !a.Author.HideAsUstadz) },
             status = a.Status == ArticleStatus.Published ? "published" : "draft",
             publishedAt = a.PublishedAt,
             updatedAt = a.UpdatedAt,

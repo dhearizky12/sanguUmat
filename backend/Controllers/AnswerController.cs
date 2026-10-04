@@ -35,8 +35,8 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            // HANYA GURU
-            if (user.Role != Roles.Guru)
+            // Hanya Guru atau Admin
+            if (!UstadzRules.CanAnswer(user))
             {
                 return Forbid();
             }

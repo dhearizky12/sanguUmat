@@ -45,7 +45,7 @@ namespace backend.Notifications
         {
             var ev = new Event(this, asker, question);
             var recipients = question.DirectedToId is int directed
-                ? await _db.Users.Where(u => u.Id == directed && u.Role == Roles.Guru).ToListAsync()
+                ? await _db.Users.Ustadz().Where(u => u.Id == directed).ToListAsync()
                 : await GurusAsync();
             foreach (var r in recipients)
             {
@@ -108,7 +108,8 @@ namespace backend.Notifications
             new Event(this, admin, null).Add(target, NotificationTypes.RoleChanged, $"Peranmu kini {role}", toAnswer: false, link: "/profile");
         }
 
-        private Task<List<User>> GurusAsync() => _db.Users.Where(u => u.Role == Roles.Guru).ToListAsync();
+        // Everyone presented as an ustadz: the Gurus and the Admins not hidden from the lists.
+        private Task<List<User>> GurusAsync() => _db.Users.Ustadz().ToListAsync();
 
         private static string Short(string title)
         {

@@ -58,6 +58,7 @@ namespace backend.Controllers
                     x.Name,
                     x.Email,
                     x.Role,
+                    HiddenAsUstadz = x.HideAsUstadz,
                     x.CreatedAt,
                     x.LastLogin
                 })
@@ -116,6 +117,49 @@ namespace backend.Controllers
                 targetUser.Name,
                 targetUser.Email,
                 targetUser.Role
+            });
+        }
+
+        // Hide an Admin from the ustadz lists, or show them again (specs/admin-users). Only Admins
+        // can be hidden: every other role is listed, or not, by its role alone.
+        [HttpPatch("{id}/ustadz")]
+        public async Task<IActionResult> UpdateUstadzVisibility(int id, [FromBody] UpdateUstadzVisibilityRequest request)
+        {
+            var currentUser = await this.GetCurrentUserAsync(_db);
+
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            if (currentUser.Role != Roles.Admin)
+            {
+                return Forbid();
+            }
+
+            var targetUser = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+
+            if (targetUser == null)
+            {
+                return NotFound();
+            }
+
+            if (targetUser.Role != Roles.Admin)
+            {
+                return BadRequest();
+            }
+
+            targetUser.HideAsUstadz = request.Hidden;
+            targetUser.UpdatedAt = DateTime.UtcNow;
+            await _db.SaveChangesAsync();
+
+            return Ok(new
+            {
+                targetUser.Id,
+                targetUser.Name,
+                targetUser.Email,
+                targetUser.Role,
+                HiddenAsUstadz = targetUser.HideAsUstadz
             });
         }
     }

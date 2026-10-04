@@ -26,7 +26,7 @@ namespace backend.Controllers
         [HttpGet]
         public async Task<IActionResult> List()
         {
-            var gurus = await _db.Users.Where(u => u.Role == Roles.Guru)
+            var gurus = await _db.Users.Ustadz()
                 .Select(u => new { u.Id, u.Name, u.Picture })
                 .ToListAsync();
             var ids = gurus.Select(g => g.Id).ToList();
@@ -67,7 +67,7 @@ namespace backend.Controllers
                 return Unauthorized();
             }
 
-            var ustadz = await _db.Users.FirstOrDefaultAsync(u => u.Id == id && u.Role == Roles.Guru);
+            var ustadz = await _db.Users.Ustadz().FirstOrDefaultAsync(u => u.Id == id);
             if (ustadz == null)
             {
                 return NotFound();
@@ -133,7 +133,7 @@ namespace backend.Controllers
         // no profile row reads as an empty profile.
         private async Task<object?> ReadAsync(int id)
         {
-            var user = await _db.Users.Where(u => u.Id == id && u.Role == Roles.Guru)
+            var user = await _db.Users.Ustadz().Where(u => u.Id == id)
                 .Select(u => new { u.Id, u.Name, u.Picture, u.CreatedAt })
                 .FirstOrDefaultAsync();
             if (user == null) return null;

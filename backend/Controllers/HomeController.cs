@@ -26,7 +26,7 @@ namespace backend.Controllers
             return Ok(new
             {
                 publishedAnswers = await published.CountAsync(),
-                ustadz = await _db.Users.CountAsync(u => u.Role == Roles.Guru),
+                ustadz = await _db.Users.Ustadz().CountAsync(),
                 lastAnsweredAt = await published.SelectMany(q => q.Answers)
                     .MaxAsync(a => (DateTime?)a.CreatedAt)
             });

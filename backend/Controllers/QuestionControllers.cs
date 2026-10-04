@@ -43,7 +43,7 @@ namespace backend.Controllers
                     .FirstOrDefaultAsync();
 
             if (request.DirectedTo != null
-                && !await _db.Users.AnyAsync(u => u.Id == request.DirectedTo && u.Role == Roles.Guru))
+                && !await _db.Users.Ustadz().AnyAsync(u => u.Id == request.DirectedTo))
             {
                 return BadRequest("Ustadz yang dipilih tidak tersedia");
             }
@@ -142,9 +142,9 @@ namespace backend.Controllers
                 {
                     Id = x.Id,
                     CategoryKey = x.Category == null ? null : x.Category.Key,
-                    AnsweredById = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.UserId).FirstOrDefault(),
-                    AnsweredByRole = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role).FirstOrDefault(),
-                    AnswerLength = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.Content.Length).FirstOrDefault() ?? 0,
+                    AnsweredById = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.UserId).FirstOrDefault(),
+                    AnsweredByIsUstadz = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role == Roles.Guru || (a.User.Role == Roles.Admin && !a.User.HideAsUstadz)).FirstOrDefault(),
+                    AnswerLength = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.Content.Length).FirstOrDefault() ?? 0,
                     CreatedAt = x.CreatedAt,
                     Views = x.Views,
                     Title = x.Title
@@ -160,7 +160,7 @@ namespace backend.Controllers
             // value never zeroes the values beside it.
             var categoryCounts = index.Where(ByUstadz).Where(r => r.CategoryKey != null)
                 .GroupBy(r => r.CategoryKey!).ToDictionary(g => g.Key, g => g.Count());
-            var ustadzCounts = index.Where(InCategory).Where(r => r.AnsweredByRole == Roles.Guru && r.AnsweredById != null)
+            var ustadzCounts = index.Where(InCategory).Where(r => r.AnsweredByIsUstadz && r.AnsweredById != null)
                 .GroupBy(r => r.AnsweredById!.Value).ToDictionary(g => g.Key, g => g.Count());
 
             var matching = index.Where(r => InCategory(r) && ByUstadz(r));
@@ -192,11 +192,11 @@ namespace backend.Controllers
                 .Select(c => new { c.Key, c.Name })
                 .ToListAsync();
 
-            // Every Guru credited with a published question, whatever the current search.
+            // Every ustadz credited with a published question, whatever the current search.
             var guruIds = await _db.Questions
                 .Published()
-                .Select(x => x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt)
-                    .Select(a => a.User.Role == Roles.Guru ? (int?)a.UserId : null).FirstOrDefault())
+                .Select(x => x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt)
+                    .Select(a => (a.User.Role == Roles.Guru || (a.User.Role == Roles.Admin && !a.User.HideAsUstadz)) ? (int?)a.UserId : null).FirstOrDefault())
                 .Where(id => id != null)
                 .Distinct()
                 .ToListAsync();
@@ -229,7 +229,7 @@ namespace backend.Controllers
             public int Id { get; set; }
             public string? CategoryKey { get; set; }
             public int? AnsweredById { get; set; }
-            public string? AnsweredByRole { get; set; }
+            public bool AnsweredByIsUstadz { get; set; }
             public int AnswerLength { get; set; }
             public DateTime CreatedAt { get; set; }
             public int Views { get; set; }
@@ -249,7 +249,7 @@ namespace backend.Controllers
             if (user == null) return Unauthorized();
             if (user.Role != Roles.Guru && user.Role != Roles.Admin) return StatusCode(StatusCodes.Status403Forbidden);
 
-            var credited = await ResolveCreditedAsync(user, request.UstadzId, required: user.Role == Roles.Admin);
+            var credited = await ResolveCreditedAsync(user, request.UstadzId);
             if (credited.Error != null) return credited.Error;
             if (!HasAllText(request)) return BadRequest("Judul, pertanyaan, dan jawaban harus diisi");
 
@@ -292,7 +292,7 @@ namespace backend.Controllers
             // An Admin may re-credit the post; a Guru may only name themselves.
             var credited = request.UstadzId == null && isAdmin
                 ? new Credited { Ustadz = await _db.Users.FirstAsync(u => u.Id == question.UserId) }
-                : await ResolveCreditedAsync(user, request.UstadzId, required: false);
+                : await ResolveCreditedAsync(user, request.UstadzId);
             if (credited.Error != null) return credited.Error;
             if (!HasAllText(request)) return BadRequest("Judul, pertanyaan, dan jawaban harus diisi");
 
@@ -315,17 +315,21 @@ namespace backend.Controllers
             public IActionResult? Error { get; set; }
         }
 
-        // Who a post is credited to. An Admin names a Guru; a Guru is always themselves and
-        // may not name anyone else.
-        private async Task<Credited> ResolveCreditedAsync(User caller, int? ustadzId, bool required)
+        // Who a post is credited to. An Admin names an ustadz (or posts as themselves when they are
+        // one); a Guru is always themselves and may not name anyone else.
+        private async Task<Credited> ResolveCreditedAsync(User caller, int? ustadzId)
         {
             if (caller.Role == Roles.Admin)
             {
                 if (ustadzId == null)
                 {
-                    return required ? new Credited { Error = BadRequest("Pilih ustadz yang bersangkutan") } : new Credited { Ustadz = caller };
+                    // An Admin shown as an ustadz may post as themselves; one hidden from the lists must
+                    // name an ustadz.
+                    return UstadzRules.IsUstadz(caller)
+                        ? new Credited { Ustadz = caller }
+                        : new Credited { Error = BadRequest("Pilih ustadz yang bersangkutan") };
                 }
-                var guru = await _db.Users.FirstOrDefaultAsync(u => u.Id == ustadzId && u.Role == Roles.Guru);
+                var guru = await _db.Users.Ustadz().FirstOrDefaultAsync(u => u.Id == ustadzId);
                 return guru == null
                     ? new Credited { Error = BadRequest("Pilih ustadz yang bersangkutan") }
                     : new Credited { Ustadz = guru };
@@ -445,6 +449,7 @@ namespace backend.Controllers
                             UserPicture =
                                 x.User.Picture,
                             Role = x.User.Role,
+                            IsUstadz = UstadzRules.IsUstadz(x.User),
                             CommentCount = x.Comments.Count
                         })
             });

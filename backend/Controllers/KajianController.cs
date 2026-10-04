@@ -279,7 +279,7 @@ namespace backend.Controllers
             int ustadzId;
             if (user.Role == Roles.Admin)
             {
-                if (request.Ustadz == null || !await _db.Users.AnyAsync(u => u.Id == request.Ustadz && u.Role == Roles.Guru))
+                if (request.Ustadz == null || !await _db.Users.Ustadz().AnyAsync(u => u.Id == request.Ustadz))
                 {
                     return BadRequest("Ustadz yang dipilih tidak tersedia");
                 }
@@ -326,7 +326,7 @@ namespace backend.Controllers
             var numbers = await SessionNumbersAsync(distinct);
             var ustadzIds = distinct.Select(k => k.UstadzId).Distinct().ToList();
             var ustadz = await _db.Users.Where(u => ustadzIds.Contains(u.Id))
-                .ToDictionaryAsync(u => u.Id, u => new { id = u.Id, name = u.Name, picture = u.Picture, role = u.Role });
+                .ToDictionaryAsync(u => u.Id, u => new { id = u.Id, name = u.Name, picture = u.Picture, role = u.Role, isUstadz = u.Role == Roles.Guru || (u.Role == Roles.Admin && !u.HideAsUstadz) });
             return distinct.ToDictionary(k => k.Id, k => (object)new
             {
                 id = k.Id,

@@ -19,6 +19,8 @@ namespace backend.Queries
         public string? UserPicture { get; set; }
         public string? AnsweredBy { get; set; }
         public string? AnsweredByRole { get; set; }
+        // The answerer is presented as an ustadz (UstadzRules): the UI's tick and link.
+        public bool AnsweredByIsUstadz { get; set; }
         public string? AnsweredByPicture { get; set; }
         public bool IsAnswered { get; set; }
         public int CommentCount { get; set; }
@@ -44,7 +46,7 @@ namespace backend.Queries
         // About 6 characters a word at 200 words a minute.
         public const int CharactersPerMinute = 1200;
 
-        // The answer a list credits: a Guru's when there is one, otherwise the earliest.
+        // The answer a list credits: a Guru's or an Admin's when there is one, otherwise the earliest.
         // Every featured-answer field below uses this same ordering.
         public static IQueryable<QuestionListItem> ToListItems(this IQueryable<Question> questions) =>
             questions.Select(x => new QuestionListItem
@@ -62,14 +64,15 @@ namespace backend.Queries
                 DirectedTo = x.DirectedTo == null ? null : new PersonRef { Id = x.DirectedTo.Id, Name = x.DirectedTo.Name },
                 UserName = x.User.Name,
                 UserPicture = x.User.Picture,
-                AnsweredById = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.UserId).FirstOrDefault(),
-                AnsweredBy = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Name).FirstOrDefault(),
-                AnsweredByRole = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role).FirstOrDefault(),
-                AnsweredByPicture = x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Picture).FirstOrDefault(),
+                AnsweredById = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.UserId).FirstOrDefault(),
+                AnsweredBy = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Name).FirstOrDefault(),
+                AnsweredByRole = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role).FirstOrDefault(),
+                AnsweredByIsUstadz = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Role == Roles.Guru || (a.User.Role == Roles.Admin && !a.User.HideAsUstadz)).FirstOrDefault(),
+                AnsweredByPicture = x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => a.User.Picture).FirstOrDefault(),
                 IsAnswered = x.Answers.Any(),
                 CommentCount = x.Answers.SelectMany(a => a.Comments).Count(),
                 ReadMinutes = Math.Max(1,
-                    ((x.Answers.OrderBy(a => a.User.Role == Roles.Guru ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.Content.Length).FirstOrDefault() ?? 0)
+                    ((x.Answers.OrderBy(a => a.User.Role != Roles.User ? 0 : 1).ThenBy(a => a.CreatedAt).Select(a => (int?)a.Content.Length).FirstOrDefault() ?? 0)
                         + CharactersPerMinute - 1) / CharactersPerMinute)
             });
     }
