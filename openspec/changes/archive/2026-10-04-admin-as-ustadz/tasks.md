@@ -10,11 +10,11 @@
 
 ## 2. Frontend
 
-- [ ] 2.1 `lib/roles.js` (`canAnswer`, `isUstadz`) and the answering side: the `/jawab-pertanyaan` route, the header's "Jawab Pertanyaan" button and count, the answer form, the related sidebar. Verify in a browser as an Admin: the queue, the count and "Tulis jawaban" appear, and a User sees none of them.
-- [ ] 2.2 The ustadz side: `AnswerItem`, `QuestionCard`, `ArticleByline`, Profil's "Profil ustadz" and the ustadz link on Panel Admin use `isUstadz`. Verify in a browser: a visible Admin's answers show the tick and link to their page, a hidden Admin's show the plain name.
-- [ ] 2.3 Panel Admin's Pengguna page: "Tampil di daftar ustadz" / "Disembunyikan dari daftar ustadz" with "Sembunyikan" / "Tampilkan" on each Admin row, and `PostForm` preselects a visible Admin. Verify in a browser: hide and show an Admin and see Dewan Ustadz and the "Ditujukan kepada" choice follow it.
+- [x] 2.1 `lib/roles.js` (`canAnswer`, `isUstadz`) and the answering side: the `/jawab-pertanyaan` route, the header's "Jawab Pertanyaan" button and count, the answer form, the related sidebar. Verify in a browser as an Admin: the queue, the count and "Tulis jawaban" appear, and a User sees none of them.
+- [x] 2.2 The ustadz side: `AnswerItem`, `QuestionCard`, `ArticleByline`, Profil's "Profil ustadz" and the ustadz link on Panel Admin use `isUstadz`. Verify in a browser: a visible Admin's answers show the tick and link to their page, a hidden Admin's show the plain name.
+- [x] 2.3 Panel Admin's Pengguna page: "Tampil di daftar ustadz" / "Disembunyikan dari daftar ustadz" with "Sembunyikan" / "Tampilkan" on each Admin row, and `PostForm` preselects a visible Admin. Verify in a browser: hide and show an Admin and see Dewan Ustadz and the "Ditujukan kepada" choice follow it.
 
 ## 3. Wrap-up
 
-- [ ] 3.1 Deploy: pull and restart the API, upload the UI, hide the owner's own Admin account. Verify on the live site: the owner is not in Dewan Ustadz, a second Admin who is shown is, and answers by an Admin read correctly.
-- [ ] 3.2 Sync the deltas into `openspec/specs/` and archive the change. Verify: `openspec validate --specs` passes.
+- [x] 3.1 Deploy: pull and restart the API, upload the UI, hide the owner's own Admin account. Verify on the live site: the owner is not in Dewan Ustadz, a second Admin who is shown is, and answers by an Admin read correctly.
+- [x] 3.2 Sync the deltas into `openspec/specs/` and archive the change. Verify: `openspec validate --specs` passes.

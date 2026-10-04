@@ -23,9 +23,9 @@ anonymously, and whether its answer may be published.
 
 #### Scenario: Directing a question to an ustadz
 
-- **WHEN** `directedTo` is the id of a Guru
+- **WHEN** `directedTo` is the id of an ustadz (a Guru, or an Admin who is not hidden as an ustadz)
 - **THEN** the question is stored as directed to that ustadz
-- **WHEN** `directedTo` is the id of anyone who is not a Guru, or of nobody
+- **WHEN** `directedTo` is the id of anyone who is not an ustadz, or of nobody
 - **THEN** the response is 400 with "Ustadz yang dipilih tidak tersedia" and
   nothing is stored
 
@@ -112,7 +112,7 @@ listed only for a Guru or an Admin, and only while unanswered, for answering.
   `category`, `userId`, `userName`, `userPicture`, `isAnswered`,
   `commentCount`, `isAnonymous`, `allowPublish`, `directedTo` (`{ id, name }` or
   `null`), and `answeredBy` / `answeredByRole` / `answeredByPicture` — the name,
-  role and picture of the answer shown for it (a Guru's answer when there is
+  role and picture of the answer shown for it (an ustadz's answer when there is
   one, otherwise the first), or `null` when unanswered
 - **AND** the asker fields are masked as described under Anonymous askers
 
@@ -152,7 +152,7 @@ listed only for a Guru or an Admin, and only while unanswered, for answering.
   row, who asked it on the left (avatar, "Ditanyakan" above the name, "Hamba
   Allah" for an anonymous asker) and who answered it on the right ("Dijawab"
   above the name, with the answerer's avatar carrying a small gold verified mark
-  for a Guru)
+  for an ustadz)
 
 ### Requirement: Own questions
 

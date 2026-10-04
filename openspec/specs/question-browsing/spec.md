@@ -53,7 +53,7 @@ questions and private answers MUST never appear in it.
 - **WHEN** one or more `?category=` keys are given
 - **THEN** questions in any of those categories match
 - **WHEN** one or more `?ustadz=` ids are given
-- **THEN** questions whose featured answer is by any of those Gurus match
+- **THEN** questions whose featured answer is by any of those ustadz match
 - **WHEN** both are given
 - **THEN** a question must match both
 
@@ -63,7 +63,7 @@ questions and private answers MUST never appear in it.
 - **THEN** `facets.categories` lists every category with how many matching
   questions it has, counted over the search and the ustadz filter but not the
   category filter
-- **AND** `facets.ustadz` lists every Guru who is the featured answerer of a
+- **AND** `facets.ustadz` lists every ustadz who is the featured answerer of a
   published question, with the same kind of count over the search and the
   category filter
 

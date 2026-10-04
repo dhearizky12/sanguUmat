@@ -81,9 +81,9 @@ queue, and follow-ups under their answers.
 #### Scenario: New question in the queue
 
 - **WHEN** a question is asked
-- **THEN** every Guru other than the directed one is notified, linking to Jawab
+- **THEN** every ustadz other than the directed one is notified, linking to Jawab
   Pertanyaan
-- **AND** a Guru who already has an unread new-question notification has that
+- **AND** an ustadz who already has an unread new-question notification has that
   one updated instead: its count goes up by one, its text reads "{N}
   pertanyaan baru menunggu jawaban", and its time becomes now
 
@@ -96,7 +96,7 @@ queue, and follow-ups under their answers.
 #### Scenario: Unanswered question edited
 
 - **WHEN** the asker edits a question that has no answers
-- **THEN** the directed ustadz, or every Guru when it is not directed, is
+- **THEN** the directed ustadz, or every ustadz when it is not directed, is
   notified: "{asker} mengubah pertanyaan: {title}", linking to the question
 - **AND** an unread edit notification for the same question is updated instead
   of adding another

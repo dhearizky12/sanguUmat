@@ -10,20 +10,20 @@ questions they have answered, so readers can see who stands behind an answer.
 
 ### Requirement: Ustadz profile
 
-Every user with the Guru role MUST have an ustadz profile made of a title line,
+Every ustadz MUST have an ustadz profile made of a title line,
 a bio, areas of expertise chosen from the categories, and an education history.
 
 #### Scenario: A new Guru
 
-- **WHEN** a user becomes a Guru
+- **WHEN** a user becomes a Guru or an Admin not hidden as an ustadz
 - **THEN** they appear as an ustadz with an empty title, bio, expertise and
   education until the profile is filled in
 
 #### Scenario: A Guru who stops being one
 
-- **WHEN** a Guru's role is changed to something else
+- **WHEN** a Guru's role is changed to User, or an Admin is hidden as an ustadz or demoted to User
 - **THEN** they no longer appear in the Dewan Ustadz list and their page answers
-  404, but the profile is kept for if they become a Guru again
+  404, but the profile is kept for if they become an ustadz again
 
 #### Scenario: A deleted category
 
@@ -37,18 +37,18 @@ Anyone MUST be able to list the ustadz and read any one of them.
 #### Scenario: Listing
 
 - **WHEN** anyone requests `GET /api/ustadz`
-- **THEN** the response is 200 with every Guru as
+- **THEN** the response is 200 with every ustadz as
   `{ id, name, picture, title, expertise: [{ key, name }], answerCount }`,
   most answers first, then by name
 - **AND** `answerCount` counts their answers on published questions
 
 #### Scenario: One ustadz
 
-- **WHEN** anyone requests `GET /api/ustadz/{id}` for a Guru
+- **WHEN** anyone requests `GET /api/ustadz/{id}` for an ustadz
 - **THEN** the response is 200 with `{ id, name, picture, title, bio, expertise,
   education, answerCount, joinedAt }`, education as
   `[{ institution, degree, startYear, endYear }]` in the order it was entered
-- **WHEN** the id is not a Guru
+- **WHEN** the id is not an ustadz
 - **THEN** the response is 404
 
 ### Requirement: Editing a profile
@@ -80,7 +80,7 @@ Nobody else may.
 - **THEN** the response is 401
 - **WHEN** a signed-in caller who is neither that ustadz nor an Admin saves
 - **THEN** the response is 403 and nothing changes
-- **WHEN** the id is not a Guru
+- **WHEN** the id is not an ustadz
 - **THEN** the response is 404
 
 ### Requirement: Ustadz pages
@@ -106,7 +106,7 @@ the design system and in Bahasa Indonesia.
 - **THEN** visitors see the answers across the full width, with no profile
   column; the ustadz and Admins instead see "Profil belum diisi." with
   "Lengkapi profil"
-- **WHEN** the id is not a Guru
+- **WHEN** the id is not an ustadz
 - **THEN** the page shows "Ustadz tidak ditemukan." with a link to Dewan Ustadz
 
 #### Scenario: The ustadz's work in tabs
@@ -127,14 +127,14 @@ the design system and in Bahasa Indonesia.
 
 - **WHEN** the ustadz or an Admin views the ustadz's page
 - **THEN** it offers "Ubah profil ustadz", which opens `/ustadz/{id}/ubah`
-- **AND** a Guru's own Profil page and each Guru row in Panel Admin link there
+- **AND** an ustadz's own Profil page and each ustadz row in Panel Admin link there
   too
 - **WHEN** anyone else opens `/ustadz/{id}/ubah`
 - **THEN** they are sent to the ustadz's page
 
 #### Scenario: Links to an ustadz
 
-- **WHEN** an answer by a Guru is shown on the question page
+- **WHEN** an answer by an ustadz is shown on the question page
 - **THEN** the ustadz's name and avatar link to their page
 - **AND** question cards, which are one link each, do not nest another link
 
@@ -142,3 +142,21 @@ the design system and in Bahasa Indonesia.
 
 - **WHEN** anyone opens `/detail-admin/{id}`
 - **THEN** they are redirected to `/ustadz/{id}`
+
+### Requirement: Who counts as an ustadz
+
+An ustadz is a user whose role is `Guru`, or an `Admin` who is not hidden from the
+ustadz lists (see `admin-users`). The platform MUST treat both the same wherever it
+presents someone as an ustadz.
+
+#### Scenario: An Admin who teaches
+
+- **WHEN** an Admin is not hidden
+- **THEN** they are listed in Dewan Ustadz with a page, a profile and the gold tick,
+  can be chosen as the ustadz of a question, a post or a kajian, and receive the
+  notifications ustadz receive
+
+#### Scenario: A hidden Admin
+
+- **WHEN** an Admin is hidden
+- **THEN** none of that applies to them, as for any other non-ustadz

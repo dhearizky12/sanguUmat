@@ -291,7 +291,7 @@ Each published article MUST have its own page.
 - **WHEN** anyone opens `/articles/{id}`
 - **THEN** they see a breadcrumb Artikel › rubrik, the rubrik, title and
   summary, the author with their avatar (with the gold tick and a link to their
-  ustadz page when they are a Guru), the published date, "N menit baca" and "N
+  ustadz page when they are an ustadz), the published date, "N menit baca" and "N
   dibaca", the cover, and the formatted body
 - **AND** one read is counted
 

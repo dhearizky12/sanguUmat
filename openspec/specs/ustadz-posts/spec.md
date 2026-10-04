@@ -26,9 +26,15 @@ credited to one ustadz. It is published immediately.
 - **THEN** the question and answer are credited to that ustadz, and nothing shows
   the Admin
 
+#### Scenario: Admin posting as themselves
+
+- **WHEN** an Admin who is not hidden as an ustadz omits `ustadzId`
+- **THEN** the post is credited to that Admin
+
 #### Scenario: Admin must name an ustadz
 
-- **WHEN** an Admin omits `ustadzId`, or it is not a Guru
+- **WHEN** an Admin who is hidden as an ustadz omits `ustadzId`, or any Admin sends
+  one that is not an ustadz
 - **THEN** the response is 400 with "Pilih ustadz yang bersangkutan" and nothing
   is stored
 
@@ -62,8 +68,9 @@ Guru and Admin MUST have a dedicated page for writing a post, in Bahasa Indonesi
 
 - **WHEN** a Guru or Admin opens `/posting/baru`
 - **THEN** it offers "Pertanyaan" (title and body), "Jawaban" in the formatted
-  editor described under `answers`, "Kategori", and for an Admin a required
-  "Diposting atas nama" choice listing every ustadz
+  editor described under `answers`, "Kategori", and for an Admin a
+  "Diposting atas nama" choice listing every ustadz, preselected to the Admin when
+  they are not hidden as an ustadz and required otherwise
 - **AND** a post's answer is always stored as a formatted answer
 - **AND** a "Terbitkan" button that publishes the post and opens it
 
@@ -133,7 +140,7 @@ The credited ustadz and any Admin MUST be able to edit a post's texts together.
 
 #### Scenario: Admin changes the credit
 
-- **WHEN** an Admin includes an `ustadzId` that is a Guru
+- **WHEN** an Admin includes an `ustadzId` that is an ustadz
 - **THEN** the post, including its answer, is credited to that ustadz
 
 #### Scenario: Someone else

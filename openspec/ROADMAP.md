@@ -87,6 +87,8 @@ stream or upload) played in an embedded player; nothing is hosted here.
 - `ustadz-posts` — 2026-10-04: a Guru or Admin publishes a question with its answer in
   one step, credited "Diposting oleh"; answers everywhere can now be written with the
   rich text editor.
+- `admin-as-ustadz` — 2026-10-04: every Admin is also an ustadz (answers, Dewan Ustadz,
+  ustadz pages), and an Admin can be hidden from the ustadz lists in Panel Admin.
 
 ## Deferred, not yet sequenced
 

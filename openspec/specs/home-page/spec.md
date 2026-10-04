@@ -17,8 +17,8 @@ questions only.
 
 - **WHEN** anyone requests `GET /api/home/summary`
 - **THEN** the response is 200 with `publishedAnswers`, the number of published
-  questions (answered with the asker's consent), `ustadz`, the number of users
-  with the Guru role, and `lastAnsweredAt`, when the newest answer on a
+  questions (answered with the asker's consent), `ustadz`, the number of ustadz (Gurus
+  and Admins not hidden as ustadz), and `lastAnsweredAt`, when the newest answer on a
   published question was posted, or null when there is none
 - **AND** private answers are never counted, and never set `lastAnsweredAt`
 

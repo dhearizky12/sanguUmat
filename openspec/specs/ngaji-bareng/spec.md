@@ -49,7 +49,7 @@ a YouTube video, a start time and a duration, and MAY have catatan ngaji.
 ### Requirement: Managing kajian
 
 A Guru MUST be able to add, edit and delete the kajian they lead. An Admin MUST
-be able to manage any kajian and choose which Guru leads it. Nobody else may.
+be able to manage any kajian and choose which ustadz leads it. Nobody else may.
 
 #### Scenario: Adding
 
@@ -57,9 +57,10 @@ be able to manage any kajian and choose which Guru leads it. Nobody else may.
   durationMinutes, notes }` to `POST /api/kajian`
 - **THEN** the kajian is created with them leading it, and the response is 201
   with it
-- **WHEN** an Admin posts the same with `ustadz`, a Guru's id
-- **THEN** that Guru leads it
-- **WHEN** an Admin omits `ustadz`, or gives an id that is not a Guru
+- **WHEN** an Admin posts the same with `ustadz`, an ustadz's id (a Guru, or an
+  Admin not hidden as an ustadz)
+- **THEN** that ustadz leads it
+- **WHEN** an Admin omits `ustadz`, or gives an id that is not an ustadz
 - **THEN** the response is 400 with "Ustadz yang dipilih tidak tersedia"
 
 #### Scenario: Validation
