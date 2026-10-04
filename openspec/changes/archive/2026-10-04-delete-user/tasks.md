@@ -8,9 +8,9 @@
 
 ## 2. Frontend
 
-- [ ] 2.1 "Hapus pengguna" per row in Pengguna (not on the Admin's own row) and "Hapus akun" on Profil (not for Admin), with the confirmation texts, and the Kebijakan Privasi "Menghapus data" paragraph. Verify in a browser: an Admin deletes a test user and the row disappears, a User deletes their own account and lands on Masuk, an Admin sees no "Hapus akun", and the privacy page reads correctly.
+- [x] 2.1 "Hapus pengguna" per row in Pengguna (not on the Admin's own row) and "Hapus akun" on Profil (not for Admin), with the confirmation texts, and the Kebijakan Privasi "Menghapus data" paragraph. Verify in a browser: an Admin deletes a test user and the row disappears, a User deletes their own account and lands on Masuk, an Admin sees no "Hapus akun", and the privacy page reads correctly.
 
 ## 3. Wrap-up
 
-- [ ] 3.1 Deploy: pull and restart the API, upload the UI. Verify on the live site with a throwaway account: it posts something that gets an answer, is deleted, and the content shows "Hamba Allah" while its old token is signed out.
-- [ ] 3.2 Sync the `account-deletion`, `auth`, `admin-users` and `admin-tools` deltas into `openspec/specs/` and archive the change. Verify: `openspec validate --specs` passes.
+- [x] 3.1 Deploy: pull and restart the API, upload the UI. Verify on the live site with a throwaway account: it posts something that gets an answer, is deleted, and the content shows "Hamba Allah" while its old token is signed out.
+- [x] 3.2 Sync the `account-deletion`, `auth`, `admin-users` and `admin-tools` deltas into `openspec/specs/` and archive the change. Verify: `openspec validate --specs` passes.

@@ -27,7 +27,7 @@ Every endpoint under `/api/admin` MUST be reachable only by an `Admin`.
 
 #### Scenario: The panel's tabs
 
-- **WHEN** an Admin opens "Panel Admin" from the header
+- **WHEN** an Admin opens "Panel Admin" from the header or the account menu
 - **THEN** it opens on Ringkasan (`/admin`)
 - **AND** every Panel Admin page offers the tabs Ringkasan, Pertanyaan, Komentar,
   Konten, Pengguna and Kategori
@@ -40,7 +40,7 @@ free text or role.
 #### Scenario: Listing
 
 - **WHEN** an Admin requests `GET /api/admin/users`
-- **THEN** every user is returned sorted by name
+- **THEN** every user who has not been deleted is returned sorted by name
 - **AND** each carries `id`, `name`, `email`, `role`, `createdAt` and `lastLogin`
 
 #### Scenario: Search

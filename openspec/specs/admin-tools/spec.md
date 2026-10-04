@@ -29,7 +29,8 @@ An Admin MUST see the site's numbers and what is waiting longest.
 
 - **WHEN** an Admin requests `GET /api/admin/overview`
 - **THEN** the response is 200 with:
-  - `users`: `{ total, anggota, ustadz, admin, newThisWeek }`;
+  - `users`: `{ total, anggota, ustadz, admin, newThisWeek }`, counting users who
+    have not been deleted;
   - `questions`: `{ total, published, waiting, privateAnswered, anonymous }`;
   - `activity`: `{ answersThisWeek, commentsThisWeek, questionsThisWeek }`, over
     the last seven days;
@@ -45,7 +46,7 @@ An Admin MUST see the site's numbers and what is waiting longest.
   Aktivitas 7 hari, Artikel, Kajian), each linking to its tab
 - **AND** "Perlu dijawab" lists the waiting questions with how long each has
   waited, linking to them
-- **AND** "Panel Admin" in the header opens this page
+- **AND** "Panel Admin", in the header or in the account menu, opens this page
 
 ### Requirement: Pertanyaan
 

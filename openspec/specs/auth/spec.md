@@ -76,6 +76,14 @@ rule in `user-profile`: a name plus an email or a phone.
 - **THEN** the response is `{ isAuthenticated: false }` with status 200
 - **AND** no `User` row is created
 
+#### Scenario: A deleted account
+
+- **WHEN** a caller whose token names a Google id that belongs to a deleted account
+  requests `GET /api/auth/me`
+- **THEN** the response is `{ isAuthenticated: false }` with status 200
+- **AND** no `User` row is created, and every other endpoint treats the caller as
+  signed out
+
 ### Requirement: Roles
 
 Every user MUST hold exactly one role: `User`, `Guru`, or `Admin`. New accounts

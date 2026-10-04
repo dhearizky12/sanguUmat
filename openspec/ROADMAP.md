@@ -89,6 +89,10 @@ stream or upload) played in an embedded player; nothing is hosted here.
   rich text editor.
 - `admin-as-ustadz` — 2026-10-04: every Admin is also an ustadz (answers, Dewan Ustadz,
   ustadz pages), and an Admin can be hidden from the ustadz lists in Panel Admin.
+- `delete-user` — 2026-10-04: an Admin can delete a user and a member can delete their own
+  account; the account is anonymised and what they wrote stays as "Hamba Allah".
+- `header-account-menu` — 2026-10-04: header actions overflow into an avatar menu when there is
+  more than one.
 
 ## Deferred, not yet sequenced
 

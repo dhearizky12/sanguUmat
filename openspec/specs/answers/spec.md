@@ -79,7 +79,9 @@ many there are, with the questions directed to them first.
 #### Scenario: Pending count in the header
 
 - **WHEN** a signed-in `Guru` or `Admin` loads any page
-- **THEN** the header shows how many questions are unanswered
+- **THEN** "Jawab Pertanyaan" shows how many questions are unanswered, whether it is a
+  button in the header or an item in the account menu (see `site-header`)
+- **AND** when it is in the account menu the count also sits on the avatar
 - **AND** the count is not shown to any other role
 
 #### Scenario: Working the queue
