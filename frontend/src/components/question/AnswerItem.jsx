@@ -21,7 +21,6 @@ function AnswerItem({ answer, canManage, onUpdated }) {
 
     const response = await fetch(`${API_URL}/api/answer/${answer.id}`, {
       method: "DELETE",
-      credentials: "include",
     });
 
     if (response.ok) {
@@ -51,7 +50,6 @@ function AnswerItem({ answer, canManage, onUpdated }) {
     try {
       const response = await fetch(`${API_URL}/api/answer/${answer.id}`, {
         method: "PUT",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

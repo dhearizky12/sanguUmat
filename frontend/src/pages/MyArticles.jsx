@@ -29,7 +29,7 @@ function MyArticles() {
   const [list, setList] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/articles/mine`, { credentials: "include" })
+    fetch(`${API_URL}/api/articles/mine`)
       .then((res) => (res.ok ? res.json() : []))
       .then(setList)
       .catch((err) => {

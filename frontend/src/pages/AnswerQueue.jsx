@@ -27,7 +27,7 @@ function AnswerQueue() {
     const fetchUnanswered = async () => {
       setLoading(true);
       try {
-        const listRes = await fetch(`${API_URL}/api/question?status=pending`, { credentials: "include" });
+        const listRes = await fetch(`${API_URL}/api/question?status=pending`);
         if (!listRes.ok) throw new Error("Failed to fetch questions");
         const list = await listRes.json();
 

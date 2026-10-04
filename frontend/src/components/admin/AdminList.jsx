@@ -50,7 +50,7 @@ export default function AdminList({ endpoint, statuses, searchLabel, placeholder
   const url = `${API_URL}${endpoint}?${query}`;
   useEffect(() => {
     let cancelled = false;
-    fetch(url, { credentials: "include" })
+    fetch(url)
       .then((res) => (res.ok ? res.json() : null))
       .catch(() => null)
       .then((data) => !cancelled && setResult({ url, data }));
@@ -63,7 +63,7 @@ export default function AdminList({ endpoint, statuses, searchLabel, placeholder
     if (!window.confirm(message)) return;
     setError("");
     try {
-      const res = await fetch(`${API_URL}${deleteUrl}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`${API_URL}${deleteUrl}`, { method: "DELETE" });
       if (!res.ok) throw new Error(String(res.status));
       setReload((n) => n + 1);
     } catch (err) {

@@ -30,7 +30,7 @@ function DetailArticle() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    fetch(`${API_URL}/api/articles/${id}`, { credentials: "include" })
+    fetch(`${API_URL}/api/articles/${id}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data) => {
         setLoaded({ id, article: data, notFound: false });
@@ -54,7 +54,7 @@ function DetailArticle() {
     setDeleting(true);
     setError("");
     try {
-      const res = await fetch(`${API_URL}/api/articles/${id}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`${API_URL}/api/articles/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error(String(res.status));
       navigate(canWriteArticles(me) ? "/articles/saya" : "/articles", { replace: true });
     } catch (err) {

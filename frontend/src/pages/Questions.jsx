@@ -48,7 +48,7 @@ function Questions() {
   const query = params.toString();
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_URL}/api/question/browse${query ? `?${query}` : ""}`, { credentials: "include" })
+    fetch(`${API_URL}/api/question/browse${query ? `?${query}` : ""}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data) => !cancelled && setResult({ query, data }))
       .catch((err) => {

@@ -20,7 +20,7 @@ function RelatedSidebar({ question, isGuru }) {
       try {
         // For an ustadz, "related" isn't useful — what matters is what to answer next, and the
         // public list holds answered questions only, so a Guru asks for the pending ones.
-        const res = await fetch(`${API_URL}/api/question${isGuru ? "?status=pending" : ""}`, { credentials: "include" });
+        const res = await fetch(`${API_URL}/api/question${isGuru ? "?status=pending" : ""}`);
         const list = res.ok ? await res.json() : [];
         const others = list.filter((q) => String(q.id) !== String(id));
 

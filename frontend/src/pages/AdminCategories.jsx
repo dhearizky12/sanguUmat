@@ -17,7 +17,6 @@ async function send(method, path, body) {
   try {
     const res = await fetch(`${API_URL}/api/admin/categories${path}`, {
       method,
-      credentials: "include",
       headers: body ? { "Content-Type": "application/json" } : undefined,
       body: body ? JSON.stringify(body) : undefined,
     });

@@ -42,9 +42,10 @@ services:
       ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       Authentication__Google__ClientId: ${GOOGLE_CLIENT_ID}
       Authentication__Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
-      # Lax is right because the SPA and the API are one origin now.
-      Authentication__CookieSameSite: ${COOKIE_SAMESITE:-Lax}
-      Authentication__CookieDomain: ${COOKIE_DOMAIN:-}
+      # Signs the login token (at least 32 random characters). Changing it signs
+      # everyone out. Lifetime is Jwt__ExpiryDays, 7 by default.
+      Jwt__Key: ${JWT_KEY}
+      Jwt__ExpiryDays: ${JWT_EXPIRY_DAYS:-7}
       # Where login and logout hand the browser back to: the public site URL,
       # including the path prefix if the app is mounted under one.
       Frontend__BaseUrl: ${PUBLIC_BASE_URL}
@@ -52,12 +53,11 @@ services:
       # "/sanguumat" behind a reverse proxy that strips it. Changing this needs a
       # restart, not a rebuild.
       App__BasePath: ${APP_BASE_PATH:-}
-      # Nothing is cross-origin here, so this is normally empty. Set
-      # EXTRA_CORS_ORIGIN in .env only to let a local `npm run dev` talk to this
-      # API (e.g. http://localhost:3000).
       # The Google account that becomes Admin when it first signs in. Only applies
       # at account creation, so set it before that person's first login.
       AdminEmails__0: ${ADMIN_EMAIL:-}
+      # The origin the UI is served from (https://sanguumat.web.id). Add a second
+      # entry here if a local `npm run dev` should also be allowed.
       Cors__AllowedOrigins__0: ${EXTRA_CORS_ORIGIN:-}
     volumes:
       - ./data/uploads:/app/wwwroot/uploads

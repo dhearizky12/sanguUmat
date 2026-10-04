@@ -101,7 +101,6 @@ function KajianEditor({ id }) {
     try {
       const res = await fetch(isNew ? `${API_URL}/api/kajian` : `${API_URL}/api/kajian/${id}`, {
         method: isNew ? "POST" : "PUT",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: form.title,

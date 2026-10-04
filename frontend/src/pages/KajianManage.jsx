@@ -26,7 +26,7 @@ function KajianManage() {
   const [list, setList] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/kajian/mine`, { credentials: "include" })
+    fetch(`${API_URL}/api/kajian/mine`)
       .then((res) => (res.ok ? res.json() : []))
       .then(setList)
       .catch((err) => {

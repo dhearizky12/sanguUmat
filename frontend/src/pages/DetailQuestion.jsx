@@ -25,7 +25,7 @@ function DetailQuestion() {
   const { hash } = useLocation();
 
   useEffect(() => {
-    fetch(`${API_URL}/api/Question/${id}`, { credentials: "include" })
+    fetch(`${API_URL}/api/Question/${id}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((data) => {
         setLoaded({ id, question: data, notFound: false });
@@ -33,7 +33,7 @@ function DetailQuestion() {
         // the caller may see. Deliberately not the same request as the fetch above — that
         // endpoint is also reused as a batch data-fetch elsewhere (Dashboard.jsx), which must
         // never count as a view.
-        fetch(`${API_URL}/api/question/${id}/view`, { method: "POST", credentials: "include" }).catch((err) =>
+        fetch(`${API_URL}/api/question/${id}/view`, { method: "POST" }).catch((err) =>
           console.error(err),
         );
       })

@@ -75,7 +75,7 @@ function KajianDetail() {
     setDeleting(true);
     setError("");
     try {
-      const res = await fetch(`${API_URL}/api/kajian/${id}`, { method: "DELETE", credentials: "include" });
+      const res = await fetch(`${API_URL}/api/kajian/${id}`, { method: "DELETE" });
       if (!res.ok) throw new Error(String(res.status));
       navigate(canWriteKajian(me) ? "/live/kelola" : "/live", { replace: true });
     } catch (err) {

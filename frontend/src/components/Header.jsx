@@ -45,7 +45,7 @@ function Header() {
 
     const loadPendingCount = async () => {
       try {
-        const listRes = await fetch(`${API_URL}/api/question?status=pending`, { credentials: "include" });
+        const listRes = await fetch(`${API_URL}/api/question?status=pending`);
         const list = listRes.ok ? await listRes.json() : [];
         if (!cancelled) setPendingAnswerCount(list.length);
       } catch (err) {

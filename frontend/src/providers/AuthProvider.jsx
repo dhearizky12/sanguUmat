@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import AuthContext from "../contexts/AuthContext";
-import { API_URL, pictureUrl } from "../lib/api";
+import { BASE_PATH } from "../lib/basePath";
+import { API_URL, pictureUrl, setToken } from "../lib/api";
 
 export default function AuthProvider({ children }) {
   const [me, setMe] = useState(null);
@@ -11,7 +12,6 @@ export default function AuthProvider({ children }) {
     const fetchUser = async () => {
       try {
         const meRes = await fetch(`${API_URL}/api/auth/me`, {
-          credentials: "include",
         });
 
         if (!meRes.ok) {
@@ -32,7 +32,6 @@ export default function AuthProvider({ children }) {
         }
 
         const profileRes = await fetch(`${API_URL}/api/auth/profile`, {
-          credentials: "include",
         });
 
         if (!profileRes.ok) {
@@ -54,7 +53,9 @@ export default function AuthProvider({ children }) {
   }, []);
 
   const logout = () => {
-    window.location.href = `${API_URL}/api/auth/logout`;
+    // Signing out is just forgetting the token. A full load resets all signed-in state.
+    setToken(null);
+    window.location.assign(`${BASE_PATH}/login`);
   };
 
   return (

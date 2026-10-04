@@ -35,34 +35,43 @@ load but show no data and sign-in does not work.
 ```bash
 cd deploy
 cp .env.example .env       # fill in every CHANGE_ME / YOUR_
-docker compose up -d --build
+docker compose up -d db    # Postgres
+./run-api.sh               # the API, on 127.0.0.1:5236 (or `docker compose up -d --build` for the API in Docker, on 127.0.0.1:8080)
 ```
 
-The API applies EF migrations on boot, so a fresh database sets itself up. It
-listens on `127.0.0.1:8080` (change with `API_HOST_PORT`); put a reverse proxy in
-front of that port to reach it from outside.
+The API applies EF migrations on boot, so a fresh database sets itself up. Put a
+reverse proxy in front of its port to reach it from outside. It must keep the path
+prefix (`/sanguumat`) and set `X-Forwarded-Proto: https`; the API strips the prefix
+itself (`APP_BASE_PATH`).
 
-Needed in `.env`: `POSTGRES_PASSWORD`, a Google OAuth client
-(`GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET`, from console.cloud.google.com → APIs
-& Services → Credentials), `PUBLIC_BASE_URL` (`https://sanguumat.web.id`) and
-`ADMIN_EMAIL` (the Google account that becomes Admin on its first sign-in; set it
-before that account has ever signed in). The Google authorized redirect URI is
-`<API public origin>/signin-google`.
+Needed in `.env`:
 
-### UI and API on different origins
+- `POSTGRES_PASSWORD`.
+- `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` from console.cloud.google.com → APIs &
+  Services → Credentials. The authorized redirect URI is
+  `<API public origin><APP_BASE_PATH>/signin-google`, for example
+  `https://se-224.tail3f5844.ts.net/sanguumat/signin-google`.
+- `JWT_KEY`: at least 32 random characters (`openssl rand -base64 48`). It signs the
+  login token; changing it signs everyone out. The API refuses to start without it.
+- `PUBLIC_BASE_URL`: where the UI lives (`https://sanguumat.web.id`).
+- `EXTRA_CORS_ORIGIN`: the same UI origin, so the browser may call the API.
+- `ADMIN_EMAIL`: the Google account that becomes Admin on its first sign-in; set it
+  before that account has ever signed in.
 
-The UI is on `sanguumat.web.id`, so the API sits on another origin and the sign-in
-cookie has to cross it. The simplest working setup is the API on a subdomain of
-the same site, `https://api.sanguumat.web.id`:
+### How sign-in works across the two sites
 
-- `VITE_API_URL=https://api.sanguumat.web.id` when building the UI.
-- `COOKIE_DOMAIN=.sanguumat.web.id`, so the cookie is shared by both hosts.
-- `COOKIE_SAMESITE=Lax` stays correct: both hosts are the same site.
-- `EXTRA_CORS_ORIGIN=https://sanguumat.web.id`. The API already allows credentials
-  for listed origins.
+The UI (`sanguumat.web.id`) and the API (`se-224.tail3f5844.ts.net`) are different
+sites, so there is no shared cookie. Instead:
 
-On an unrelated domain the cookie would be third-party, which Firefox and Safari
-block by default, so sign-in fails there.
+1. The UI sends the browser to `<API>/api/auth/login`, which goes to Google.
+2. Google returns to `<API>/signin-google`; the API turns that into a signed token and
+   redirects to `https://sanguumat.web.id/masuk/selesai#token=…`.
+3. The UI stores the token, removes it from the address bar, and sends it as
+   `Authorization: Bearer …` on every API call. Tokens last 7 days (`JWT_EXPIRY_DAYS`);
+   after that the visitor signs in again. Signing out just discards the token.
+
+Build the UI with `VITE_API_URL` set to the API origin plus prefix
+(`frontend/.env.production`), then upload `dist/` again whenever it changes.
 
 ## 3. What is persisted — `deploy/data/`
 

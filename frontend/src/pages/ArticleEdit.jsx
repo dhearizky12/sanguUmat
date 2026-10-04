@@ -49,7 +49,7 @@ function ArticleEditor({ id }) {
 
   useEffect(() => {
     if (isNew) return;
-    fetch(`${API_URL}/api/articles/${id}`, { credentials: "include" })
+    fetch(`${API_URL}/api/articles/${id}`)
       .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
       .then((a) => {
         const initial = { title: a.title, summary: a.summary ?? "", category: a.category?.key ?? "", cover: a.cover, body: a.body };
@@ -89,7 +89,7 @@ function ArticleEditor({ id }) {
     try {
       const body = new FormData();
       body.append("file", file);
-      const res = await fetch(`${API_URL}/api/articles/cover`, { method: "POST", credentials: "include", body });
+      const res = await fetch(`${API_URL}/api/articles/cover`, { method: "POST", body });
       if (!res.ok) {
         setCoverError((await res.text()) || "Gagal mengunggah sampul. Silakan coba lagi.");
         return;
@@ -110,7 +110,6 @@ function ArticleEditor({ id }) {
     try {
       const res = await fetch(isNew ? `${API_URL}/api/articles` : `${API_URL}/api/articles/${id}`, {
         method: isNew ? "POST" : "PUT",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ...form, publish }),
       });

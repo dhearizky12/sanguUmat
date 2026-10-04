@@ -76,7 +76,7 @@ function CreateQuestion() {
     const fetchMine = async () => {
       setLoadingMine(true);
       try {
-        const res = await fetch(`${API_URL}/api/question/mine`, { credentials: "include" });
+        const res = await fetch(`${API_URL}/api/question/mine`);
         if (!res.ok) throw new Error("Failed to fetch my questions");
         const mine = await res.json();
 
@@ -118,7 +118,6 @@ function CreateQuestion() {
     try {
       const response = await fetch(`${API_URL}/api/question`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

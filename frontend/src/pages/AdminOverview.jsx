@@ -32,7 +32,7 @@ function AdminOverview() {
   const [data, setData] = useState(null);
 
   useEffect(() => {
-    fetch(`${API_URL}/api/admin/overview`, { credentials: "include" })
+    fetch(`${API_URL}/api/admin/overview`)
       .then((res) => (res.ok ? res.json() : null))
       .then(setData)
       .catch((err) => console.error(err));

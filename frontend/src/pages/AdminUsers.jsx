@@ -44,7 +44,7 @@ function AdminUsers() {
         if (search) params.set("search", search);
         if (role !== "semua") params.set("role", role);
 
-        const res = await fetch(`${API_URL}/api/admin/users?${params.toString()}`, { credentials: "include" });
+        const res = await fetch(`${API_URL}/api/admin/users?${params.toString()}`);
         if (!res.ok) throw new Error("Failed to fetch users");
         const data = await res.json();
 
@@ -72,7 +72,6 @@ function AdminUsers() {
     try {
       const res = await fetch(`${API_URL}/api/admin/users/${userId}/role`, {
         method: "PATCH",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ role: newRole }),
       });

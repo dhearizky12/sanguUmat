@@ -90,7 +90,6 @@ function UstadzEdit() {
       const toYear = (v) => (v === "" ? null : Number(v));
       const res = await fetch(`${API_URL}/api/ustadz/${id}`, {
         method: "PUT",
-        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           title: form.title,

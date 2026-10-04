@@ -1,7 +1,6 @@
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using backend.Data;
 using backend.Extensions;
 using backend.Models;
@@ -30,16 +29,37 @@ namespace backend.Controllers
         [HttpGet("login")]
         public async Task<IActionResult> Login([FromQuery] string? returnUrl)
         {
-            // After Google the frontend's /masuk/selesai decides where to go: the profile
-            // form for an incomplete profile, otherwise the page the visitor came from.
+            // After Google, /api/auth/token issues the JWT and sends the visitor to the
+            // frontend's /masuk/selesai, which decides where to go: the profile form for
+            // an incomplete profile, otherwise the page the visitor came from.
             var next = IsLocalPath(returnUrl) ? returnUrl! : "/";
             return Challenge(
                 new AuthenticationProperties
                 {
-                    RedirectUri = _frontendBaseUrl + "/masuk/selesai?next=" + Uri.EscapeDataString(next)
+                    // Back to this API's token step, which hands the UI its JWT.
+                    RedirectUri = Url.Content("~/api/auth/token") + "?next=" + Uri.EscapeDataString(next)
                 },
                 await IsMockGoogleUpAsync() ? DevAuth.MockGoogleScheme : GoogleDefaults.AuthenticationScheme
             );
+        }
+
+        // Google just signed the visitor in (the short-lived External cookie holds the
+        // result). Turn it into the bearer token and hand it to the UI in the URL
+        // fragment, which no server or log ever sees.
+        [HttpGet("token")]
+        public async Task<IActionResult> Token([FromQuery] string? next)
+        {
+            var external = await HttpContext.AuthenticateAsync(TokenService.ExternalScheme);
+            if (!external.Succeeded || external.Principal == null)
+            {
+                return Redirect(_frontendBaseUrl + "/login");
+            }
+
+            var token = TokenService.Issue(_config, external.Principal);
+            await HttpContext.SignOutAsync(TokenService.ExternalScheme);
+
+            var safeNext = IsLocalPath(next) ? next! : "/";
+            return Redirect(_frontendBaseUrl + "/masuk/selesai?next=" + Uri.EscapeDataString(safeNext) + "#token=" + token);
         }
 
         // Only a path within the app — one leading "/", not "//" or "/\" (both of which
@@ -132,18 +152,6 @@ namespace backend.Controllers
             {
                 isAuthenticated = false
             });
-        }
-
-        [HttpGet("logout")]
-        public IActionResult Logout()
-        {
-            return SignOut(
-                new AuthenticationProperties
-                {
-                    RedirectUri = _frontendBaseUrl + "/login"
-                },
-                CookieAuthenticationDefaults.AuthenticationScheme
-            );
         }
 
         [HttpPost("complete-profile")]

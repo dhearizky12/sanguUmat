@@ -17,7 +17,7 @@ function useJson(path) {
   const [state, setState] = useState({ loading: true, data: null });
   useEffect(() => {
     let cancelled = false;
-    fetch(`${API_URL}${path}`, { credentials: "include" })
+    fetch(`${API_URL}${path}`)
       .then((res) => (res.ok ? res.json() : null))
       .catch((err) => {
         console.error(err);

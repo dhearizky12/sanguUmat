@@ -19,7 +19,7 @@ function CommentSection({ answerId }) {
     let cancelled = false;
 
     // With the cookie: staff see an anonymous asker by name, and a private answer's comments.
-    fetch(`${API_URL}/api/answer/${answerId}/comments`, { credentials: "include" })
+    fetch(`${API_URL}/api/answer/${answerId}/comments`)
       .then((res) => (res.ok ? res.json() : []))
       .then((data) => {
         if (!cancelled) setComments(data);
@@ -45,7 +45,6 @@ function CommentSection({ answerId }) {
     try {
       const response = await fetch(`${API_URL}/api/answer/${answerId}/comments`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -73,7 +72,6 @@ function CommentSection({ answerId }) {
 
     const response = await fetch(`${API_URL}/api/answer/${answerId}/comments/${commentId}`, {
       method: "DELETE",
-      credentials: "include",
     });
 
     if (response.ok) {

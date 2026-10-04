@@ -44,7 +44,6 @@ function EditProfile() {
 
     const response = await fetch(`${API_URL}/api/auth/upload-picture`, {
       method: "POST",
-      credentials: "include",
       body: formData,
     });
 
@@ -64,7 +63,6 @@ function EditProfile() {
     try {
       const response = await fetch(`${API_URL}/api/auth/complete-profile`, {
         method: "POST",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },

@@ -53,7 +53,6 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
     try {
       const response = await fetch(`${API_URL}/api/question/${question.id}`, {
         method: "PUT",
-        credentials: "include",
         headers: {
           "Content-Type": "application/json",
         },
@@ -85,7 +84,6 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
 
     const response = await fetch(`${API_URL}/api/question/${question.id}`, {
       method: "DELETE",
-      credentials: "include",
     });
 
     if (response.ok) {

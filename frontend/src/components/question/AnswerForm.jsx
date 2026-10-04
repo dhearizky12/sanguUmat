@@ -11,7 +11,6 @@ function AnswerForm({ questionId }) {
   const submitAnswer = async () => {
     const response = await fetch(`${API_URL}/api/answer/${questionId}`, {
       method: "POST",
-      credentials: "include",
       headers: {
         "Content-Type": "application/json",
       },

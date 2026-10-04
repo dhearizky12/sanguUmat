@@ -2,6 +2,8 @@ using backend.Auth;
 using backend.Data;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
@@ -52,9 +54,9 @@ builder.Services.Configure<ForwardedHeadersOptions>(options =>
     options.KnownProxies.Clear();
 });
 
-// CORS is only needed when the SPA is served from somewhere other than this app
-// — i.e. `npm run dev` on localhost:3000. In the deployed setup the bundle comes
-// out of wwwroot on this same origin and no request is cross-origin at all.
+// The UI is a static site on another origin, so the browser needs CORS to call this API.
+// Authentication is a bearer token in the Authorization header, not a cookie, so
+// credentials are not allowed or needed.
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()
     ?.Where(origin => !string.IsNullOrWhiteSpace(origin)).ToArray()
     ?? ["http://localhost:3000"];
@@ -66,47 +68,50 @@ builder.Services.AddCors(options =>
         {
             policy.WithOrigins(allowedOrigins)
                 .AllowAnyHeader()
-                .AllowAnyMethod()
-                .AllowCredentials();
+                .AllowAnyMethod();
         });
 });
 
-//Authentication Google
+// Authentication: callers prove who they are with a JWT (Authorization: Bearer). Google
+// sign-in only runs once, at /api/auth/login: its result is parked in a short-lived
+// "External" cookie, then /api/auth/token turns it into a JWT and redirects to the UI.
+var jwtKey = TokenService.GetKey(builder.Configuration);
 builder.Services.AddAuthentication(options =>
 {
-    options.DefaultScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 })
-.AddCookie(options =>
+.AddJwtBearer(options =>
 {
-    // In production the SPA is served out of this app's own wwwroot, so it and the
-    // API share one origin and the cookie is first-party. Lax is
-    // therefore the right default: every browser accepts it — including Firefox and
-    // Safari, which block the third-party cookie SameSite=None would need — and it
-    // closes the CSRF hole None leaves open. Google's callback is a top-level GET,
-    // so Lax still lets the login redirect through.
-    //
-    // Override with Authentication__CookieSameSite=None only if the SPA ever moves
-    // back to a separate host.
-    if (!builder.Environment.IsDevelopment())
+    // Keep claim names exactly as TokenService wrote them (ClaimTypes URIs), so the
+    // controllers read the same claims the cookie session used to carry.
+    options.MapInboundClaims = false;
+    options.TokenValidationParameters = new TokenValidationParameters
     {
-        options.Cookie.SameSite =
-            Enum.TryParse<SameSiteMode>(builder.Configuration["Authentication:CookieSameSite"], ignoreCase: true, out var sameSite)
-                ? sameSite
-                : SameSiteMode.Lax;
-        options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-
-        // Only for sibling subdomains sharing a registrable domain. Not needed on a
-        // single origin — leave unset.
-        var cookieDomain = builder.Configuration["Authentication:CookieDomain"];
-        if (!string.IsNullOrWhiteSpace(cookieDomain))
-        {
-            options.Cookie.Domain = cookieDomain;
-        }
-    }
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = jwtKey,
+        ValidIssuer = TokenService.Issuer,
+        ValidAudience = TokenService.Audience,
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(1),
+        NameClaimType = System.Security.Claims.ClaimTypes.Name,
+        RoleClaimType = System.Security.Claims.ClaimTypes.Role
+    };
+})
+.AddCookie(TokenService.ExternalScheme, options =>
+{
+    // Only holds the Google result for the few seconds between Google's callback and
+    // /api/auth/token. Lax lets it survive Google's top-level redirect back to us.
+    options.Cookie.Name = "sangu.external";
+    options.Cookie.SameSite = SameSiteMode.Lax;
+    options.Cookie.SecurePolicy = builder.Environment.IsDevelopment()
+        ? CookieSecurePolicy.SameAsRequest
+        : CookieSecurePolicy.Always;
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(5);
 })
 .AddGoogle(options =>
 {
+    options.SignInScheme = TokenService.ExternalScheme;
     options.ClientId = builder.Configuration["Authentication:Google:ClientId"]
         ?? throw new InvalidOperationException("Authentication:Google:ClientId is not configured.");
     options.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"]
@@ -124,6 +129,7 @@ if (builder.Environment.IsDevelopment() && !string.IsNullOrWhiteSpace(mockGoogle
 {
     builder.Services.AddAuthentication().AddGoogle(DevAuth.MockGoogleScheme, "Mock Google", options =>
     {
+        options.SignInScheme = TokenService.ExternalScheme;
         options.ClientId = "mock-client";
         options.ClientSecret = "mock-secret";
         options.CallbackPath = "/signin-mock-google";
