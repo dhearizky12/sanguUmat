@@ -14,10 +14,10 @@
 - [x] 2.1 In `lib/api.js` add token storage (`localStorage`, guarded with try/catch), `captureTokenFromUrl()` and the `fetch` wrapper that adds `Authorization: Bearer` for API requests and clears the token on 401; call the capture from `main.jsx` before render. Verify: opening `/masuk/selesai#token=abc` stores the token and leaves the address bar as `/masuk/selesai?next=…`.
 - [x] 2.2 `AuthProvider.logout` clears the token and goes to `/login`; remove the `/api/auth/logout` navigation. Verify: Keluar returns to Masuk and a reload stays signed out.
 - [x] 2.3 Remove `credentials: "include"` from every fetch call. Verify: `grep -rn 'credentials:' frontend/src` returns nothing, `npx eslint src` is clean and `npm run build` passes.
-- [ ] 2.4 Verify end to end locally with the UI and API on different origins (UI on :3000, API on :5236): sign in through the mock, reload and stay signed in, ask a question, sign out; an expired or tampered token drops back to signed-out.
+- [x] 2.4 Verify end to end locally with the UI and API on different origins (UI on :3000, API on :5236): sign in through the mock, reload and stay signed in, ask a question, sign out; an expired or tampered token drops back to signed-out.
 
 ## 3. Deploy config and docs
 
 - [x] 3.1 `deploy/docker-compose.yml` and `.env.example`: add `JWT_KEY` and `JWT_EXPIRY_DAYS`, pass `Jwt__Key` / `Jwt__ExpiryDays` and `Cors__AllowedOrigins__0`, remove `COOKIE_SAMESITE` and `COOKIE_DOMAIN`, set the prefix and public URL examples for `/sanguumat` and `https://sanguumat.web.id`. Verify: `docker compose config` renders without warnings.
 - [x] 3.2 Set `frontend/.env.production` to `VITE_API_URL=https://se-224.tail3f5844.ts.net/sanguumat`; rewrite the "different origins" section of `deploy/README.md` for the token flow, the Google redirect URI and the key. Verify: README steps match the compose file names.
-- [ ] 3.3 Sync the `auth` spec into `openspec/specs/` and archive this change; tick it in `ROADMAP.md`. Verify: `openspec validate` passes.
+- [x] 3.3 Sync the `auth` spec into `openspec/specs/` and archive this change; tick it in `ROADMAP.md`. Verify: `openspec validate` passes.

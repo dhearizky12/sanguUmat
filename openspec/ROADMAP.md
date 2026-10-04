@@ -80,6 +80,11 @@ streaming provider. Depends on 3.
 Decided 2026-09-26: YouTube only. Each session is a pasted YouTube link (live
 stream or upload) played in an embedded player; nothing is hosted here.
 
+## Shipped outside the sequence
+
+- `jwt-auth` — 2026-10-04: sign-in uses a bearer token instead of a cookie, so the
+  static UI on sanguumat.web.id can use the API on another site.
+
 ## Deferred, not yet sequenced
 
 - ~~The home page details~~ — done 2026-09-26 in `home-page-sections`: live strip,
