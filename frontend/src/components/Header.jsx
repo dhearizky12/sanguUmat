@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useAuth } from "../hooks/useAuth";
 import { useMediaQuery } from "../hooks/useMediaQuery";
 import { API_URL } from "../lib/api";
-import Avatar from "./Avatar";
+import AccountMenu from "./AccountMenu";
 import Brand from "./Brand";
 import MonoLabel from "./MonoLabel";
 import Button from "./Button";
@@ -24,12 +24,16 @@ const NAV_ITEMS = [
   { label: "Ngaji Bareng", to: "/live", matchPaths: ["/live"] },
 ];
 
+// Wide screens show at most this many action buttons; with more, they all go into the account
+// menu on the avatar (specs/site-header). One number to change, and no check on the role.
+const MAX_INLINE_ACTIONS = 1;
+
 function isMenuActive(pathname, matchPaths) {
   return matchPaths.some((path) => pathname === path || pathname.startsWith(`${path}/`));
 }
 
 function Header() {
-  const { isAuthenticated, me, profile } = useAuth();
+  const { isAuthenticated, me } = useAuth();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
   const [pendingAnswerCount, setPendingAnswerCount] = useState(null);
@@ -63,6 +67,14 @@ function Header() {
     };
   }, [mayAnswer]);
 
+  // The actions this visitor has; the rule below decides whether they are buttons or menu items.
+  const actions = [];
+  if (isAuthenticated && me?.role === "User") actions.push({ key: "ask", label: "Ajukan Pertanyaan", to: "/question/create" });
+  if (isAuthenticated && mayAnswer) actions.push({ key: "answer", label: "Jawab Pertanyaan", to: "/jawab-pertanyaan", count: pendingAnswerCount });
+  if (isAdmin) actions.push({ key: "admin", label: "Panel Admin", to: "/admin" });
+  const overflow = actions.length > MAX_INLINE_ACTIONS;
+  const answerAction = actions.find((a) => a.key === "answer");
+
   // "Masuk" brings the visitor back to this page after signing in.
   const loginHref = loginPath(location.pathname + location.search);
 
@@ -89,49 +101,52 @@ function Header() {
         </MonoLabel>
 
         <div className="hidden md:flex items-center flex-wrap gap-4">
-          {isAuthenticated && me?.role === "User" && (
-            <Button
-              as={Link}
-              to="/question/create"
-              className="px-3.5 py-2.5 whitespace-nowrap"
-            >
-              Ajukan Pertanyaan
-            </Button>
-          )}
-          {isAuthenticated && canAnswer(me) && (
-            <Button
-              variant="gold"
-              as={Link}
-              to="/jawab-pertanyaan"
-              title={pendingAnswerCount > 0 ? `${pendingAnswerCount} pertanyaan menunggu jawaban anda` : undefined}
-              className="relative px-3.5 py-2.5 whitespace-nowrap"
-            >
-              Jawab Pertanyaan
-              {pendingAnswerCount > 0 && (
-                <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-live text-cream-text text-[10px] font-mono leading-none">
-                  {pendingAnswerCount}
-                </span>
-              )}
-            </Button>
-          )}
-          {isAdmin && (
-            <MonoLabel
-              as={Link}
-              to="/admin"
-              className={`border px-3.5 py-2.5 whitespace-nowrap transition-colors ${
-                isMenuActive(location.pathname, ["/admin"])
-                  ? "border-forest text-forest bg-cream-hover"
-                  : "border-stone-border text-ink-muted hover:bg-cream-hover"
-              }`}
-            >
-              Panel Admin
-            </MonoLabel>
-          )}
+          {!overflow &&
+            actions.map((a) => {
+              if (a.key === "answer") {
+                return (
+                  <Button
+                    key={a.key}
+                    variant="gold"
+                    as={Link}
+                    to={a.to}
+                    title={a.count > 0 ? `${a.count} pertanyaan menunggu jawaban anda` : undefined}
+                    className="relative px-3.5 py-2.5 whitespace-nowrap"
+                  >
+                    {a.label}
+                    {a.count > 0 && (
+                      <span className="absolute -top-2 -right-2 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-live text-cream-text text-[10px] font-mono leading-none">
+                        {a.count}
+                      </span>
+                    )}
+                  </Button>
+                );
+              }
+              if (a.key === "admin") {
+                return (
+                  <MonoLabel
+                    key={a.key}
+                    as={Link}
+                    to={a.to}
+                    className={`border px-3.5 py-2.5 whitespace-nowrap transition-colors ${
+                      isMenuActive(location.pathname, ["/admin"])
+                        ? "border-forest text-forest bg-cream-hover"
+                        : "border-stone-border text-ink-muted hover:bg-cream-hover"
+                    }`}
+                  >
+                    {a.label}
+                  </MonoLabel>
+                );
+              }
+              return (
+                <Button key={a.key} as={Link} to={a.to} className="px-3.5 py-2.5 whitespace-nowrap">
+                  {a.label}
+                </Button>
+              );
+            })}
           {isAuthenticated && wide && <NotificationBell />}
           {isAuthenticated ? (
-            <Link to="/profile" aria-label="Profil saya" className="shrink-0">
-              <Avatar src={profile?.picture} name={profile?.name} size={36} />
-            </Link>
+            <AccountMenu items={overflow ? actions : []} badge={overflow ? answerAction?.count ?? 0 : 0} />
           ) : (
             <>
               <MonoLabel as={Link} to={loginHref} className="text-ink-muted hover:text-ink transition-colors">
