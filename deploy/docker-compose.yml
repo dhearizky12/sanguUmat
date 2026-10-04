@@ -60,6 +60,9 @@ services:
       # Nothing is cross-origin here, so this is normally empty. Set
       # EXTRA_CORS_ORIGIN in .env only to let a local `npm run dev` talk to this
       # API (e.g. http://localhost:3000).
+      # The Google account that becomes Admin when it first signs in. Only applies
+      # at account creation, so set it before that person's first login.
+      AdminEmails__0: ${ADMIN_EMAIL:-}
       Cors__AllowedOrigins__0: ${EXTRA_CORS_ORIGIN:-}
     volumes:
       - ./data/uploads:/app/wwwroot/uploads
