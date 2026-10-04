@@ -45,11 +45,11 @@ namespace backend.Controllers
             {
                 users = new
                 {
-                    total = await _db.Users.CountAsync(),
-                    anggota = await _db.Users.CountAsync(u => u.Role == Roles.User),
+                    total = await _db.Users.CountAsync(u => u.DeletedAt == null),
+                    anggota = await _db.Users.CountAsync(u => u.DeletedAt == null && u.Role == Roles.User),
                     ustadz = await _db.Users.CountAsync(u => u.Role == Roles.Guru),
                     admin = await _db.Users.CountAsync(u => u.Role == Roles.Admin),
-                    newThisWeek = await _db.Users.CountAsync(u => u.CreatedAt >= week)
+                    newThisWeek = await _db.Users.CountAsync(u => u.DeletedAt == null && u.CreatedAt >= week)
                 },
                 questions = new
                 {

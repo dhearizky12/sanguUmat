@@ -13,6 +13,10 @@ namespace backend.Models
 
         // An Admin hidden from the ustadz lists (specs/admin-users). Only meaningful for Admins.
         public bool HideAsUstadz { get; set; }
+
+        // Set when the account is deleted (specs/account-deletion). The row stays, anonymised, so
+        // what the person wrote keeps its place; it is treated as nobody everywhere.
+        public DateTime? DeletedAt { get; set; }
         public bool HasCompletedProfile { get; set;} = false;
         public ICollection<Answer> Answers { get; set;}
         public DateTime CreatedAt { get; set;}

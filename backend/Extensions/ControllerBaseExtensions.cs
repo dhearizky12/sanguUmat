@@ -13,7 +13,7 @@ namespace backend.Extensions
         public static async Task<User?> GetCurrentUserAsync(this ControllerBase controller, AppDbContext db)
         {
             var googleId = controller.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            return await db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId);
+            return await db.Users.FirstOrDefaultAsync(x => x.GoogleId == googleId && x.DeletedAt == null);
         }
     }
 }

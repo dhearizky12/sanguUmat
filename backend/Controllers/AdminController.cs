@@ -1,3 +1,4 @@
+using backend.Accounts;
 using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
@@ -36,7 +37,7 @@ namespace backend.Controllers
                 return Forbid();
             }
 
-            var query = _db.Users.AsQueryable();
+            var query = _db.Users.Where(x => x.DeletedAt == null);
 
             if (!string.IsNullOrWhiteSpace(search))
             {
@@ -88,7 +89,7 @@ namespace backend.Controllers
                 return BadRequest();
             }
 
-            var targetUser = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var targetUser = await _db.Users.FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
 
             if (targetUser == null)
             {
@@ -137,7 +138,7 @@ namespace backend.Controllers
                 return Forbid();
             }
 
-            var targetUser = await _db.Users.FirstOrDefaultAsync(x => x.Id == id);
+            var targetUser = await _db.Users.FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
 
             if (targetUser == null)
             {
@@ -161,6 +162,39 @@ namespace backend.Controllers
                 targetUser.Role,
                 HiddenAsUstadz = targetUser.HideAsUstadz
             });
+        }
+
+        // Delete another user (specs/account-deletion): anonymised, what they wrote stays.
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteUser(int id)
+        {
+            var currentUser = await this.GetCurrentUserAsync(_db);
+
+            if (currentUser == null)
+            {
+                return Unauthorized();
+            }
+
+            if (currentUser.Role != Roles.Admin)
+            {
+                return Forbid();
+            }
+
+            var targetUser = await _db.Users.FirstOrDefaultAsync(x => x.Id == id && x.DeletedAt == null);
+
+            if (targetUser == null)
+            {
+                return NotFound();
+            }
+
+            // Not your own account: an Admin must not remove their own access.
+            if (targetUser.Id == currentUser.Id)
+            {
+                return BadRequest();
+            }
+
+            await AccountDeleter.DeleteAsync(_db, targetUser);
+            return NoContent();
         }
     }
 }

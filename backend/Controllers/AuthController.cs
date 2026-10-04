@@ -7,6 +7,7 @@ using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 using backend.DTOs;
+using backend.Accounts;
 using backend.Auth;
 
 namespace backend.Controllers
@@ -53,6 +54,16 @@ namespace backend.Controllers
             if (!external.Succeeded || external.Principal == null)
             {
                 return Redirect(_frontendBaseUrl + "/login");
+            }
+
+            // A real Google sign-in by someone whose account was deleted starts over as a new user:
+            // free the Google id the deleted account kept, so /me can create the new one.
+            var googleId = external.Principal.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            var deleted = await _db.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId && u.DeletedAt != null);
+            if (deleted != null)
+            {
+                deleted.GoogleId = $"deleted:{deleted.Id}";
+                await _db.SaveChangesAsync();
             }
 
             var token = TokenService.Issue(_config, external.Principal);
@@ -104,6 +115,12 @@ namespace backend.Controllers
                 var name = User.FindFirst(ClaimTypes.Name)?.Value;
                 var picture = User.FindFirst("picture")?.Value;
                 var existingUser = await this.GetCurrentUserAsync(_db);
+
+                // A token issued before the account was deleted: signed out, and no new account.
+                if (existingUser == null && await _db.Users.AnyAsync(u => u.GoogleId == googleId && u.DeletedAt != null))
+                {
+                    return Ok(new { isAuthenticated = false });
+                }
 
                 if (existingUser == null)
                 {
@@ -204,6 +221,26 @@ namespace backend.Controllers
                 user.CreatedAt,
                 user.LastLogin
             });
+        }
+
+        // Delete your own account (specs/account-deletion). An Admin cannot, so there is always
+        // someone left to administer; another Admin demotes them first.
+        [HttpDelete("account")]
+        public async Task<IActionResult> DeleteAccount()
+        {
+            var user = await this.GetCurrentUserAsync(_db);
+            if (user == null)
+            {
+                return Unauthorized();
+            }
+
+            if (user.Role == Roles.Admin)
+            {
+                return BadRequest("Admin tidak dapat menghapus akunnya sendiri. Minta Admin lain menurunkan perannya lebih dulu.");
+            }
+
+            await AccountDeleter.DeleteAsync(_db, user);
+            return NoContent();
         }
 
         [HttpPost("upload-picture")]
