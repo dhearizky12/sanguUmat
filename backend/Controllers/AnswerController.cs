@@ -50,6 +50,12 @@ namespace backend.Controllers
                 return NotFound();
             }
 
+            // A post is published with its one answer; it takes no others.
+            if (question.IsPost)
+            {
+                return Conflict("Posting ini sudah berisi jawaban");
+            }
+
             var answer = new Answer
             {
                 Content = request.Content,

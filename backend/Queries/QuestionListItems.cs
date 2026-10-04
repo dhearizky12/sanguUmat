@@ -25,6 +25,7 @@ namespace backend.Queries
         public int ReadMinutes { get; set; }
         public bool IsAnonymous { get; set; }
         public bool AllowPublish { get; set; }
+        public bool IsPost { get; set; }
         public PersonRef? DirectedTo { get; set; }
 
         // Used by /browse to filter by ustadz; not part of the response.
@@ -57,6 +58,7 @@ namespace backend.Queries
                 UserId = x.User.Id,
                 IsAnonymous = x.IsAnonymous,
                 AllowPublish = x.AllowPublish,
+                IsPost = x.IsPost,
                 DirectedTo = x.DirectedTo == null ? null : new PersonRef { Id = x.DirectedTo.Id, Name = x.DirectedTo.Name },
                 UserName = x.User.Name,
                 UserPicture = x.User.Picture,

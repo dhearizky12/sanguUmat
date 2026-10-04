@@ -19,6 +19,10 @@ namespace backend.Models
         public bool IsAnonymous { get; set; }
         public bool AllowPublish { get; set; } = true;
 
+        // A post: published by an ustadz (or an Admin for them) together with its answer, with no
+        // asker. UserId is then the credited ustadz, who also wrote the one answer.
+        public bool IsPost { get; set; }
+
         // The ustadz the asker addressed it to, if any. Any Guru may still answer.
         public int? DirectedToId { get; set; }
         public User? DirectedTo { get; set; }

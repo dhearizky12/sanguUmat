@@ -238,6 +238,113 @@ namespace backend.Controllers
             public int ReadMinutes => Math.Max(1, (AnswerLength + QuestionListItems.CharactersPerMinute - 1) / QuestionListItems.CharactersPerMinute);
         }
 
+        // Ustadz posts: a question and its answer published together, credited to one ustadz.
+        // Written in one SaveChanges, so a post never exists without its answer, and never
+        // through the Notifier: nobody asked and nobody is waiting.
+        [HttpPost("post")]
+        public async Task<IActionResult> CreatePost([FromBody] SavePostRequest request)
+        {
+            var user = await this.GetCurrentUserAsync(_db);
+            if (user == null) return Unauthorized();
+            if (user.Role != Roles.Guru && user.Role != Roles.Admin) return StatusCode(StatusCodes.Status403Forbidden);
+
+            var credited = await ResolveCreditedAsync(user, request.UstadzId, required: user.Role == Roles.Admin);
+            if (credited.Error != null) return credited.Error;
+            if (!HasAllText(request)) return BadRequest("Judul, pertanyaan, dan jawaban harus diisi");
+
+            var now = DateTime.UtcNow;
+            var question = new Question
+            {
+                Title = request.Title!.Trim(),
+                Content = request.Content!.Trim(),
+                CategoryId = await CategoryIdAsync(request.Category),
+                CreatedAt = now,
+                UserId = credited.Ustadz!.Id,
+                IsPost = true,
+                IsAnonymous = false,
+                AllowPublish = true,
+                Answers = new List<Answer>
+                {
+                    new Answer { Content = request.Answer!.Trim(), CreatedAt = now, UserId = credited.Ustadz.Id }
+                }
+            };
+            _db.Questions.Add(question);
+            await _db.SaveChangesAsync();
+
+            return StatusCode(StatusCodes.Status201Created, new { question.Id });
+        }
+
+        [HttpPut("post/{id:int}")]
+        public async Task<IActionResult> UpdatePost(int id, [FromBody] SavePostRequest request)
+        {
+            var user = await this.GetCurrentUserAsync(_db);
+            if (user == null) return Unauthorized();
+
+            var question = await _db.Questions
+                .Include(x => x.Answers)
+                .FirstOrDefaultAsync(x => x.Id == id && x.IsPost);
+            if (question == null) return NotFound();
+
+            var isAdmin = user.Role == Roles.Admin;
+            if (!isAdmin && question.UserId != user.Id) return StatusCode(StatusCodes.Status403Forbidden);
+
+            // An Admin may re-credit the post; a Guru may only name themselves.
+            var credited = request.UstadzId == null && isAdmin
+                ? new Credited { Ustadz = await _db.Users.FirstAsync(u => u.Id == question.UserId) }
+                : await ResolveCreditedAsync(user, request.UstadzId, required: false);
+            if (credited.Error != null) return credited.Error;
+            if (!HasAllText(request)) return BadRequest("Judul, pertanyaan, dan jawaban harus diisi");
+
+            question.Title = request.Title!.Trim();
+            question.Content = request.Content!.Trim();
+            question.CategoryId = await CategoryIdAsync(request.Category);
+            question.UserId = credited.Ustadz!.Id;
+            var answer = question.Answers.OrderBy(a => a.CreatedAt).First();
+            answer.Content = request.Answer!.Trim();
+            answer.UserId = credited.Ustadz.Id;
+            await _db.SaveChangesAsync();
+
+            return Ok();
+        }
+
+        private sealed class Credited
+        {
+            public User? Ustadz { get; set; }
+            public IActionResult? Error { get; set; }
+        }
+
+        // Who a post is credited to. An Admin names a Guru; a Guru is always themselves and
+        // may not name anyone else.
+        private async Task<Credited> ResolveCreditedAsync(User caller, int? ustadzId, bool required)
+        {
+            if (caller.Role == Roles.Admin)
+            {
+                if (ustadzId == null)
+                {
+                    return required ? new Credited { Error = BadRequest("Pilih ustadz yang bersangkutan") } : new Credited { Ustadz = caller };
+                }
+                var guru = await _db.Users.FirstOrDefaultAsync(u => u.Id == ustadzId && u.Role == Roles.Guru);
+                return guru == null
+                    ? new Credited { Error = BadRequest("Pilih ustadz yang bersangkutan") }
+                    : new Credited { Ustadz = guru };
+            }
+
+            if (ustadzId != null && ustadzId != caller.Id)
+            {
+                return new Credited { Error = StatusCode(StatusCodes.Status403Forbidden) };
+            }
+            return new Credited { Ustadz = caller };
+        }
+
+        private static bool HasAllText(SavePostRequest r) =>
+            !string.IsNullOrWhiteSpace(r.Title) && !string.IsNullOrWhiteSpace(r.Content) && !string.IsNullOrWhiteSpace(r.Answer);
+
+        // A missing or unknown key leaves the post uncategorised (the FE shows "Lainnya").
+        private async Task<int?> CategoryIdAsync(string? key) =>
+            string.IsNullOrWhiteSpace(key)
+                ? null
+                : await _db.Categories.Where(c => c.Key == key).Select(c => (int?)c.Id).FirstOrDefaultAsync();
+
         // "mine" is a literal segment so it takes routing precedence over "{id}" below for
         // GET /api/question/mine — same response shape as GetQuestions, just pre-filtered.
         [HttpGet("mine")]
@@ -252,7 +359,8 @@ namespace backend.Controllers
 
             var questions = await _db.Questions
                 .Include(x => x.User)
-                .Where(x => x.UserId == user.Id)
+                // Posts credited to them are not questions they asked.
+                .Where(x => x.UserId == user.Id && !x.IsPost)
                 .OrderByDescending(x => x.CreatedAt)
                 .ToListItems()
                 .ToListAsync();
@@ -311,6 +419,7 @@ namespace backend.Controllers
 
                 question.IsAnonymous,
                 question.AllowPublish,
+                question.IsPost,
                 DirectedTo = question.DirectedTo == null ? null : new { question.DirectedTo.Id, question.DirectedTo.Name },
 
                 Answers =
@@ -430,7 +539,8 @@ namespace backend.Controllers
                 return Forbid();
             }
 
-            if (isOwner && !isAdmin && question.Answers.Any())
+            // A post is answered from the start, so its credited ustadz may still delete it.
+            if (isOwner && !isAdmin && !question.IsPost && question.Answers.Any())
             {
                 return Conflict();
             }

@@ -56,6 +56,8 @@ namespace backend.Notifications
 
         public async Task QuestionDeletedByAdmin(Question question, User admin)
         {
+            // Posts notify nobody (specs/ustadz-posts).
+            if (question.IsPost) return;
             var asker = await _db.Users.FirstOrDefaultAsync(u => u.Id == question.UserId);
             if (asker == null) return;
             // The question row is going away, so this one links to Pertanyaan saya instead.
@@ -73,6 +75,7 @@ namespace backend.Notifications
 
         public async Task AnswerEdited(Question question, Answer answer, User editor)
         {
+            if (question.IsPost) return;
             var asker = await _db.Users.FirstOrDefaultAsync(u => u.Id == question.UserId);
             var writer = await _db.Users.FirstOrDefaultAsync(u => u.Id == answer.UserId);
             if (asker == null || writer == null) return;
