@@ -22,6 +22,13 @@ has no backend at all yet.
 
 ## Sequence
 
+Numbers are fixed ids, not a running count: 5 (`membership`), 6
+(`whatsapp-otp-login`), 7 (`outside-notifications`), 8
+(`question-review-workflow`) and 9 (`question-quota`) were dropped 2026-10-04 as
+not needed, along with payment and billing. WhatsApp is out because it is paid;
+Google sign-in and the in-app bell (`specs/notifications`) cover login and
+notifications.
+
 ### 1. `restyle-to-new-design` — frontend only — ✓ archived 2026-09-26
 Extract the design system (Tailwind theme tokens plus shared primitives), then
 port the eighteen remaining files onto it. Clears the half-redesigned state and
@@ -54,46 +61,6 @@ Tanya Jawab and Artikel canvases filter on. Depends on 3 for facets. (The Ustadz
 facet on Tanya Jawab already shipped with change 3, credited by featured answer;
 this change adds the profile pages it can link to.)
 
-### 5. `membership` — full stack
-The tier behind "Khusus Anggota" and every "Jadi Anggota" call to action.
-Start with an admin-granted membership flag and the gating rules; leave payment
-to its own change. Gating must exist before Artikel and Ngaji Bareng ship, or
-their member-only states have nothing to check.
-
-### 6. `whatsapp-otp-login` — full stack — skipped 2026-09-26
-Second sign-in path beside Google: phone entry, OTP send, verify, resend
-countdown, and rate limiting. Needs a WhatsApp Business provider chosen first.
-Completes the Masuk canvas that change 1 restyles.
-Skipped: WhatsApp messages the business starts (OTP, notifications) are paid on
-the official API, and unofficial gateways risk the number being banned; only
-free services can be used. Google sign-in covers login. If people without a
-Google account become a problem, an email magic link on a free email tier is
-the fallback.
-
-### 7. `outside-notifications` (was `whatsapp-notifications`) — full stack — skipped 2026-09-26
-Notify an asker on WhatsApp when an ustadz starts answering. Depends on 6 for
-the provider integration and a verified phone number.
-
-In-app notifications shipped 2026-09-26 (`notifications`): the bell, the
-Notifikasi page and the event rules in `specs/notifications`. A WhatsApp (or
-any other) channel only has to deliver those same events.
-Skipped for now: the in-app bell is enough. When revisited, use a free channel:
-browser Web Push (no third party; iPhone needs Add to Home Screen), a Telegram
-bot, or email on a free tier. WhatsApp is out, since it is paid.
-
-### 8. `question-review-workflow` — full stack — deferred 2026-09-26
-Questions stop publishing instantly and enter a moderation queue: statuses,
-ticket id, moderator notes, and the "Perbaiki pertanyaan" revision loop, with
-the status tabs the Ajukan Pertanyaan canvas shows. The largest behavioural
-change to an existing capability — it rewrites much of `specs/questions`.
-Deferred: questions go straight to the ustadz queue, and an Admin can delete a
-bad one. Revisit if spam or unclear questions become a real burden.
-
-### 9. `question-quota` — full stack
-A monthly per-user question allowance, with the remaining count shown on the
-form. Reads more naturally once 8 exists, since quota and review share a
-lifecycle. Likely interacts with 5, if members get a larger allowance.
-
 ### 10. `question-extras` — full stack — ✓ archived 2026-09-26
 Anonymous posting, consent to publish the answer, and directing a question to a
 chosen ustadz. Depends on 4 for the ustadz picker.
@@ -101,23 +68,20 @@ chosen ustadz. Depends on 4 for the ustadz picker.
 ### 11. `articles` — full stack — ✓ archived 2026-09-26
 The Artikel capability: model, rubrics, authors including guest authors, read
 time, read counts, the free/members-only flag, lead article, and the list with
-facets, sort and paging. Depends on 3 and 5.
-(Shipped ahead of 5 with every article free to read and no guest authors; the
-"Khusus Anggota" tag, the Akses facet and the "Jadi Anggota" banner arrive with
-`membership`.)
+facets, sort and paging. Depends on 3.
+(Shipped with every article free to read and no guest authors.)
 
 ### 12. `ngaji-bareng` — full stack — ✓ archived 2026-09-26
 Live sessions and the recordings archive: live state and viewer count, weekly
 schedule in WIB, series and session numbering, durations, catatan ngaji, and
 the member-only parts. Needs the video source decided first — an embed versus a
-streaming provider. Depends on 3 and 5.
+streaming provider. Depends on 3.
 
 Decided 2026-09-26: YouTube only. Each session is a pasted YouTube link (live
 stream or upload) played in an embedded player; nothing is hosted here.
 
 ## Deferred, not yet sequenced
 
-- Payment and billing behind `membership`.
 - ~~The home page details~~ — done 2026-09-26 in `home-page-sections`: live strip,
   stats line, Ngaji Bareng and Artikel Pilihan sections (the toggle and "Sering
   dicari" were already there; the verified-ustadz badge shipped with change 4).
