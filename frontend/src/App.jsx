@@ -9,6 +9,7 @@ import DetailArticle from "./pages/DetailArticle";
 import DetailQuestion from "./pages/DetailQuestion";
 import Legal from "./pages/Legal";
 import Live from "./pages/Live";
+import PostForm from "./pages/PostForm";
 import Login from "./pages/Login";
 import Ustadz from "./pages/Ustadz";
 import UstadzDetail from "./pages/UstadzDetail";
@@ -106,6 +107,11 @@ function App() {
 
           <Route element={<RoleGuard allow={["Guru"]} />}>
             <Route path="/jawab-pertanyaan" element={<AnswerQueue />} />
+          </Route>
+
+          <Route element={<RoleGuard allow={["Guru", "Admin"]} fallback="/questions" />}>
+            <Route path="/posting/baru" element={<PostForm />} />
+            <Route path="/posting/:id/ubah" element={<PostForm />} />
           </Route>
 
           {/* Admin only */}

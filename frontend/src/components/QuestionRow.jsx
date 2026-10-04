@@ -33,12 +33,13 @@ function Count({ icon, value, label }) {
 // The canvases' question row. Top: category on the left; date, views and comments on the
 // right. Then the serif title and a two-line excerpt. Bottom, pinned so rows sharing a grid
 // line stay level: who asked (`asker` { name, picture }) on the left and who answered
-// (`answerer` { name, picture, isGuru }) on the right. `comments` and `readMinutes` are
+// (`answerer` { name, picture, isGuru }) on the right. A post (`postedBy` { name, picture,
+// isGuru }) has neither: one "Diposting oleh" credit instead. `comments` and `readMinutes` are
 // optional. `asker.anonymous` marks an anonymous asker shown by name (to staff); `flags` is
 // an optional node beside the category (the answer queue's QuestionFlags). `action` is a
 // node set level with the asker at the card's bottom right, where the answerer would be —
 // beside the link rather than in it, since a link cannot hold a button.
-export default function QuestionRow({ to, category, date, views, comments, readMinutes, title, excerpt, asker, answerer, flags, action }) {
+export default function QuestionRow({ to, category, date, views, comments, readMinutes, title, excerpt, asker, answerer, postedBy, flags, action }) {
   const link = (
     <NavLink
       to={to}
@@ -70,6 +71,12 @@ export default function QuestionRow({ to, category, date, views, comments, readM
       </h3>
 
       {excerpt && <p className="text-base leading-relaxed text-ink-soft max-w-[74ch] text-pretty line-clamp-2">{excerpt}</p>}
+
+      {postedBy && (
+        <div className={`mt-auto pt-1 ${action ? "pr-28" : ""}`}>
+          <Person label="Diposting oleh" name={postedBy.name} picture={postedBy.picture} verified={postedBy.isGuru} />
+        </div>
+      )}
 
       {(asker || answerer) && (
         <div className={`mt-auto flex flex-wrap items-end justify-between gap-x-4 gap-y-3 pt-1 ${action ? "pr-28" : ""}`}>

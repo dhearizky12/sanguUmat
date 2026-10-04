@@ -5,7 +5,7 @@ import QuestionRow from "./QuestionRow";
 import QuestionFlags from "./question/QuestionFlags";
 
 // A question from GET /api/question as a canvas question row, crediting who asked it and
-// who answered it (the list carries the answerer's name and role, not the answer text).
+// who answered it (a post, `isPost`, has a single "Diposting oleh" credit instead) (the list carries the answerer's name and role, not the answer text).
 // An anonymous asker arrives as "Hamba Allah" for the public; staff get the real name,
 // marked anonim. `flags` shows the asker's choices (the answer queue), `meId` the viewer.
 function QuestionCard({ slug, question, flags = false, meId, action }) {
@@ -21,15 +21,24 @@ function QuestionCard({ slug, question, flags = false, meId, action }) {
       readMinutes={question.readMinutes}
       title={question.title}
       excerpt={question.content}
-      asker={{
-        name: question.userName,
-        picture: pictureUrl(question.userPicture),
-        anonymous: question.isAnonymous && question.userId != null,
-      }}
+      postedBy={
+        question.isPost
+          ? { name: question.userName, picture: pictureUrl(question.userPicture), isGuru: true }
+          : undefined
+      }
+      asker={
+        question.isPost
+          ? undefined
+          : {
+              name: question.userName,
+              picture: pictureUrl(question.userPicture),
+              anonymous: question.isAnonymous && question.userId != null,
+            }
+      }
       flags={flags ? <QuestionFlags question={question} meId={meId} /> : null}
       action={action}
       answerer={
-        question.answeredBy && {
+        !question.isPost && question.answeredBy && {
           name: question.answeredBy,
           picture: pictureUrl(question.answeredByPicture),
           isGuru: question.answeredByRole === "Guru",

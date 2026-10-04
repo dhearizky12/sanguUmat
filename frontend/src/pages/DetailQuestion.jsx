@@ -52,9 +52,12 @@ function DetailQuestion() {
     if (hash === "#jawab") document.getElementById("answer-body")?.focus({ preventScroll: true });
   }, [question, hash, id]);
 
-  const canEditQuestion = me?.id === question?.userId && question?.answers.length === 0;
+  const isAdmin = me?.role === "Admin";
+  // A post is answered from the start: its credited ustadz and any Admin can change or remove it.
+  const canManagePost = !!question?.isPost && (me?.id === question.userId || isAdmin);
+  const canEditQuestion = canManagePost || (me?.id === question?.userId && question?.answers.length === 0);
   // Admin moderation isn't subject to the zero-answers rule.
-  const canDeleteQuestion = canEditQuestion || me?.role === "Admin";
+  const canDeleteQuestion = canEditQuestion || isAdmin;
 
   const updateQuestion = (changes) => setQuestion((prev) => ({ ...prev, ...changes }));
 
@@ -102,6 +105,7 @@ function DetailQuestion() {
                       <AnswerItem
                         key={item.id}
                         answer={item}
+                        isPost={question.isPost}
                         canManage={me?.id === item.userId || me?.role === "Admin"}
                         onUpdated={(content) => updateAnswer(item.id, content)}
                       />
@@ -109,7 +113,7 @@ function DetailQuestion() {
                   )}
                 </section>
 
-                {me?.role === "Guru" && <AnswerForm questionId={id} />}
+                {me?.role === "Guru" && !question.isPost && <AnswerForm questionId={id} />}
               </div>
 
               <RelatedSidebar question={question} isGuru={me?.role === "Guru"} />

@@ -10,7 +10,7 @@ import { TextArea } from "../Field";
 
 // One answer with its comments. `canManage` (the answer's author or an Admin) unlocks the
 // inline edit and the delete.
-function AnswerItem({ answer, canManage, onUpdated }) {
+function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
   const [isEditing, setIsEditing] = useState(false);
   const [editAnswerContent, setEditAnswerContent] = useState("");
   const [savingAnswerEdit, setSavingAnswerEdit] = useState(false);
@@ -72,41 +72,43 @@ function AnswerItem({ answer, canManage, onUpdated }) {
 
   return (
     <article id={`jawaban-${answer.id}`} className="py-8 border-b border-stone-line scroll-mt-24">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3 min-w-0">
-          {answer.role === "Guru" ? (
-            <Link to={`/ustadz/${answer.userId}`} aria-hidden="true" tabIndex={-1} className="shrink-0">
-              <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} verified />
-            </Link>
-          ) : (
-            <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} />
-          )}
-          <div className="flex flex-col gap-0.5 min-w-0">
+      {!isPost && (
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3 min-w-0">
             {answer.role === "Guru" ? (
-              <Link to={`/ustadz/${answer.userId}`} className="font-serif text-lg text-ink hover:text-forest transition-colors">
-                {answer.userName}
+              <Link to={`/ustadz/${answer.userId}`} aria-hidden="true" tabIndex={-1} className="shrink-0">
+                <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} verified />
               </Link>
             ) : (
-              <span className="font-serif text-lg text-ink">{answer.userName}</span>
+              <Avatar src={pictureUrl(answer.userPicture)} name={answer.userName} size={40} />
             )}
-            <MonoLabel size="xs" className="text-ink-faint">
-              {answer.role === "Guru" ? "Guru" : "Anggota"}
-            </MonoLabel>
+            <div className="flex flex-col gap-0.5 min-w-0">
+              {answer.role === "Guru" ? (
+                <Link to={`/ustadz/${answer.userId}`} className="font-serif text-lg text-ink hover:text-forest transition-colors">
+                  {answer.userName}
+                </Link>
+              ) : (
+                <span className="font-serif text-lg text-ink">{answer.userName}</span>
+              )}
+              <MonoLabel size="xs" className="text-ink-faint">
+                {answer.role === "Guru" ? "Guru" : "Anggota"}
+              </MonoLabel>
+            </div>
           </div>
+          {canManage && !isEditing && (
+            <div className="flex items-center gap-5 shrink-0 pt-1">
+              <Button variant="link" onClick={startEditAnswer}>
+                Ubah
+              </Button>
+              <Button variant="danger" onClick={deleteAnswer}>
+                Hapus
+              </Button>
+            </div>
+          )}
         </div>
-        {canManage && !isEditing && (
-          <div className="flex items-center gap-5 shrink-0 pt-1">
-            <Button variant="link" onClick={startEditAnswer}>
-              Ubah
-            </Button>
-            <Button variant="danger" onClick={deleteAnswer}>
-              Hapus
-            </Button>
-          </div>
-        )}
-      </div>
+      )}
 
-      <div className="mt-5 md:pl-[52px]">
+      <div className={isPost ? "" : "mt-5 md:pl-[52px]"}>
         {isEditing ? (
           <div className="flex flex-col gap-3">
             <TextArea

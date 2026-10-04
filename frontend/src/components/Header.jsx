@@ -111,6 +111,11 @@ function Header() {
               )}
             </Button>
           )}
+          {isAuthenticated && (me?.role === "Guru" || isAdmin) && (
+            <Button variant="outline" as={Link} to="/posting/baru" className="px-3.5 py-2.5 whitespace-nowrap">
+              Tulis Posting
+            </Button>
+          )}
           {isAdmin && (
             <MonoLabel
               as={Link}
@@ -186,6 +191,16 @@ function Header() {
               >
                 Jawab Pertanyaan
                 {pendingAnswerCount > 0 ? ` (${pendingAnswerCount})` : ""}
+              </MonoLabel>
+            )}
+            {isAuthenticated && (me?.role === "Guru" || isAdmin) && (
+              <MonoLabel
+                as={Link}
+                to="/posting/baru"
+                onClick={() => setMenuOpen(false)}
+                className="py-3.5 border-b border-stone-line-soft text-forest"
+              >
+                Tulis Posting
               </MonoLabel>
             )}
             {isAdmin && (

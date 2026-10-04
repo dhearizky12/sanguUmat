@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Breadcrumb from "../Breadcrumb";
 import Button from "../Button";
 import Byline from "../Byline";
@@ -79,7 +79,11 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
   };
 
   const deleteQuestion = async () => {
-    const confirmDelete = window.confirm("Hapus pertanyaan ini? Tindakan ini tidak bisa dibatalkan.");
+    const confirmDelete = window.confirm(
+      question.isPost
+        ? "Hapus posting ini beserta jawabannya? Tindakan ini tidak bisa dibatalkan."
+        : "Hapus pertanyaan ini? Tindakan ini tidak bisa dibatalkan."
+    );
     if (!confirmDelete) return;
 
     const response = await fetch(`${API_URL}/api/question/${question.id}`, {
@@ -155,15 +159,26 @@ function QuestionHeader({ question, canEdit, canDelete, onUpdated }) {
           <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3">
             <Byline>
               <Avatar src={pictureUrl(question.userPicture)} name={question.userName} size={28} />
-              <span>Ditanyakan oleh</span>
-              <span className="text-forest">{question.userName}</span>
-              {anonymousShown && <span className="text-ink-faint">(anonim)</span>}
+              {question.isPost ? (
+                <>
+                  <span>Diposting oleh</span>
+                  <Link to={`/ustadz/${question.userId}`} className="text-forest hover:text-gold-dark transition-colors">
+                    {question.userName}
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <span>Ditanyakan oleh</span>
+                  <span className="text-forest">{question.userName}</span>
+                  {anonymousShown && <span className="text-ink-faint">(anonim)</span>}
+                </>
+              )}
             </Byline>
 
             {(canEdit || canDelete) && (
               <div className="flex items-center gap-5">
                 {canEdit && (
-                  <Button variant="link" onClick={startEditQuestion}>
+                  <Button variant="link" onClick={question.isPost ? () => navigate(`/posting/${question.id}/ubah`) : startEditQuestion}>
                     Ubah
                   </Button>
                 )}
