@@ -44,6 +44,9 @@ reverse proxy in front of its port to reach it from outside. It must keep the pa
 prefix (`/sanguumat`) and set `X-Forwarded-Proto: https`; the API strips the prefix
 itself (`APP_BASE_PATH`).
 
+On a Linux host, `deploy/sanguumat-api.service` runs the API as a systemd user service
+(starts on boot, restarts on failure); the header of that file has the commands.
+
 Needed in `.env`:
 
 - `POSTGRES_PASSWORD`.

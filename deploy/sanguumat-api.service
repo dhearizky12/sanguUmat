@@ -1,0 +1,24 @@
+# systemd user service for the API, so it starts on boot and restarts if it crashes.
+# The laptop already has linger enabled for this user, so user services run without a login.
+#
+#   systemctl --user enable --now ~/Desktop/Personal/sanguumat/deploy/sanguumat-api.service
+#   systemctl --user restart sanguumat-api        # after `git pull`: it rebuilds on start
+#   journalctl --user -u sanguumat-api -f         # logs
+#
+# Postgres is the `sangu-umat-live` container (restart: unless-stopped). If it is not up yet at
+# boot the API exits on its first migration and systemd retries until it is.
+[Unit]
+Description=sangu-umat API
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+WorkingDirectory=%h/Desktop/Personal/sanguumat/deploy
+ExecStart=%h/Desktop/Personal/sanguumat/deploy/run-api.sh
+Restart=on-failure
+RestartSec=5
+# dotnet run builds first, which can take a while on a cold start.
+TimeoutStartSec=300
+
+[Install]
+WantedBy=default.target
