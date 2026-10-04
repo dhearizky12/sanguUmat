@@ -16,9 +16,8 @@ import { useCategories } from "../lib/category";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 import { loginPath } from "../lib/next";
 
-// The Ajukan Pertanyaan canvas, built to what the backend supports today. Left out until
-// their roadmap changes land: the monthly quota, ticket numbers and review statuses, and
-// the review-flow panel. `?ustadz=<id>` preselects "Ditujukan kepada" (from an ustadz's page).
+// The Ajukan Pertanyaan canvas, built to what the backend supports. Left out on purpose:
+// the monthly quota, ticket numbers, review statuses and the review-flow panel. `?ustadz=<id>` preselects "Ditujukan kepada" (from an ustadz's page).
 const TIPS = [
   "Satu pertanyaan untuk satu masalah, agar jawabannya bisa fokus.",
   "Sebutkan konteksnya: pekerjaan, kondisi kesehatan, atau kebiasaan setempat yang relevan.",

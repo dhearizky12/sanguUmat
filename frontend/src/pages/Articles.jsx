@@ -23,7 +23,7 @@ const nf = new Intl.NumberFormat("id-ID");
 // Artikel, after its canvas: search in the header band; beside the results, a facet panel
 // for Rubrik and Penulis; above them the count, sort and column toggle; the active filters
 // as chips; the Sorotan on the plain first page; and numbered pages. All of it lives in the
-// URL (lib/articleParams). The canvas's membership parts wait for the membership change.
+// URL (lib/articleParams). There is no membership, so every article is open.
 function Articles() {
   const [params, setParams] = useSearchParams();
   const state = readArticleParams(params);

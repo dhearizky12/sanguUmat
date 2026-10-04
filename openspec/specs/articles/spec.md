@@ -232,7 +232,7 @@ never appear in it.
 ### Requirement: Artikel page
 
 Artikel MUST follow the Artikel canvas, in the design system and in Bahasa
-Indonesia, leaving out the parts that depend on membership.
+Indonesia, leaving out membership, which is not planned.
 
 #### Scenario: Layout
 

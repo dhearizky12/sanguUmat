@@ -12,7 +12,6 @@ const EXPLORE_LINKS = [
 const ABOUT_LINKS = [
   { label: "Dewan Ustadz", to: "/ustadz" },
   { label: "Metode Verifikasi", to: "#" },
-  { label: "Keanggotaan", to: "#" },
 ];
 
 const HELP_LINKS = [

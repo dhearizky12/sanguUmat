@@ -5,8 +5,8 @@ import AutoGrid from "../components/AutoGrid";
 import Brand from "../components/Brand";
 import MonoLabel from "../components/MonoLabel";
 
-// The Masuk canvas, Google path only. The canvas's WhatsApp OTP path (phone
-// entry, code boxes, resend countdown) has no backend yet and is left out.
+// The Masuk canvas, Google path only. The canvas's WhatsApp OTP path is not
+// built: WhatsApp is paid, so Google is the only sign-in.
 const PERKS = [
   { tag: "Tanya Jawab", text: "Ajukan pertanyaan langsung ke dewan ustadz dan pantau jawabannya." },
   { tag: "Ngaji Bareng", text: "Pengingat sebelum kajian dimulai, plus rekaman penuh tanpa jeda." },

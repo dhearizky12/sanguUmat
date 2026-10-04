@@ -41,8 +41,7 @@
   --color-gold-dark: #8a6a18;
   --color-gold-muted: #c9a94e;
 
-  /* Gold tint: the "Khusus Anggota" badge, the "Menunggu tinjauan" status,
-     active filter chips and the sent-confirmation panel. */
+  /* Gold tint: active filter chips and the sent-confirmation panel. */
   --color-gold-tint: #f0e4be;
   --color-gold-tint-hover: #e7d8a8;
   --color-gold-line: #dcc98c;

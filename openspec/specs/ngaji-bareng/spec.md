@@ -191,8 +191,8 @@ Anyone MUST be able to open a kajian and watch it on the site.
 ### Requirement: Ngaji Bareng page
 
 Ngaji Bareng MUST follow its canvas, in the design system and Bahasa Indonesia,
-leaving out the parts that depend on membership, notifications or viewer
-counts.
+leaving out membership, outside notifications and viewer counts, none of which
+are planned.
 
 #### Scenario: Live section
 

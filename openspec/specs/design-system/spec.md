@@ -113,8 +113,8 @@ type scale, colour, and the wording of its copy.
 
 #### Scenario: Canvas shows a feature that has no backend
 
-- **WHEN** a canvas shows something the backend cannot yet supply, such as
-  faceted counts, a monthly quota, or WhatsApp sign-in
+- **WHEN** a canvas shows something the backend does not supply, such as
+  a monthly quota or WhatsApp sign-in
 - **THEN** that part is left out rather than mocked with invented content
 - **AND** the rest of the page is still built to the canvas
 

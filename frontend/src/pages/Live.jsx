@@ -58,7 +58,7 @@ function NotesFacet({ checked, count, onToggle }) {
 // Ngaji Bareng, after its canvas: the live band while a kajian runs, this week's schedule,
 // and the recording archive with Seri / Ustadz / notes facets, sort, columns and pages (URL
 // state in lib/kajianParams). Live and schedule refresh every minute, so sessions roll
-// over without a reload. Membership parts wait for the membership change.
+// over without a reload. There is no membership, so every session is open.
 function Live() {
   const [params, setParams] = useSearchParams();
   const state = readKajianParams(params);
