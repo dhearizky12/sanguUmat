@@ -7,6 +7,7 @@ import Articles from "./pages/Articles";
 import Dashboard from "./pages/Dashboard";
 import DetailArticle from "./pages/DetailArticle";
 import DetailQuestion from "./pages/DetailQuestion";
+import Legal from "./pages/Legal";
 import Live from "./pages/Live";
 import Login from "./pages/Login";
 import Ustadz from "./pages/Ustadz";
@@ -60,6 +61,8 @@ function App() {
           <Route path="/masuk/selesai" element={<SignInComplete />} />
 
           <Route path="/" element={<Dashboard />} />
+          <Route path="/syarat" element={<Legal doc="syarat" />} />
+          <Route path="/privasi" element={<Legal doc="privasi" />} />
 
           <Route path="/questions" element={<Questions />} />
           <Route path="/question/detail/:id" element={<DetailQuestion />} />

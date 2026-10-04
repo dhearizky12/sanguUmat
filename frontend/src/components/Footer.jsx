@@ -11,13 +11,11 @@ const EXPLORE_LINKS = [
 
 const ABOUT_LINKS = [
   { label: "Dewan Ustadz", to: "/ustadz" },
-  { label: "Metode Verifikasi", to: "#" },
 ];
 
 const HELP_LINKS = [
-  { label: "Hubungi Kami", to: "#" },
-  { label: "Kebijakan Privasi", to: "#" },
-  { label: "Syarat Layanan", to: "#" },
+  { label: "Kebijakan Privasi", to: "/privasi" },
+  { label: "Syarat Layanan", to: "/syarat" },
 ];
 
 function FooterColumn({ title, links }) {

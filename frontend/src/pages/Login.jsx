@@ -9,8 +9,8 @@ import MonoLabel from "../components/MonoLabel";
 // built: WhatsApp is paid, so Google is the only sign-in.
 const PERKS = [
   { tag: "Tanya Jawab", text: "Ajukan pertanyaan langsung ke dewan ustadz dan pantau jawabannya." },
-  { tag: "Ngaji Bareng", text: "Pengingat sebelum kajian dimulai, plus rekaman penuh tanpa jeda." },
-  { tag: "Catatan", text: "Simpan artikel dan catatan ngaji untuk dibaca lagi nanti." },
+  { tag: "Ngaji Bareng", text: "Tonton kajian langsung atau putar ulang rekamannya kapan saja." },
+  { tag: "Artikel", text: "Baca tulisan para ustadz dan catatan ngaji dari setiap kajian." },
 ];
 
 function GoogleMark() {
@@ -83,13 +83,13 @@ function Login() {
   
                 <p className="text-sm leading-[1.65] text-ink-faint max-w-[44ch]">
                   Dengan melanjutkan, Anda menyetujui{" "}
-                  <a href="#" className="text-forest hover:text-gold-dark transition-colors">
+                  <Link to="/syarat" className="text-forest hover:text-gold-dark transition-colors">
                     Syarat Layanan
-                  </a>{" "}
+                  </Link>{" "}
                   dan{" "}
-                  <a href="#" className="text-forest hover:text-gold-dark transition-colors">
+                  <Link to="/privasi" className="text-forest hover:text-gold-dark transition-colors">
                     Kebijakan Privasi
-                  </a>{" "}
+                  </Link>{" "}
                   Sangu Umat.
                 </p>
               </div>
@@ -114,12 +114,6 @@ function Login() {
                   </div>
                 ))}
               </div>
-              <MonoLabel as="div" size="sm" className="text-sage-dark">
-                Butuh bantuan?{" "}
-                <a href="#" className="text-gold border-b border-forest-line">
-                  Hubungi kami
-                </a>
-              </MonoLabel>
             </div>
           </aside>
         </AutoGrid>
