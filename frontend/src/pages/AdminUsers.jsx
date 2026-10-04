@@ -90,6 +90,29 @@ function AdminUsers() {
     }
   };
 
+  // Delete another user: anonymised, what they wrote stays as "Hamba Allah".
+  const deleteUser = async (u) => {
+    const ok = window.confirm(
+      "Hapus pengguna ini? Data pribadinya dihapus dan tulisannya tetap tampil sebagai Hamba Allah. Tindakan ini tidak bisa dibatalkan."
+    );
+    if (!ok) return;
+
+    setSavingId(u.id);
+    try {
+      const res = await fetch(`${API_URL}/api/admin/users/${u.id}`, { method: "DELETE" });
+      if (res.ok) {
+        setUsers((prev) => prev.filter((x) => x.id !== u.id));
+      } else {
+        alert("Gagal menghapus pengguna.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menghapus pengguna.");
+    } finally {
+      setSavingId(null);
+    }
+  };
+
   // An Admin can be hidden from (or shown in) the ustadz lists; the row updates from the answer.
   const toggleHidden = async (u) => {
     setSavingId(u.id);
@@ -180,6 +203,11 @@ function AdminUsers() {
                           <MonoLabel as={Link} to={`/ustadz/${u.id}/ubah`} size="xs" className="self-start mt-1 text-forest border-b border-stone-border hover:text-gold-dark transition-colors">
                             Ubah profil ustadz
                           </MonoLabel>
+                        )}
+                        {!isSelf && (
+                          <Button variant="danger" disabled={savingId === u.id} onClick={() => deleteUser(u)} className="self-start mt-1">
+                            Hapus pengguna
+                          </Button>
                         )}
                         {u.role === "Admin" && (
                           <span className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-1">

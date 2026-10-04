@@ -33,8 +33,8 @@ const DOCS = {
       ["Data yang kami simpan", "Dari akun Google: nama, alamat email, dan foto profil. Dari Anda: nomor telepon dan alamat bila Anda mengisinya, serta pertanyaan, komentar, dan tulisan yang Anda kirim."],
       ["Untuk apa", "Untuk menampilkan profil Anda, menjawab pertanyaan Anda, mengirim notifikasi di dalam aplikasi, dan mengelola layanan. Kami tidak menjual data Anda dan tidak membagikannya kepada pihak lain untuk iklan."],
       ["Yang terlihat oleh orang lain", "Nama, foto, pertanyaan yang dijawab, dan komentar Anda dapat dilihat pengunjung. Email, nomor telepon, dan alamat tidak ditampilkan. Pertanyaan anonim tidak menampilkan nama Anda."],
-      ["Cookie", "Kami memakai satu cookie masuk agar Anda tetap login. Kami tidak memakai cookie pelacak iklan."],
-      ["Menghapus data", "Anda dapat mengubah data profil kapan saja di halaman profil. Untuk menghapus akun atau data Anda, hubungi kami lewat halaman Hubungi Kami."],
+      ["Penyimpanan di peramban", "Setelah masuk dengan Google, kami menyimpan token masuk di peramban Anda agar Anda tetap login selama 7 hari. Token dihapus saat Anda keluar. Kami tidak memakai cookie pelacak iklan."],
+      ["Menghapus data", "Anda dapat mengubah data profil kapan saja di halaman profil. Anda juga dapat menghapus akun lewat tombol \"Hapus akun\" di halaman profil: nama, email, foto, nomor telepon, dan alamat Anda dihapus. Pertanyaan yang sudah dijawab, jawaban, komentar, dan artikel yang pernah Anda tulis tetap ada, tampil sebagai \"Hamba Allah\". Pertanyaan yang belum dijawab atau yang tidak boleh ditayangkan ikut dihapus. Bila butuh bantuan, hubungi kami lewat halaman Hubungi Kami."],
     ],
   },
 };

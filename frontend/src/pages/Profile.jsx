@@ -6,6 +6,7 @@ import Button from "../components/Button";
 import MonoLabel from "../components/MonoLabel";
 import { useAuth } from "../hooks/useAuth";
 import Avatar from "../components/Avatar";
+import { API_URL } from "../lib/api";
 import { formatDate } from "../lib/date";
 import { PageBody, PageHeader } from "../components/Page";
 
@@ -24,6 +25,27 @@ function DetailRow({ label, children }) {
 
 function Profile() {
   const { logout, profile } = useAuth();
+
+  // Deleting your own account: personal data goes, what you wrote stays as "Hamba Allah".
+  // The server refuses an Admin (another Admin must demote them first), so the button is not shown.
+  const deleteAccount = async () => {
+    const ok = window.confirm(
+      "Hapus akun ini? Data pribadimu dihapus dan tulisanmu tetap tampil sebagai Hamba Allah. Tindakan ini tidak bisa dibatalkan."
+    );
+    if (!ok) return;
+
+    try {
+      const res = await fetch(`${API_URL}/api/auth/account`, { method: "DELETE" });
+      if (res.ok) {
+        logout();
+      } else {
+        alert("Gagal menghapus akun. Silakan coba lagi.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Gagal menghapus akun. Silakan coba lagi.");
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-cream font-serif text-ink">
@@ -86,6 +108,20 @@ function Profile() {
               <DetailRow label="Alamat">{profile?.address}</DetailRow>
               <DetailRow label="Bergabung sejak">{profile?.createdAt && formatDate(profile.createdAt)}</DetailRow>
             </dl>
+
+            {profile?.role !== "Admin" && (
+              <div className="mt-10 flex flex-col items-start gap-2">
+                <MonoLabel as="h2" className="block tracking-[0.14em] text-ink pb-2.5 border-b border-ink self-stretch">
+                  Hapus akun
+                </MonoLabel>
+                <p className="text-[15px] leading-relaxed text-ink-soft max-w-[60ch] text-pretty">
+                  Data pribadimu dihapus. Pertanyaan yang sudah dijawab, jawaban, komentar, dan artikelmu tetap ada, tampil sebagai Hamba Allah.
+                </p>
+                <Button variant="danger" onClick={deleteAccount}>
+                  Hapus akun
+                </Button>
+              </div>
+            )}
           </div>
         </PageBody>
       </main>
