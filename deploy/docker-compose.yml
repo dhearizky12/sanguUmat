@@ -10,10 +10,11 @@
 # is visible in one folder. Note the consequence: `docker compose down -v` does
 # NOT erase it — to wipe, delete ./data yourself.
 
-name: sangu-umat-dev
+name: sangu-umat-live
 
 services:
   db:
+    container_name: sangu-umat-live
     image: postgres:17-alpine
     restart: unless-stopped
     environment:
@@ -31,6 +32,7 @@ services:
       retries: 12
 
   api:
+    container_name: sangu-umat-live-api
     build:
       context: ..
       dockerfile: deploy/Dockerfile
