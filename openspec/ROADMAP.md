@@ -84,6 +84,9 @@ stream or upload) played in an embedded player; nothing is hosted here.
 
 - `jwt-auth` — 2026-10-04: sign-in uses a bearer token instead of a cookie, so the
   static UI on sanguumat.web.id can use the API on another site.
+- `ustadz-posts` — 2026-10-04: a Guru or Admin publishes a question with its answer in
+  one step, credited "Diposting oleh"; answers everywhere can now be written with the
+  rich text editor.
 
 ## Deferred, not yet sequenced
 

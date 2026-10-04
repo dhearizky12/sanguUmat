@@ -11,13 +11,13 @@
 
 ## 2. Frontend
 
-- [ ] 2.1 Credit lines: `QuestionRow`, `QuestionHeader` and `AnswerItem` show "Diposting oleh {nama}" once for a post (linking to the ustadz) and neither "Ditanyakan" nor "Dijawab". Verify in a browser: a post card and its page read correctly, an ordinary question is unchanged, and lint and the build pass.
-- [ ] 2.2 `PostForm` page for `/posting/baru` and `/posting/{id}/ubah` (Guru and Admin only): "Pertanyaan", "Jawaban", "Kategori", the Admin's required "Diposting atas nama", "Terbitkan" and its edit mode, plus "Tulis Posting" in the header's ustadz menu and "Ubah" and "Hapus" on a post's page for the credited ustadz and Admin. Verify in a browser: a Guru and an Admin can publish and edit, a User is turned away, and the post appears in Tanya Jawab and under the ustadz.
+- [x] 2.1 Credit lines: `QuestionRow`, `QuestionHeader` and `AnswerItem` show "Diposting oleh {nama}" once for a post (linking to the ustadz) and neither "Ditanyakan" nor "Dijawab". Verify in a browser: a post card and its page read correctly, an ordinary question is unchanged, and lint and the build pass.
+- [x] 2.2 `PostForm` page for `/posting/baru` and `/posting/{id}/ubah` (Guru and Admin only): "Pertanyaan", "Jawaban", "Kategori", the Admin's required "Diposting atas nama", "Terbitkan" and its edit mode, plus "Tulis Posting" in the header's ustadz menu and "Ubah" and "Hapus" on a post's page for the credited ustadz and Admin. Verify in a browser: a Guru and an Admin can publish and edit, a User is turned away, and the post appears in Tanya Jawab and under the ustadz.
 
-- [ ] 2.3 Rich answer editing: a lazily loaded article editor for "Tulis jawaban", "Ubah jawaban" and the posting page's "Jawaban", plain answers converted to paragraphs when edited, and formatted answers shown in the article type. Verify in a browser: write, edit and read a formatted answer, open a plain answer for editing, and check the question page for a visitor does not load the editor.
-- [ ] 2.4 "Tulis posting" on the Profil page and on an ustadz's page, with `?ustadz=` preselecting the ustadz for an Admin. Verify in a browser as a Guru and as an Admin.
+- [x] 2.3 Rich answer editing: a lazily loaded article editor for "Tulis jawaban", "Ubah jawaban" and the posting page's "Jawaban", plain answers converted to paragraphs when edited, and formatted answers shown in the article type. Verify in a browser: write, edit and read a formatted answer, open a plain answer for editing, and check the question page for a visitor does not load the editor.
+- [x] 2.4 "Tulis posting" on the Profil page and on an ustadz's page, with `?ustadz=` preselecting the ustadz for an Admin. Verify in a browser as a Guru and as an Admin.
 
 ## 3. Wrap-up
 
-- [ ] 3.1 Deploy: pull and restart the API on the laptop, rebuild the UI and upload it. Verify: publish a post on the live site, see it in Tanya Jawab with "Diposting oleh", delete it, and confirm the dummy data is gone afterwards.
-- [ ] 3.2 Sync the `ustadz-posts`, `answers` and `questions` deltas into `openspec/specs/` and archive the change. Verify: `openspec validate --specs` passes.
+- [x] 3.1 Deploy: pull and restart the API on the laptop, rebuild the UI and upload it. Verify: publish a post on the live site, see it in Tanya Jawab with "Diposting oleh", delete it, and confirm the dummy data is gone afterwards.
+- [x] 3.2 Sync the `ustadz-posts`, `answers` and `questions` deltas into `openspec/specs/` and archive the change. Verify: `openspec validate --specs` passes.
