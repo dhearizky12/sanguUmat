@@ -1,10 +1,28 @@
-# Hostinger (Apache): send every route that is not a real file to the SPA, so a
+# Hostinger (Apache/LiteSpeed): send every route that is not a real file to the SPA, so a
 # refresh or a shared link such as /questions or /articles/12 still loads.
+#
+# Two things keep a new upload from showing a blank page to people who visited before:
+# - index.html is never cached, so a visitor always gets the current one, which names the
+#   current hashed files under /assets/.
+# - /assets/ never falls back to index.html. A missing (old) bundle must be a 404, not the
+#   HTML page served as JavaScript, which is what leaves the page blank until a hard reload.
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
   RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_URI} !^/assets/
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
   RewriteRule . /index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+  # The page itself: always revalidate.
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
+  # Vite names bundles by content hash (name-AbCdEf12.js), so they can be cached for good.
+  <FilesMatch "-[A-Za-z0-9_-]{8}\.(js|css)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
 </IfModule>
