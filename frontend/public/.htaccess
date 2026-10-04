@@ -1,0 +1,10 @@
+# Hostinger (Apache): send every route that is not a real file to the SPA, so a
+# refresh or a shared link such as /questions or /articles/12 still loads.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+  RewriteRule ^index\.html$ - [L]
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule . /index.html [L]
+</IfModule>

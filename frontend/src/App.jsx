@@ -63,6 +63,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/syarat" element={<Legal doc="syarat" />} />
           <Route path="/privasi" element={<Legal doc="privasi" />} />
+          <Route path="/kontak" element={<Legal doc="kontak" />} />
 
           <Route path="/questions" element={<Questions />} />
           <Route path="/question/detail/:id" element={<DetailQuestion />} />

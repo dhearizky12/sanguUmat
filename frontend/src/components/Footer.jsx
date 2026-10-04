@@ -14,6 +14,7 @@ const ABOUT_LINKS = [
 ];
 
 const HELP_LINKS = [
+  { label: "Hubungi Kami", to: "/kontak" },
   { label: "Kebijakan Privasi", to: "/privasi" },
   { label: "Syarat Layanan", to: "/syarat" },
 ];

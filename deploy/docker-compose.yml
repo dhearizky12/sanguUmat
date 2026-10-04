@@ -1,15 +1,10 @@
-# Self-hosted stack: Postgres and the ASP.NET Core API, which also serves the built
-# SPA out of its wwwroot. Public access is Tailscale Funnel, running on the host
-# rather than in a container — see README.md section 3.
+# Self-hosted stack: Postgres and the ASP.NET Core API. The React bundle is baked
+# into the api image too, so the API can also serve the UI out of its wwwroot; the
+# public site is normally the static build hosted separately (see README.md).
 #
 #   cd deploy
 #   cp .env.example .env      # then fill it in
 #   docker compose up -d --build
-#   sudo tailscale funnel --bg 8080
-#
-# There is no separate frontend deployment: the React bundle is baked into the api
-# image, so the SPA and the API share one origin (the Funnel hostname) and the auth
-# cookie stays first-party. See README.md.
 #
 # All persistent state is bind-mounted under ./data, so everything the stack owns
 # is visible in one folder. Note the consequence: `docker compose down -v` does
@@ -50,12 +45,12 @@ services:
       # Lax is right because the SPA and the API are one origin now.
       Authentication__CookieSameSite: ${COOKIE_SAMESITE:-Lax}
       Authentication__CookieDomain: ${COOKIE_DOMAIN:-}
-      # Where login and logout hand the browser back to — the Funnel URL,
+      # Where login and logout hand the browser back to: the public site URL,
       # including the path prefix if the app is mounted under one.
       Frontend__BaseUrl: ${PUBLIC_BASE_URL}
       # URL path prefix this app is mounted under: empty for the domain root,
-      # "/sanguumat" behind Caddy's matching handle block. Changing this needs a
-      # restart, not a rebuild — see README.md section 9.
+      # "/sanguumat" behind a reverse proxy that strips it. Changing this needs a
+      # restart, not a rebuild.
       App__BasePath: ${APP_BASE_PATH:-}
       # Nothing is cross-origin here, so this is normally empty. Set
       # EXTRA_CORS_ORIGIN in .env only to let a local `npm run dev` talk to this
@@ -68,7 +63,6 @@ services:
       - ./data/uploads:/app/wwwroot/uploads
       - ./data/dp-keys:/root/.aspnet/DataProtection-Keys
     ports:
-      # Loopback only — nothing is exposed on the LAN or the router. This is also
-      # what Tailscale Funnel proxies to, so the port here and the port given to
-      # `tailscale funnel` must match.
+      # Loopback only — nothing is exposed on the LAN or the router. Put a reverse
+      # proxy in front of this port to reach it from elsewhere.
       - "127.0.0.1:${API_HOST_PORT:-8080}:8080"

@@ -1,8 +1,7 @@
 # syntax=docker/dockerfile:1
 #
 # One image, one origin: the ASP.NET Core API plus the built React bundle, which
-# it serves out of wwwroot. That is what keeps the auth cookie first-party behind
-# the Tailscale Funnel hostname.
+# it serves out of wwwroot, so the UI and the auth cookie share one origin.
 #
 # The build context is the repo root, because both backend/ and frontend/ have to
 # be reachable:

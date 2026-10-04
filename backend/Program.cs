@@ -41,7 +41,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
             maxRetryDelay: TimeSpan.FromSeconds(10),
             errorCodesToAdd: null)));
 
-// The app runs behind Tailscale Funnel, which terminates TLS and forwards plain
+// The app runs behind a reverse proxy that terminates TLS and forwards plain
 // HTTP to the container with X-Forwarded-Proto: https. Without this the app thinks
 // every request is http://, builds the Google redirect_uri as http, and refuses to
 // set the Secure cookie.
@@ -80,7 +80,7 @@ builder.Services.AddAuthentication(options =>
 .AddCookie(options =>
 {
     // In production the SPA is served out of this app's own wwwroot, so it and the
-    // API share one origin (the Funnel hostname) and the cookie is first-party. Lax is
+    // API share one origin and the cookie is first-party. Lax is
     // therefore the right default: every browser accepts it — including Firefox and
     // Safari, which block the third-party cookie SameSite=None would need — and it
     // closes the CSRF hole None leaves open. Google's callback is a top-level GET,

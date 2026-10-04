@@ -4,7 +4,7 @@ import Breadcrumb from "../components/Breadcrumb";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 
 // Syarat Layanan and Kebijakan Privasi: plain text, written for what the app does today.
-// Edit the wording here; the routes are /syarat and /privasi.
+// Edit the wording here; the routes are /syarat, /privasi and /kontak.
 const DOCS = {
   syarat: {
     title: "Syarat Layanan",
@@ -17,6 +17,15 @@ const DOCS = {
       ["Perubahan", "Syarat ini dapat berubah. Dengan terus memakai layanan, Anda menyetujui syarat yang berlaku."],
     ],
   },
+  kontak: {
+    title: "Hubungi Kami",
+    lead: "Pertanyaan tentang situs, saran, atau laporan.",
+    sections: [
+      ["Email", "fatikhunnizam@gmail.com"],
+      ["WhatsApp", "+62 823-3678-8323"],
+      ["Untuk apa", "Laporkan isi yang tidak pantas, minta penghapusan akun atau data Anda, atau tanyakan hal teknis tentang Sangu Umat. Pertanyaan agama tetap diajukan lewat halaman Tanya Jawab."],
+    ],
+  },
   privasi: {
     title: "Kebijakan Privasi",
     lead: "Data apa yang kami simpan, dan untuk apa.",
@@ -25,7 +34,7 @@ const DOCS = {
       ["Untuk apa", "Untuk menampilkan profil Anda, menjawab pertanyaan Anda, mengirim notifikasi di dalam aplikasi, dan mengelola layanan. Kami tidak menjual data Anda dan tidak membagikannya kepada pihak lain untuk iklan."],
       ["Yang terlihat oleh orang lain", "Nama, foto, pertanyaan yang dijawab, dan komentar Anda dapat dilihat pengunjung. Email, nomor telepon, dan alamat tidak ditampilkan. Pertanyaan anonim tidak menampilkan nama Anda."],
       ["Cookie", "Kami memakai satu cookie masuk agar Anda tetap login. Kami tidak memakai cookie pelacak iklan."],
-      ["Menghapus data", "Anda dapat mengubah data profil kapan saja di halaman profil. Untuk menghapus akun atau data Anda, hubungi pengelola Sangu Umat."],
+      ["Menghapus data", "Anda dapat mengubah data profil kapan saja di halaman profil. Untuk menghapus akun atau data Anda, hubungi kami lewat halaman Hubungi Kami."],
     ],
   },
 };
