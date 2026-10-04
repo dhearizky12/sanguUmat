@@ -60,6 +60,11 @@ function Profile() {
                   Tulis artikel
                 </Button>
               )}
+              {(profile?.role === "Guru" || profile?.role === "Admin") && (
+                <Button as={Link} to="/posting/baru" variant="outline" className="px-5 py-3">
+                  Tulis posting
+                </Button>
+              )}
               <Button as={Link} to="/edit-profile" className="px-5 py-3">
                 Ubah profil
               </Button>

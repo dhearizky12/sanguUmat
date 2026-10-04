@@ -95,6 +95,11 @@ function UstadzDetail() {
                     </Button>
                   )}
                   {canEdit && (
+                    <Button as={Link} to={`/posting/baru?ustadz=${id}`} variant="outline" className="px-5 py-3">
+                      Tulis posting
+                    </Button>
+                  )}
+                  {canEdit && (
                     <Button as={Link} to={`/ustadz/${id}/ubah`} variant="outline" className="px-5 py-3">
                       Ubah profil ustadz
                     </Button>

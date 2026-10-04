@@ -49,7 +49,16 @@ function DetailQuestion() {
     if (!question || !(hash.startsWith("#jawaban-") || hash === "#jawab") || scrolledTo.current === target) return;
     scrolledTo.current = target;
     document.getElementById(hash.slice(1))?.scrollIntoView({ behavior: "smooth", block: "start" });
-    if (hash === "#jawab") document.getElementById("answer-body")?.focus({ preventScroll: true });
+    if (hash === "#jawab") {
+      // The editor loads lazily, so wait for its editable area to exist.
+      let tries = 0;
+      const focusEditor = () => {
+        const editable = document.querySelector("#jawab [contenteditable=true]");
+        if (editable) editable.focus({ preventScroll: true });
+        else if (tries++ < 20) setTimeout(focusEditor, 150);
+      };
+      focusEditor();
+    }
   }, [question, hash, id]);
 
   const isAdmin = me?.role === "Admin";
@@ -61,10 +70,10 @@ function DetailQuestion() {
 
   const updateQuestion = (changes) => setQuestion((prev) => ({ ...prev, ...changes }));
 
-  const updateAnswer = (answerId, content) =>
+  const updateAnswer = (answerId, content, isHtml) =>
     setQuestion((prev) => ({
       ...prev,
-      answers: prev.answers.map((a) => (a.id === answerId ? { ...a, content } : a)),
+      answers: prev.answers.map((a) => (a.id === answerId ? { ...a, content, isHtml } : a)),
     }));
 
   return (
@@ -107,7 +116,7 @@ function DetailQuestion() {
                         answer={item}
                         isPost={question.isPost}
                         canManage={me?.id === item.userId || me?.role === "Admin"}
-                        onUpdated={(content) => updateAnswer(item.id, content)}
+                        onUpdated={(content, isHtml) => updateAnswer(item.id, content, isHtml)}
                       />
                     ))
                   )}

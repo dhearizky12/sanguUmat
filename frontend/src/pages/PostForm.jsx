@@ -1,12 +1,14 @@
 import { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Footer from "../components/Footer";
 import Header from "../components/Header";
 import Breadcrumb from "../components/Breadcrumb";
 import Button from "../components/Button";
 import LoadingState from "../components/LoadingState";
 import MonoLabel from "../components/MonoLabel";
+import LazyEditor from "../components/article/LazyEditor";
 import { FieldLabel, FormError, Input, Select, TextArea } from "../components/Field";
+import { plainToHtml } from "../lib/answer";
 import { PageBody, PageHeader, PageLead, PageTitle } from "../components/Page";
 import { useAuth } from "../hooks/useAuth";
 import { API_URL } from "../lib/api";
@@ -25,6 +27,7 @@ function PostForm() {
   const { id } = useParams();
   const editing = id != null;
   const navigate = useNavigate();
+  const [params] = useSearchParams();
   const { me } = useAuth();
   const isAdmin = me?.role === "Admin";
   const categories = useCategories();
@@ -33,7 +36,8 @@ function PostForm() {
   const [content, setContent] = useState("");
   const [answer, setAnswer] = useState("");
   const [category, setCategory] = useState("");
-  const [ustadzId, setUstadzId] = useState("");
+  // `?ustadz=` (from an ustadz's page) preselects who an Admin posts for.
+  const [ustadzId, setUstadzId] = useState(params.get("ustadz") ?? "");
   const [loading, setLoading] = useState(editing);
   const [notFound, setNotFound] = useState(false);
   const [error, setError] = useState("");
@@ -62,7 +66,8 @@ function PostForm() {
         }
         setTitle(q.title);
         setContent(q.content);
-        setAnswer(q.answers?.[q.answers.length - 1]?.content ?? "");
+        const a = q.answers?.[q.answers.length - 1];
+        setAnswer(a ? (a.isHtml ? a.content : plainToHtml(a.content)) : "");
         setCategory(q.category ?? "");
         setUstadzId(String(q.userId));
       })
@@ -78,9 +83,14 @@ function PostForm() {
     setError("");
   };
 
+  const clearAnswer = (html) => {
+    setAnswer(html);
+    setError("");
+  };
+
   const submit = async (e) => {
     e.preventDefault();
-    if (!title.trim() || !content.trim() || !answer.trim()) {
+    if (!title.trim() || !content.trim() || !answer) {
       setError("Judul, pertanyaan, dan jawaban harus diisi.");
       return;
     }
@@ -199,15 +209,14 @@ function PostForm() {
               </div>
 
               <div className="flex flex-col gap-2.5">
-                <FieldLabel htmlFor="post-answer">Jawaban</FieldLabel>
-                <TextArea
-                  id="post-answer"
-                  rows="12"
+                <FieldLabel as="div" id="post-answer-label">
+                  Jawaban
+                </FieldLabel>
+                <LazyEditor
                   value={answer}
-                  onChange={clearError(setAnswer)}
+                  onChange={clearAnswer}
+                  labelledBy="post-answer-label"
                   placeholder="Tulis jawabannya, lengkap dengan dalil dan rujukan."
-                  invalid={!!error && !answer.trim()}
-                  size="lg"
                 />
               </div>
 

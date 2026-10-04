@@ -1,12 +1,13 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import RichContent from "../RichContent";
+import AnswerBody from "./AnswerBody";
 import CommentSection from "../CommentSection";
 import { API_URL, pictureUrl } from "../../lib/api";
 import Avatar from "../Avatar";
 import Button from "../Button";
 import MonoLabel from "../MonoLabel";
-import { TextArea } from "../Field";
+import LazyEditor from "../article/LazyEditor";
+import { plainToHtml } from "../../lib/answer";
 
 // One answer with its comments. `canManage` (the answer's author or an Admin) unlocks the
 // inline edit and the delete.
@@ -32,7 +33,7 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
   };
 
   const startEditAnswer = () => {
-    setEditAnswerContent(answer.content);
+    setEditAnswerContent(answer.isHtml ? answer.content : plainToHtml(answer.content));
     setIsEditing(true);
   };
 
@@ -41,7 +42,7 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
   };
 
   const saveAnswerEdit = async () => {
-    if (!editAnswerContent.trim()) {
+    if (!editAnswerContent) {
       alert("Jawaban tidak boleh kosong.");
       return;
     }
@@ -53,11 +54,11 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content: editAnswerContent }),
+        body: JSON.stringify({ content: editAnswerContent, isHtml: true }),
       });
 
       if (response.ok) {
-        onUpdated(editAnswerContent);
+        onUpdated(editAnswerContent, true);
         setIsEditing(false);
       } else {
         alert("Gagal menyimpan perubahan jawaban.");
@@ -111,11 +112,14 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
       <div className={isPost ? "" : "mt-5 md:pl-[52px]"}>
         {isEditing ? (
           <div className="flex flex-col gap-3">
-            <TextArea
-              aria-label="Ubah jawaban"
-              rows="10"
+            <span id={`ubah-jawaban-${answer.id}`} className="sr-only">
+              Ubah jawaban
+            </span>
+            <LazyEditor
               value={editAnswerContent}
-              onChange={(e) => setEditAnswerContent(e.target.value)}
+              onChange={setEditAnswerContent}
+              labelledBy={`ubah-jawaban-${answer.id}`}
+              placeholder="Ubah jawaban…"
             />
             <div className="flex flex-wrap justify-end gap-3">
               <Button variant="outline" onClick={cancelEditAnswer} className="px-5 py-3">
@@ -127,7 +131,7 @@ function AnswerItem({ answer, canManage, isPost = false, onUpdated }) {
             </div>
           </div>
         ) : (
-          <RichContent text={answer.content} className="text-[17px] leading-[1.7] text-ink-soft max-w-[70ch] text-pretty" />
+          <AnswerBody answer={answer} />
         )}
 
         <div className="mt-8">
