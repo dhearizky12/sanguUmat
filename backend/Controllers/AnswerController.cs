@@ -1,5 +1,6 @@
 using backend.Data;
 using backend.DTOs;
+using backend.Articles;
 using backend.Extensions;
 using backend.Models;
 using backend.Notifications;
@@ -56,9 +57,16 @@ namespace backend.Controllers
                 return Conflict("Posting ini sudah berisi jawaban");
             }
 
+            var content = AnswerContent.Prepare(request.Content, request.IsHtml);
+            if (content == null)
+            {
+                return BadRequest(AnswerContent.EmptyMessage);
+            }
+
             var answer = new Answer
             {
-                Content = request.Content,
+                Content = content,
+                IsHtml = request.IsHtml,
 
                 CreatedAt =
                     DateTime.UtcNow,
@@ -126,7 +134,14 @@ namespace backend.Controllers
                 return Forbid();
             }
 
-            answer.Content = request.Content;
+            var content = AnswerContent.Prepare(request.Content, request.IsHtml);
+            if (content == null)
+            {
+                return BadRequest(AnswerContent.EmptyMessage);
+            }
+
+            answer.Content = content;
+            answer.IsHtml = request.IsHtml;
             var answered = await _db.Questions.FirstAsync(q => q.Id == answer.QuestionId);
             await _notifier.AnswerEdited(answered, answer, user);
             await _db.SaveChangesAsync();

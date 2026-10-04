@@ -52,6 +52,17 @@ still works for the writer, and is silent for posts).
 answers and comments. It gets one more allowed caller: the credited ustadz, for a
 post, even though it is answered.
 
+**Formatted answers: a flag, not a guess.** `Answer` gains `IsHtml` (bool, default false).
+Clients send `isHtml: true` when they send editor HTML; the server runs it through
+`ArticleHtml.Clean` (the same allowlist as articles) and rejects an answer with no text.
+Detail responses carry `isHtml` per answer; the UI renders HTML with the article type and
+anything else through `RichContent` as before. Existing rows stay plain, and a plain
+answer opened for editing is converted line by line to paragraphs. A post's answer is
+always HTML. *Alternative:* sniff `<p>` in the text. Rejected: a plain answer could look
+like HTML. List "read time" still counts the stored length, so HTML tags overstate it by
+roughly 10 to 20 percent; accepted. The editor is the article one, loaded lazily so the
+question page does not pull TipTap for readers.
+
 **Notifications stay silent.** The post endpoints never call `Notifier`. Three
 existing calls need a guard so a post does not notify its own author:
 `AnswerEdited` and `QuestionDeletedByAdmin` return early for `IsPost`, and for

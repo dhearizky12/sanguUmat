@@ -1,3 +1,4 @@
+using backend.Articles;
 using backend.Data;
 using backend.DTOs;
 using backend.Extensions;
@@ -265,7 +266,7 @@ namespace backend.Controllers
                 AllowPublish = true,
                 Answers = new List<Answer>
                 {
-                    new Answer { Content = request.Answer!.Trim(), CreatedAt = now, UserId = credited.Ustadz.Id }
+                    new Answer { Content = AnswerContent.Prepare(request.Answer, isHtml: true)!, IsHtml = true, CreatedAt = now, UserId = credited.Ustadz.Id }
                 }
             };
             _db.Questions.Add(question);
@@ -300,7 +301,8 @@ namespace backend.Controllers
             question.CategoryId = await CategoryIdAsync(request.Category);
             question.UserId = credited.Ustadz!.Id;
             var answer = question.Answers.OrderBy(a => a.CreatedAt).First();
-            answer.Content = request.Answer!.Trim();
+            answer.Content = AnswerContent.Prepare(request.Answer, isHtml: true)!;
+            answer.IsHtml = true;
             answer.UserId = credited.Ustadz.Id;
             await _db.SaveChangesAsync();
 
@@ -336,8 +338,10 @@ namespace backend.Controllers
             return new Credited { Ustadz = caller };
         }
 
+        // The post's answer is the editor's HTML, so "has text" is judged after cleaning.
         private static bool HasAllText(SavePostRequest r) =>
-            !string.IsNullOrWhiteSpace(r.Title) && !string.IsNullOrWhiteSpace(r.Content) && !string.IsNullOrWhiteSpace(r.Answer);
+            !string.IsNullOrWhiteSpace(r.Title) && !string.IsNullOrWhiteSpace(r.Content)
+            && AnswerContent.Prepare(r.Answer, isHtml: true) != null;
 
         // A missing or unknown key leaves the post uncategorised (the FE shows "Lainnya").
         private async Task<int?> CategoryIdAsync(string? key) =>
@@ -430,6 +434,7 @@ namespace backend.Controllers
                         {
                             x.Id,
                             x.Content,
+                            x.IsHtml,
                             x.CreatedAt,
 
                             UserId = x.UserId,

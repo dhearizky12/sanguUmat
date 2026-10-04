@@ -6,6 +6,10 @@ namespace backend.Models
 
         public string Content { get; set; }
 
+        // Content is sanitised editor HTML (ArticleHtml) rather than plain text. Answers written
+        // before formatting existed stay false and are shown as plain text.
+        public bool IsHtml { get; set; }
+
         public DateTime CreatedAt { get; set; }
 
         // RELASI QUESTION

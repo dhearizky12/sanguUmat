@@ -60,14 +60,19 @@ Guru and Admin MUST have a dedicated page for writing a post, in Bahasa Indonesi
 #### Scenario: Opening the page
 
 - **WHEN** a Guru or Admin opens `/posting/baru`
-- **THEN** it offers "Pertanyaan" (title and body), "Jawaban", "Kategori", and for
-  an Admin a required "Diposting atas nama" choice listing every ustadz
+- **THEN** it offers "Pertanyaan" (title and body), "Jawaban" in the formatted
+  editor described under `answers`, "Kategori", and for an Admin a required
+  "Diposting atas nama" choice listing every ustadz
+- **AND** a post's answer is always stored as a formatted answer
 - **AND** a "Terbitkan" button that publishes the post and opens it
 
 #### Scenario: Reaching the page
 
-- **WHEN** a Guru or Admin looks at the header's ustadz menu
+- **WHEN** a Guru or Admin looks at the header
 - **THEN** it has "Tulis Posting", linking to the page
+- **AND** their Profil has a "Tulis posting" button beside "Tulis artikel"
+- **AND** an ustadz's page offers "Tulis posting" to that ustadz and to Admins,
+  opening the page with that ustadz already chosen (`/posting/baru?ustadz={id}`)
 
 #### Scenario: Not allowed
 

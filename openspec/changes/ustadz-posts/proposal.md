@@ -21,6 +21,8 @@ Touches **both backend and frontend**.
   to; the Admin is never shown.
 - No asker, no anonymity, no "ditujukan kepada". Published immediately.
 - They never enter the answer queue and send no notifications.
+- Every Jawaban box, on the question page, in its edit box and on the posting page, becomes
+  the article's rich text editor. Existing answers stay plain text.
 - The poster (or an Admin) can edit both texts and delete the post. Comments work
   as on any answer.
 - Stored in the existing Question and Answer tables with a flag on `Question`.
@@ -32,7 +34,8 @@ API changes:
 | POST | `/api/question/post` | Guru or Admin | `201 { id }` |
 | PUT | `/api/question/post/{id}` | the credited Guru, or Admin | `200` |
 | GET | `/api/question`, `/browse`, `/{id}` | as before | each item and the detail gain `isPost` |
-| POST | `/api/answer/{questionId}` | Guru | now `409` when the question is a post |
+| POST | `/api/answer/{questionId}` | Guru | body gains `isHtml`; `409` when the question is a post |
+| PUT | `/api/answer/{answerId}` | writer or Admin | body gains `isHtml` |
 | DELETE | `/api/question/{id}` | as before, plus the credited Guru for a post | `200` |
 
 New frontend pages: `/posting/baru` and `/posting/{id}/ubah` (Guru and Admin only).
@@ -47,6 +50,7 @@ New frontend pages: `/posting/baru` and `/posting/{id}/ubah` (Guru and Admin onl
 
 ### Modified Capabilities
 
+- `answers`: answers can be written, edited and shown with formatting (`isHtml`).
 - `questions`: reading a question carries `isPost`; the asker's own-questions list
   leaves posts out; an ustadz may delete their own post even though it is answered.
 
