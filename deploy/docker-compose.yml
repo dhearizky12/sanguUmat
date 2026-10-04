@@ -1,14 +1,13 @@
-# Self-hosted stack: Postgres and the ASP.NET Core API. The React bundle is baked
-# into the api image too, so the API can also serve the UI out of its wwwroot; the
-# public site is normally the static build hosted separately (see README.md).
+# Postgres for the live site. The API is not in Docker: it runs on the host as a systemd
+# service (sanguumat-api.service, started by run-api.sh) and talks to this database on
+# 127.0.0.1:5433. The UI is a static build hosted separately.
 #
 #   cd deploy
 #   cp .env.example .env      # then fill it in
-#   docker compose up -d --build
+#   docker compose up -d db
 #
-# All persistent state is bind-mounted under ./data, so everything the stack owns
-# is visible in one folder. Note the consequence: `docker compose down -v` does
-# NOT erase it — to wipe, delete ./data yourself.
+# The database lives in ./data/postgres, so it is visible in one folder. Note the
+# consequence: `docker compose down -v` does NOT erase it; to wipe, delete ./data yourself.
 
 name: sangu-umat-live
 
@@ -30,41 +29,3 @@ services:
       interval: 5s
       timeout: 5s
       retries: 12
-
-  api:
-    container_name: sangu-umat-live-api
-    build:
-      context: ..
-      dockerfile: deploy/Dockerfile
-    restart: unless-stopped
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      ConnectionStrings__DefaultConnection: "Host=db;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
-      Authentication__Google__ClientId: ${GOOGLE_CLIENT_ID}
-      Authentication__Google__ClientSecret: ${GOOGLE_CLIENT_SECRET}
-      # Signs the login token (at least 32 random characters). Changing it signs
-      # everyone out. Lifetime is Jwt__ExpiryDays, 7 by default.
-      Jwt__Key: ${JWT_KEY}
-      Jwt__ExpiryDays: ${JWT_EXPIRY_DAYS:-7}
-      # Where login and logout hand the browser back to: the public site URL,
-      # including the path prefix if the app is mounted under one.
-      Frontend__BaseUrl: ${PUBLIC_BASE_URL}
-      # URL path prefix this app is mounted under: empty for the domain root,
-      # "/sanguumat" behind a reverse proxy that strips it. Changing this needs a
-      # restart, not a rebuild.
-      App__BasePath: ${APP_BASE_PATH:-}
-      # The Google account that becomes Admin when it first signs in. Only applies
-      # at account creation, so set it before that person's first login.
-      AdminEmails__0: ${ADMIN_EMAIL:-}
-      # The origin the UI is served from (https://sanguumat.web.id). Add a second
-      # entry here if a local `npm run dev` should also be allowed.
-      Cors__AllowedOrigins__0: ${EXTRA_CORS_ORIGIN:-}
-    volumes:
-      - ./data/uploads:/app/wwwroot/uploads
-      - ./data/dp-keys:/root/.aspnet/DataProtection-Keys
-    ports:
-      # Loopback only — nothing is exposed on the LAN or the router. Put a reverse
-      # proxy in front of this port to reach it from elsewhere.
-      - "127.0.0.1:${API_HOST_PORT:-8080}:8080"

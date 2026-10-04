@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Runs the API on the host (not in Docker) against the Postgres from `docker compose up -d db`.
+# Runs the API on the host against the Postgres from `docker compose up -d db`.
 # Reads deploy/.env; listens on 127.0.0.1:5236 for a reverse proxy to forward to.
 set -euo pipefail
 cd "$(dirname "$0")"

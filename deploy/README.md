@@ -5,10 +5,8 @@ Two parts, deployed separately:
 | Part | Where |
 | --- | --- |
 | UI (React build) | Static hosting (Hostinger) at `https://sanguumat.web.id` |
-| API + Postgres | Docker on a machine you control (`deploy/docker-compose.yml`) |
-
-The API image also contains the UI and can serve it from its own origin, which is
-handy for trying the whole thing on one machine. The public site is the static build.
+| API | A systemd service on a machine you control (`sanguumat-api.service`, `run-api.sh`) |
+| Postgres | A Docker container on that machine (`deploy/docker-compose.yml`) |
 
 ---
 
@@ -36,7 +34,7 @@ load but show no data and sign-in does not work.
 cd deploy
 cp .env.example .env       # fill in every CHANGE_ME / YOUR_
 docker compose up -d db    # Postgres
-./run-api.sh               # the API, on 127.0.0.1:5236 (or `docker compose up -d --build` for the API in Docker, on 127.0.0.1:8080)
+./run-api.sh               # the API, on 127.0.0.1:5236
 ```
 
 The API applies EF migrations on boot, so a fresh database sets itself up. Put a
@@ -76,29 +74,27 @@ sites, so there is no shared cookie. Instead:
 Build the UI with `VITE_API_URL` set to the API origin plus prefix
 (`frontend/.env.production`), then upload `dist/` again whenever it changes.
 
-## 3. What is persisted — `deploy/data/`
+## 3. What is persisted
 
-Everything the stack owns is bind-mounted under `deploy/data/`:
+- `deploy/data/postgres/`: the database (bind-mounted into the Postgres container).
+- `backend/wwwroot/uploads/`: avatars and article covers, written by the API on the host.
+- `~/.aspnet/DataProtection-Keys/`: the API's key ring.
 
-- `postgres/` — the database
-- `uploads/` — avatars and article covers
-- `dp-keys/` — the key ring that signs the login cookie; losing it logs everyone out
-
-`docker compose down -v` does **not** erase `data/`; to wipe, delete the folder.
+`docker compose down -v` does **not** erase `data/`; to wipe the database, delete the folder.
 
 ## 4. Common commands
 
 ```bash
-docker compose logs -f api                  # follow API logs
-docker compose up -d --build                # rebuild and restart after a code change
-docker compose exec db psql -U sanguumat -d sanguumat
+docker compose exec db psql -U sanguumat -d sanguumat     # a SQL prompt
+journalctl --user -u sanguumat-api -f                      # follow the API logs
+systemctl --user restart sanguumat-api                     # after `git pull`: rebuilds and restarts
 
 # backup / restore
 docker compose exec -T db pg_dump -U sanguumat sanguumat > backup.sql
 docker compose exec -T db psql -U sanguumat -d sanguumat < backup.sql
 ```
 
-Back up the database dump together with `data/uploads/`.
+Back up the database dump together with `backend/wwwroot/uploads/`.
 
 ## 5. Local development
 
