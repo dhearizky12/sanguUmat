@@ -200,7 +200,12 @@ function CreateQuestion() {
                   <Button onClick={() => setSent(false)} className="tracking-[0.16em] px-5 py-3.5">
                     Ajukan lagi
                   </Button>
-                  <Button as="a" href="#riwayat" variant="outline" className="tracking-[0.16em] px-5 py-3.5">
+                  {/* Not an href="#riwayat": index.html's <base href="/"> would send that to the home page. */}
+                  <Button
+                    variant="outline"
+                    onClick={() => document.getElementById("riwayat")?.scrollIntoView({ behavior: "smooth", block: "start" })}
+                    className="tracking-[0.16em] px-5 py-3.5"
+                  >
                     Lihat pertanyaan saya
                   </Button>
                 </div>
