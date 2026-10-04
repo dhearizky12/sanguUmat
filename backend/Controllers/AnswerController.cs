@@ -177,9 +177,14 @@ namespace backend.Controllers
                 return NotFound();
             }
 
+            if (string.IsNullOrWhiteSpace(request.Content))
+            {
+                return BadRequest("Komentar tidak boleh kosong");
+            }
+
             var comment = new Comment
             {
-                Content = request.Content,
+                Content = request.Content.Trim(),
                 CreatedAt = DateTime.UtcNow,
                 AnswerId = answerId,
                 UserId = user.Id

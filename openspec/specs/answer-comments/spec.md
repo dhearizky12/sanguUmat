@@ -44,6 +44,12 @@ their role.
 - **AND** the created comment is returned, so the UI can show it without
   refetching the list
 
+#### Scenario: Empty comment
+
+- **WHEN** the posted `content` is missing, empty or only whitespace
+- **THEN** the response is 400 with "Komentar tidak boleh kosong"
+- **AND** nothing is stored
+
 #### Scenario: Anonymous caller
 
 - **WHEN** an unauthenticated caller posts a comment
